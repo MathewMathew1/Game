@@ -1,0 +1,143 @@
+using BoardGameBackend.Models;
+
+namespace BoardGameBackend.Managers
+{
+    public class MiniPhaseManager
+    {
+        private List<MiniPhase> _miniPhases;
+        private GameContext _gameContext;
+        public MiniPhase? CurrentMiniPhase = null;
+
+        public MiniPhaseManager(GameContext gameContext)
+        {
+            _miniPhases = new List<MiniPhase>
+            {
+                new RerollMercenaryMiniPhase(_gameContext),
+                new TeleportMiniPhase(_gameContext),
+                new ArtifactPickMiniPhase(_gameContext)
+            };
+            _gameContext = gameContext;
+
+            gameContext.EventManager.Subscribe<MoveOnTile>("MoveOnTile", moveOnTileData =>
+            {
+                HandleMoveOnTile(moveOnTileData.TileReward);
+            }, priority: 5);
+
+            _gameContext.EventManager.Subscribe<GetCurrentTileReward>("GetCurrentTileReward",  getCurrentTileReward =>
+            {
+                HandleMoveOnTile(getCurrentTileReward.TileReward);
+            }, priority: 5);
+
+
+             _gameContext.EventManager.Subscribe<MercenaryRerolled>("MercenaryRerolled", rerollMercenaryData =>
+            {
+                if(CurrentMiniPhase is RerollMercenaryMiniPhase){
+                    EndCurrentMiniPhase();
+                }
+                
+            }, priority: 20);
+            gameContext.EventManager.Subscribe("ArtifactsTaken", (ArtifactsTaken data) =>
+            {
+                if (CurrentMiniPhase?.GetType() == typeof(ArtifactPickMiniPhase))
+                {
+                    EndCurrentMiniPhase();
+                }
+
+            }, priority: 5);
+
+            gameContext.EventManager.Subscribe<FulfillProphecy>("FulfillProphecy", data =>
+            {
+                if (CurrentMiniPhase is FulfillProphecyMiniPhase)
+                {
+                    EndCurrentMiniPhase();
+                }
+
+            }, priority: 5);
+
+            gameContext.EventManager.Subscribe<BuffHeroData>("HeroCardBuffed", data =>
+            {
+                if (CurrentMiniPhase is BuffHeroMiniPhase)
+                {
+                    EndCurrentMiniPhase();
+                }
+
+            }, priority: 5);
+
+            gameContext.EventManager.Subscribe<LockMercenaryData>("LockMercenary", data =>
+            {
+                if (CurrentMiniPhase is LockCardMiniPhase)
+                {
+                    EndCurrentMiniPhase();
+                }
+            }, priority: 5);  
+
+            gameContext.EventManager.Subscribe<MercenaryPicked>("MercenaryPicked", mercenaryPicked =>
+            {            
+                if(mercenaryPicked.Card.LockedByPlayerInfo != null){
+                    StartLockCardMiniPhase();
+                };
+            }, priority: 15);   
+
+             gameContext.EventManager.Subscribe<BlockedTileData>("BlockedTileEvent", data =>
+            {            
+                if(CurrentMiniPhase is BlockTileMiniPhase){
+                    EndCurrentMiniPhase();
+                };
+            }, priority: 0);   
+        }
+
+        private void StartCurrentMiniPhase(MiniPhase miniPhase)
+        {
+            CurrentMiniPhase = miniPhase;
+            CurrentMiniPhase.StartMiniPhase();
+        }
+
+        public void EndCurrentMiniPhase()
+        {
+            if(CurrentMiniPhase != null){
+                CurrentMiniPhase.EndMiniPhase();
+            }
+            CurrentMiniPhase = null;
+        }
+
+        public void HandleMoveOnTile(TileReward tileReward){
+         
+            if(tileReward.RerollMercenaryAction != null &&tileReward.RerollMercenaryAction == true){      
+                var miniPhaseClass = new RerollMercenaryMiniPhase(_gameContext);
+                
+                StartCurrentMiniPhase(miniPhaseClass);
+            }
+        }
+
+        public void StartTeleportMiniPhase(){
+            var miniPhaseClass = new TeleportMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StartArtifactPickMiniPhase(){
+            var miniPhaseClass = new ArtifactPickMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StartMercenaryFulfillMiniPhase(){
+            var miniPhaseClass = new FulfillProphecyMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StartLockCardMiniPhase(){
+            var miniPhaseClass = new LockCardMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StartBuffHeroMiniPhase(){
+            var miniPhaseClass = new BuffHeroMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StartBlockTileMiniPhase(){
+            var miniPhaseClass = new BlockTileMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+    }
+}

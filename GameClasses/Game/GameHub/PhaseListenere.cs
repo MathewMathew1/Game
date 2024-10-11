@@ -1,0 +1,133 @@
+using BoardGameBackend.Providers;
+using BoardGameBackend.Models;
+using Microsoft.AspNetCore.SignalR;
+
+namespace BoardGameBackend.Managers.EventListeners
+{
+    public class PhaseEventListener : IEventListener
+    {
+        private readonly IHubContextProvider _hubContextProvider;
+
+        public PhaseEventListener(IHubContextProvider hubContextProvider)
+        {
+            _hubContextProvider = hubContextProvider;
+        }
+
+        public void SubscribeEvents(GameContext gameContext)
+        {
+            var gameId = gameContext.GameId;
+
+            gameContext.EventManager.Subscribe<DummyPhaseStarted>("HeroCardPickingPhaseStarted", data =>
+            {
+                BroadcastHeroCardPickingPhaseStart(gameContext.GameId, data);
+            });
+
+            gameContext.EventManager.Subscribe<DummyPhaseStarted>("DummyPhasePickingPhaseStarted", args =>
+           {
+               BroadcastDummyPickingPhaseStart(args.Player, gameId);
+           });
+            gameContext.EventManager.Subscribe<DummyPhaseStarted>("BoardPhasePickingPhaseStarted", args =>
+            {
+                BroadcastBoardPickingPhaseStart(args.Player, gameId);
+            });
+            gameContext.EventManager.Subscribe<ArtifactPhaseStarted>("ArtifactPhaseStarted", data =>
+            {
+                BroadcastArtifactPickingPhaseStart(gameId, data);
+            });
+
+            gameContext.EventManager.Subscribe<DummyPhaseStarted>("MercenaryPhaseStarted", args =>
+            {
+                BroadcastMercenaryPhaseStart(args.Player, gameId);
+            });
+
+            gameContext.EventManager.Subscribe<HeroTurnEnded>("HeroTurnEnded", args =>
+         {
+             BroadcastHeroTurnEnded(args.Player, gameId);
+         });
+
+            gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", player =>
+            {
+                BroadcastNewPlayerTurn(player, gameId);
+            }, priority: 0);
+
+            gameContext.EventManager.Subscribe("EndOfTurn", () =>
+            {
+                BroadcastEndOfTurn(gameId);
+            });
+     
+            gameContext.EventManager.Subscribe("EndOfRound", (EndOfRoundData data) =>
+            {
+                BroadcastEndOfRound(gameId, data);
+            }, priority: 0);
+
+            gameContext.EventManager.Subscribe("GameStarted", (StartOfGame data) =>
+            {
+                BroadCastStartOfTheGame(data);
+            }, priority: 0);
+        }
+
+        public void BroadcastHeroCardPickingPhaseStart(string gameId, DummyPhaseStarted data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("HeroCardPickingPhaseStarted", data);
+        }
+
+        public void BroadcastDummyPickingPhaseStart(PlayerInGame player, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("DummyPhaseStarted", player);
+        }
+
+        public void BroadcastMercenaryPhaseStart(PlayerInGame player, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("MercenaryPhaseStarted", player);
+        }
+
+
+        public void BroadcastArtifactPickingPhaseStart(string gameId, ArtifactPhaseStarted data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ArtifactPhaseStarted", data);
+        }
+
+        public void BroadcastBoardPickingPhaseStart(PlayerInGame player, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BoardPhaseStarted", player);
+        }
+
+        public void BroadcastNewPlayerTurn(PlayerInGame player, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("NewPlayerTurn", player);
+        }
+
+        public void BroadcastHeroTurnEnded(PlayerInGame player, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("HeroTurnEnded", player);
+        }
+
+        public void BroadcastEndOfTurn(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfTurn");
+        }
+
+        public void BroadcastEndOfRound(string gameId, EndOfRoundData endOfRoundData)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfRound", endOfRoundData);
+        }
+
+        public void BroadCastStartOfTheGame(StartOfGame startOfGame){
+           var hubContext = _hubContextProvider!.LobbyHubContext;     
+           hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(startOfGame.GameId)!.Id).SendAsync("GameStarted", startOfGame);
+        }
+
+        
+
+
+    }
+}
