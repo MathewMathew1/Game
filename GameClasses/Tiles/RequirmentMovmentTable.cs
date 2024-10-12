@@ -210,13 +210,13 @@ namespace BoardGameBackend.Models
                     case 8:
                         _requirements.Add(requirementData.Id, new RequirementMovementEight(requirementData.Value1, requirementData.Value2));
                         break;
-                    case 12:
+                    case 9:
                         _requirements.Add(requirementData.Id, new RequirementMovementEight(requirementData.Value1, requirementData.Value2));
                         break;
-                    case 13:
+                    case 10:
                         _requirements.Add(requirementData.Id, new RequirementMovementEight(requirementData.Value1, requirementData.Value2));
                         break;
-                    case 14:
+                    case 11:
                         _requirements.Add(requirementData.Id, new RequirementMovementEight(requirementData.Value1, requirementData.Value2));
                         break;
 

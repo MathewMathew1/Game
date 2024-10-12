@@ -6,9 +6,9 @@
 {"Id" : 6, "Nazwa" : "MagicPower", "ReqType" : "ReqMocy", "Value1" : 4, "Value2" : -1},
 {"Id" : 7, "Nazwa" : "ArmyPower", "ReqType" : "ReqMocy", "Value1" : 4, "Value2" : -1},
 {"Id" : 8, "Nazwa" : "HasHeroFrakcja1", "ReqType" : "HasHeroFrakcja", "Value1" : 1, "Value2" : -1},
-{"Id" : 9, "Nazwa" : "PoleNotWithinRadius3", "ReqType" : "NotWithinRadius", "Value1" : 3, "Value2" : -1},
-{"Id" : 10, "Nazwa" : "PoleNotWithinRadius2", "ReqType" : "NotWithinRadius", "Value1" : 2, "Value2" : -1},
-{"Id" : 11, "Nazwa" : "PoleNotWithinRadius1", "ReqType" : "NotWithinRadius", "Value1" : 1, "Value2" : -1},
-{"Id" : 12, "Nazwa" : "HasHeroFrakcja2", "ReqType" : "HasHeroFrakcja", "Value1" : 2, "Value2" : -1},
-{"Id" : 13, "Nazwa" : "HasHeroFrakcja3", "ReqType" : "HasHeroFrakcja", "Value1" : 3, "Value2" : -1},
-{"Id" : 14, "Nazwa" : "HasHeroFrakcja4", "ReqType" : "HasHeroFrakcja", "Value1" : 4, "Value2" : -1}]
+{"Id" : 9, "Nazwa" : "HasHeroFrakcja2", "ReqType" : "HasHeroFrakcja", "Value1" : 2, "Value2" : -1},
+{"Id" : 10, "Nazwa" : "HasHeroFrakcja3", "ReqType" : "HasHeroFrakcja", "Value1" : 3, "Value2" : -1},
+{"Id" : 11, "Nazwa" : "HasHeroFrakcja4", "ReqType" : "HasHeroFrakcja", "Value1" : 4, "Value2" : -1},
+{"Id" : 12, "Nazwa" : "PoleNotWithinRadius1", "ReqType" : "NotWithinRadius", "Value1" : 1, "Value2" : -1},
+{"Id" : 13, "Nazwa" : "PoleNotWithinRadius2", "ReqType" : "NotWithinRadius", "Value1" : 2, "Value2" : -1},
+{"Id" : 14, "Nazwa" : "PoleNotWithinRadius3", "ReqType" : "NotWithinRadius", "Value1" : 3, "Value2" : -1}]

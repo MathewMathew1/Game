@@ -70,9 +70,10 @@ namespace BoardGameBackend.Managers
 
             if(boughtMercenary.Req != null){
                 var requirement = RequirementMovementStore.GetRequirementById(boughtMercenary.Req.Value);
-                var fulifiedRequirement = requirement.CheckRequirements(player);
-
-                if(!fulifiedRequirement) return false;
+                if(requirement != null){
+                    var fulifiedRequirement = requirement.CheckRequirements(player);
+                    if(!fulifiedRequirement) return false;
+                }            
             }
 
             if(boughtMercenary.LockedByPlayerInfo != null && boughtMercenary.LockedByPlayerInfo.PlayerId != player.Id ) return false;
