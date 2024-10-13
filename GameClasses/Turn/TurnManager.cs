@@ -27,7 +27,7 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Subscribe<HeroTurnEnded>("HeroTurnEnded", args =>
             {
                 EndTurn();
-            });
+            }, priority: 0);
             gameContext.EventManager.Subscribe("ArtifactsTaken", (ArtifactsTaken data) =>
             {
                 if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))

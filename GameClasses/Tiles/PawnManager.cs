@@ -50,6 +50,7 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Broadcast("GetCurrentTileReward", ref eventArgs);
         }
 
+
         public bool TeleportToPortal(PlayerInGame player, int tileId)
         {
             var tile = _gameContext.GameTiles.GetTileById(tileId);

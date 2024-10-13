@@ -26,10 +26,10 @@ namespace BoardGameBackend.Managers
 
 
 
-            _gameContext.EventManager.Subscribe<MoveOnTile>("MoveOnTile", moveOnTileData =>
+            _gameContext.EventManager.Subscribe<HeroTurnEnded>("HeroTurnEnded", moveOnTileData =>
             {
                 CheckOnMovementEvents();
-            }, priority: 0);
+            }, priority: 1);
 
             gameContext.EventManager.Subscribe<MercenaryPicked>("MercenaryPicked", mercenaryPicked =>
             {
@@ -78,6 +78,7 @@ namespace BoardGameBackend.Managers
 
         public void AddMoraleToPlayer(PlayerInGame player, int addedMorale)
         {
+            if(addedMorale == 0) return;
             player.Morale += addedMorale;
             UpdatePlayersBasedOnMorale(player);
         }
