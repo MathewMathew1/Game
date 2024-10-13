@@ -55,7 +55,7 @@ namespace BoardGameBackend.Models
         public required PlayerInGame Player { get; set; }
     }
 
-    public class ArtifactPhaseStarted
+    public class NewCardsSetupData
     {
         public required PlayerInGame Player { get; set; }
         public required int TurnCount { get; set; }
@@ -215,6 +215,10 @@ namespace BoardGameBackend.Models
         public required Guid PlayerId {get; set;}
         public required int TileId {get; set;}
         public required TokenFromJson Token {get; set;}
+    }
+
+    public class EndOfPlayerTurn{
+        public required PlayerInGame Player {get; set;}
     }
 
 }

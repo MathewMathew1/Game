@@ -19,9 +19,9 @@ namespace BoardGameBackend.Managers
             PlayersBasedOnMorale = Players;
             UpdatePlayersBasedOnMorale();
 
-            _gameContext.EventManager.Subscribe("EndOfTurn ", () =>
+            _gameContext.EventManager.Subscribe("EndOfPlayerTurn", (EndOfPlayerTurn data) =>
             {
-                EndTurn();
+                EndTurn(data.Player);
             }, priority: 5);
 
 
@@ -34,18 +34,19 @@ namespace BoardGameBackend.Managers
             gameContext.EventManager.Subscribe<MercenaryPicked>("MercenaryPicked", mercenaryPicked =>
             {
                 CheckForAurasOnMercenaryPicked(mercenaryPicked);
-            }, priority: 1);     
+            }, priority: 1);
         }
 
-        public void CheckForAurasOnMercenaryPicked(MercenaryPicked mercenaryPicked){
+        public void CheckForAurasOnMercenaryPicked(MercenaryPicked mercenaryPicked)
+        {
             var player = GetPlayerById(mercenaryPicked.Player.Id);
-            if(player == null) return;
+            if (player == null) return;
 
-            if(mercenaryPicked.Card.TypeCard != 3) return;
+            if (mercenaryPicked.Card.TypeCard != 3) return;
 
             var auraIndex = player.AurasTypes.FindIndex(a => a.Aura == AurasType.FULFILL_PROPHECY);
 
-            if(auraIndex==-1) return;
+            if (auraIndex == -1) return;
 
             player.PlayerMercenaryManager.SetMercenaryProphecyFulfill(mercenaryPicked.Card.InGameIndex);
 
@@ -64,34 +65,36 @@ namespace BoardGameBackend.Managers
             return Players.FirstOrDefault(p => p.Id == playerId);
         }
 
-        public void CheckOnMovementEvents(){
+        public void CheckOnMovementEvents()
+        {
             var player = _gameContext.TurnManager.CurrentPlayer;
 
-            if(player == null) return;
+            if (player == null) return;
 
             var removedCount = player.RemoveAurasOfTypeAndReturnAmountCount(AurasType.RETURN_TO_CENTER_ON_MOVEMENT);
 
-            if(removedCount > 0){
+            if (removedCount > 0)
+            {
                 _gameContext.PawnManager.MoveToCenter(player, AurasType.RETURN_TO_CENTER_ON_MOVEMENT);
             }
         }
 
         public void AddMoraleToPlayer(PlayerInGame player, int addedMorale)
         {
-            if(addedMorale == 0) return;
+            if (addedMorale == 0) return;
             player.Morale += addedMorale;
             UpdatePlayersBasedOnMorale(player);
         }
 
-        public void EndTurn(){
-            Players.ForEach(p => {
-                if(p.AurasTypes.Any(a=>a.Aura==AurasType.BLOCK_TILE)){
-                    _gameContext.TurnManager.TemporarySetCurrentPlayer(p);
-                    _gameContext.MiniPhaseManager.StartBlockTileMiniPhase();
-                }
-                p.ResetAura();
-                p.ResourceManager.EndOfTurnIncome();
-            });     
+        public void EndTurn(PlayerInGame player)
+        {
+            if (player.AurasTypes.Any(a => a.Aura == AurasType.BLOCK_TILE))
+            {
+                _gameContext.TurnManager.TemporarySetCurrentPlayer(player);
+                _gameContext.MiniPhaseManager.StartBlockTileMiniPhase();
+            }
+            player.ResetAura();
+            player.ResourceManager.EndOfTurnIncome();
         }
 
         private void UpdatePlayersBasedOnMorale(PlayerInGame? updatedPlayer = null)
@@ -123,7 +126,7 @@ namespace BoardGameBackend.Managers
 
             return playerResources;
         }
-        
+
         public PlayerInGame? GetNextPlayerForPhase()
         {
             var nextPlayer = PlayersBasedOnMorale.FirstOrDefault(p => !p.AlreadyPlayedCurrentPhase);
@@ -131,8 +134,9 @@ namespace BoardGameBackend.Managers
             return nextPlayer;
         }
 
-        public void ResetAllPlayersPlayedTurn(){
-            PlayersBasedOnMorale.ForEach(p=>p.AlreadyPlayedCurrentPhase = false);
+        public void ResetAllPlayersPlayedTurn()
+        {
+            PlayersBasedOnMorale.ForEach(p => p.AlreadyPlayedCurrentPhase = false);
         }
     }
 

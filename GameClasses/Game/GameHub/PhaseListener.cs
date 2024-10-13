@@ -30,7 +30,7 @@ namespace BoardGameBackend.Managers.EventListeners
             {
                 BroadcastBoardPickingPhaseStart(args.Player, gameId);
             });
-            gameContext.EventManager.Subscribe<ArtifactPhaseStarted>("ArtifactPhaseStarted", data =>
+            gameContext.EventManager.Subscribe<DummyPhaseStarted>("ArtifactPhaseStarted", data =>
             {
                 BroadcastArtifactPickingPhaseStart(gameId, data);
             });
@@ -41,9 +41,9 @@ namespace BoardGameBackend.Managers.EventListeners
             });
 
             gameContext.EventManager.Subscribe<HeroTurnEnded>("HeroTurnEnded", args =>
-         {
-             BroadcastHeroTurnEnded(args.Player, gameId);
-         });
+            {
+                BroadcastHeroTurnEnded(args.Player, gameId);
+            }, priority: 20);
 
             gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", player =>
             {
@@ -53,6 +53,11 @@ namespace BoardGameBackend.Managers.EventListeners
             gameContext.EventManager.Subscribe("EndOfTurn", () =>
             {
                 BroadcastEndOfTurn(gameId);
+            });
+
+            gameContext.EventManager.Subscribe("EndOfPlayerTurn", (EndOfPlayerTurn data) =>
+            {
+                BroadcastEndOfPlayerTurn(gameId, data);
             });
      
             gameContext.EventManager.Subscribe("EndOfRound", (EndOfRoundData data) =>
@@ -85,7 +90,7 @@ namespace BoardGameBackend.Managers.EventListeners
         }
 
 
-        public void BroadcastArtifactPickingPhaseStart(string gameId, ArtifactPhaseStarted data)
+        public void BroadcastArtifactPickingPhaseStart(string gameId, DummyPhaseStarted data)
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ArtifactPhaseStarted", data);
@@ -113,6 +118,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfTurn");
+        }
+
+        public void BroadcastEndOfPlayerTurn(string gameId, EndOfPlayerTurn data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfPlayerTurn", data);
         }
 
         public void BroadcastEndOfRound(string gameId, EndOfRoundData endOfRoundData)

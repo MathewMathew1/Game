@@ -114,12 +114,12 @@ public static class LobbyManager
         return lobby;
     }
 
-    public static GameContext? StartGame(string lobbyId, UserModel user)
+    public static GameContext? StartGame(string lobbyId, UserModel user,StartGameModel startGameModel)
     {
         var lobby = Lobbies.FirstOrDefault(l => l.Id == lobbyId);
         if (lobby != null && lobby.HostId == user.Id)
         {
-            var gameContext = GameManager.StartGameFromLobby(lobby);
+            var gameContext = GameManager.StartGameFromLobby(lobby, startGameModel);
             SetGameIdForLobby(lobbyId, gameContext.GameId);
             return gameContext;
         }

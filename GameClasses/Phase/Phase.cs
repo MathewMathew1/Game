@@ -125,17 +125,9 @@ namespace BoardGameBackend.Models
         public override void StartPhase()
         {
 
-            List<HeroCardCombined>? newCards = new List<HeroCardCombined> { };
-            if (_gameContext.TurnManager.CurrentTurn % 2 != 0)
-            {
-                newCards = _gameContext.HeroCardManager.TakeTopNHeroCards(_gameContext.PlayerManager.Players.Count * 2 + 1);
-            }
-            var eventArgs = new ArtifactPhaseStarted
+            var eventArgs = new DummyPhaseStarted
             {
                 Player = _gameContext.TurnManager.CurrentPlayer!,
-                TurnCount = _gameContext.TurnManager.CurrentTurn,
-                NewCards = newCards,
-                RoundCount = _gameContext.TurnManager.CurrentRound
             };
 
             _gameContext.EventManager.Broadcast("ArtifactPhaseStarted", ref eventArgs);

@@ -21,9 +21,9 @@ namespace BoardGameBackend.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("start/{id}")]
+        [HttpPost("start/{id}")]
         [Authorize] // Ensure only authenticated users can start a game
-        public async Task<ActionResult> StartGame(string id)
+        public async Task<ActionResult> StartGame(string id, StartGameModel startGameModel)
         {
             UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
             if (user == null)
@@ -31,7 +31,7 @@ namespace BoardGameBackend.Controllers
                 return Unauthorized("User not found.");
             }
 
-            var gameContext = LobbyManager.StartGame(id, user);
+            var gameContext = LobbyManager.StartGame(id, user, startGameModel);
             if (gameContext == null)
             {
                 return BadRequest("Failed to start the game. Ensure the lobby exists and the user is the host.");

@@ -49,6 +49,7 @@ namespace BoardGameBackend.Managers
                 data.EndOfRoundMercenaryData.Mercenaries = BuyableMercenaries;
 
             }, priority: 5);
+            
         }
 
         private void ShuffleMercenaries()

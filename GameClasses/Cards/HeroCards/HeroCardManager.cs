@@ -10,13 +10,20 @@ namespace BoardGameBackend.Models
         private int _currentPosition = 0;
         private Dictionary<int, PlayerInGame?> _takenCards;
         private GameContext _gameContext;
+        private bool _moreCardsPerRound = false;
 
         private static Random _random = new Random();
 
-        public HeroCardManager(GameContext gameContext)
+        public HeroCardManager(GameContext gameContext, bool lessCards, bool moreCardsPerRound)
         {
             _gameContext = gameContext;
+            _moreCardsPerRound = moreCardsPerRound;
             _heroCards = GenerateRandomHeroCards();
+            if (lessCards)
+            {
+                int cardLimit = GetCardLimitBasedOnPlayers(_gameContext.PlayerManager.Players.Count);
+                _heroCards = _heroCards.Take(cardLimit).ToList();
+            }
             _heroCardCombinedList = CombineHeroCards(_heroCards);
             _takenCards = new Dictionary<int, PlayerInGame?>();
             ShuffleHeroCardCombinedList();
@@ -25,6 +32,23 @@ namespace BoardGameBackend.Models
             {
                 _takenCards[card.Id] = null;
             }
+
+            _gameContext.EventManager.Subscribe("StartTurn", () =>
+            {
+                SetUpNewCards();
+            }, priority: 5);
+        }
+
+        private int GetCardLimitBasedOnPlayers(int playerCount)
+        {
+            return playerCount switch
+            {
+                2 => 24,
+                3 => 24,
+                4 => 36,
+                5 => 48,
+                _ => 24
+            };
         }
 
         private List<HeroCard> GenerateRandomHeroCards()
@@ -63,15 +87,15 @@ namespace BoardGameBackend.Models
 
         public List<HeroCardCombined> TakeTopNHeroCards(int n)
         {
-            if (n <= 0 || n > _heroCardCombinedList.Count)
-                throw new ArgumentException("Invalid number of cards requested.");
 
             var takenCards = new List<HeroCardCombined>();
 
             for (int i = 0; i < n; i++)
             {
                 int index = (_currentPosition + i) % _heroCardCombinedList.Count;
-                takenCards.Add(_heroCardCombinedList[index]);
+                if(_heroCardCombinedList[index] != null){
+                    takenCards.Add(_heroCardCombinedList[index]);
+                }      
             }
 
             _currentPosition = (_currentPosition + n) % _heroCardCombinedList.Count;
@@ -106,9 +130,9 @@ namespace BoardGameBackend.Models
                 { ResourceHeroType.Magic, heroCard.Magic },
             };
 
-            BuffHeroData eventArgs = new BuffHeroData { PlayerId = player.Id, HeroId = heroCardId, HeroResourcesNew = heroResources};
+            BuffHeroData eventArgs = new BuffHeroData { PlayerId = player.Id, HeroId = heroCardId, HeroResourcesNew = heroResources };
             _gameContext.EventManager.Broadcast("HeroCardBuffed", ref eventArgs);
-            
+
             return true;
         }
 
@@ -148,7 +172,6 @@ namespace BoardGameBackend.Models
                     break;
                 }
 
-
             }
             if (heroCard != null)
             {
@@ -159,6 +182,30 @@ namespace BoardGameBackend.Models
             }
             return heroCard;
 
+
+        }
+
+        public void SetUpNewCards()
+        {
+            List<HeroCardCombined>? newCards;
+            if (_gameContext.TurnManager.CurrentTurn % 2 != 0)
+            {
+                var amount = _gameContext.PlayerManager.Players.Count * 2;
+                if(_moreCardsPerRound == true){
+                    amount = amount + 1;
+                }
+                newCards = _gameContext.HeroCardManager.TakeTopNHeroCards(amount);
+
+                var eventArgs = new NewCardsSetupData
+                {
+                    Player = _gameContext.TurnManager.CurrentPlayer!,
+                    TurnCount = _gameContext.TurnManager.CurrentTurn,
+                    NewCards = newCards,
+                    RoundCount = _gameContext.TurnManager.CurrentRound
+                };
+
+                _gameContext.EventManager.Broadcast("NewCardsSetup", ref eventArgs);
+            }
 
         }
     }

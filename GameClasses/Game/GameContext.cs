@@ -8,7 +8,7 @@ namespace BoardGameBackend.Managers
     {
         public string GameId { get; private set; }
         public PlayersManager PlayerManager { get; private set; }
-        public TurnManager TurnManager { get; private set; }
+        public ITurnManager TurnManager { get; private set; }
         public HeroCardManager HeroCardManager { get; set; }
         public PhaseManager PhaseManager { get; set; }
         public BoardManager BoardManager { get; set; }
@@ -24,13 +24,13 @@ namespace BoardGameBackend.Managers
         public TokenManager TokenManager { get; private set; }
         public RewardHandlerManager RewardHandlerManager { get; private set; }
 
-        public GameContext(string gameId, List<Player> players)
+        public GameContext(string gameId, List<Player> players, StartGameModel startGameModel)
         {
             EventManager = new EventManager();
             GameId = gameId;
             PlayerManager = new PlayersManager(players, this);
-            TurnManager = new TurnManager(this);
-            HeroCardManager = new HeroCardManager(this);
+            TurnManager =  startGameModel.TurnType == TurnTypes.FULL_TURN ? new PlayerFullTurnManager(this): new PhaseByPhaseTurnManager(this);
+            HeroCardManager = new HeroCardManager(this, startGameModel.LessCards, startGameModel.MoreHeroCards);
             PhaseManager = new PhaseManager(this);
             BoardManager = new BoardManager(this);         
             GameTiles = new GameTiles(this);
@@ -51,7 +51,7 @@ namespace BoardGameBackend.Managers
         }
 
         public void StartGame(){
-            PhaseManager.StartCurrentPhase();
+            
             ArtifactManager.SetUpNewArtifacts(TurnManager.CurrentPlayer!);
             var tokenSetup = GameTiles.SetupTokens();
 
@@ -64,6 +64,10 @@ namespace BoardGameBackend.Managers
             StartOfGame data = new StartOfGame { MercenaryData = mercenaryData, TokenSetup = tokenSetup, Players = playerViewModels, GameId = GameId  };
 
             EventManager.Broadcast("GameStarted", ref data);
+
+            EventManager.Broadcast("StartTurn"); 
+
+            PhaseManager.StartCurrentPhase();
         }
 
         public void EndGame(){

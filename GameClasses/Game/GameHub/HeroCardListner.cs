@@ -27,6 +27,11 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastHeroCardPicked(args.Card, args.Player, gameId);
             }, priority: 10);
 
+            gameContext.EventManager.Subscribe<NewCardsSetupData>("NewCardsSetup", data =>
+            {
+                BroadcastNewCardsSetup(data, gameId);
+            }, priority: 10);
+
 
         }
 
@@ -34,6 +39,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("CardPicked", player, card);
+        }
+
+        public void BroadcastNewCardsSetup(NewCardsSetupData data, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("NewCardsSetup", data);
         }
 
         public void BroadcastHeroCardBuffed(BuffHeroData data, string gameId)

@@ -17,12 +17,12 @@ namespace BoardGameBackend.Managers
         }
 
 
-        public static GameContext StartGameFromLobby(Lobby lobby)
+        public static GameContext StartGameFromLobby(Lobby lobby, StartGameModel startGameModel)
         {
             var gameId = Guid.NewGuid().ToString();
             var players = lobby.Players.Select(p => new Player { Id = p.Id, Name = p.Name }).ToList();
 
-            var gameContext = new GameContext(gameId, players);
+            var gameContext = new GameContext(gameId, players, startGameModel);
 
             var eventListenerContainer = new EventListenerContainer(_hubContextProvider);
             eventListenerContainer.SubscribeAll(gameContext);

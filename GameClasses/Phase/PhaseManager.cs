@@ -6,17 +6,18 @@ namespace BoardGameBackend.Managers
     {
         private List<Phase> _phases;
         private int _currentPhaseIndex = 0;
-
+        private GameContext _gameContext;
         public Phase CurrentPhase => _phases[_currentPhaseIndex];
 
-        public PhaseManager(GameContext _gameContext)
+        public PhaseManager(GameContext gameContext)
         {
+            _gameContext = gameContext;
             _phases = new List<Phase>
             {
-                new ArtifactPhase(_gameContext),
-                new HeroCardPickingPhase(_gameContext),
-                new BoardPhase(_gameContext),
-                new MercenaryPhase(_gameContext)
+                new ArtifactPhase(gameContext),
+                new HeroCardPickingPhase(gameContext),
+                new BoardPhase(gameContext),
+                new MercenaryPhase(gameContext)
             };
         }
 
@@ -25,17 +26,20 @@ namespace BoardGameBackend.Managers
             CurrentPhase.StartPhase();
         }
 
-        public void EndCurrentPhase()
+        public void EndCurrentPhase(bool startNextTurn)
         {
             CurrentPhase.EndPhase();
-            MoveToNextPhase();
+            MoveToNextPhase(startNextTurn);
         }
 
-        private void MoveToNextPhase()
+        private void MoveToNextPhase(bool startNextTurn)
         {
             _currentPhaseIndex++;
             if (_currentPhaseIndex >= _phases.Count)
             {
+                if(startNextTurn){
+                   _gameContext.EventManager.Broadcast("StartTurn"); 
+                }
                 _currentPhaseIndex = 0; 
             }
             CurrentPhase.StartPhase();
