@@ -10,7 +10,7 @@ namespace BoardGameBackend.Managers
         protected int _currentRound = 1;
         protected int _currentTurn = 1;
         protected PlayerInGame? realCurrentPlayer;
-        public readonly int MAX_ROUNDS = 1;
+        public readonly int MAX_ROUNDS = 5;
 
         public BaseTurnManager(GameContext gameContext)
         {
