@@ -68,7 +68,7 @@ namespace BoardGameBackend.Models
         public override void StartMiniPhase()
         {
             _gameContext.EventManager.Broadcast("ArtifactPickMiniPhase");
-            _gameContext.ArtifactManager.SetUpNewArtifactsWithoutCondition();
+            
             Console.WriteLine("ArtifactPick Phase started.");
         }
 
@@ -176,6 +176,28 @@ namespace BoardGameBackend.Models
             };
             _gameContext.EventManager.Broadcast("BlockTileMiniPhaseEnded", ref eventArgs);
             Console.WriteLine("BuffHeroMiniPhase ended.");
+        }
+    }
+
+    public class RoyalCardPickMiniPhase : MiniPhase
+    {
+        public override string Name => "LockCardMiniPhase";
+
+        public RoyalCardPickMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("RoyalMiniPhaseStarted");
+            Console.WriteLine("BlockTileMiniPhase started.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("RoyalMiniPhaseEnded");
+            Console.WriteLine("RoyalMiniPhaseEnded.");
         }
     }
 

@@ -8,9 +8,11 @@ namespace BoardGameBackend.Models
         START_TELEPORT_MINI_PHASE,
         TAKE_THREE_ARTIFACTS,
         START_PICK_ARTIFACT_MINI_PHASE,
+        START_PICK_ARTIFACTS_MINI_PHASE,
         FULFILL_PROPHECY,
         LOCK_CARD,
-        BUFF_HERO
+        BUFF_HERO,
+        REROLL_MERCENARY
     }
 
     public class GameEffect

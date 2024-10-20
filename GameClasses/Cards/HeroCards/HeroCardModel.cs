@@ -19,6 +19,7 @@ namespace BoardGameBackend.Models
         public int? EffectImageIndex {get; set;}
         public string? EffectToolTip { get; set; }
         public int? EffectTypeId {get; set;}
+        public int? EffectId {get; set;}
     }
 
     public class HeroCard
@@ -40,6 +41,7 @@ namespace BoardGameBackend.Models
         public int? EffectImageIndex {get; set;}
         public string? EffectToolTip { get; set; }
         public int? EffectTypeId {get; set;}
+        public int? EffectId {get; set;}
     }
 
     public class CurrentHeroCard{
@@ -58,6 +60,14 @@ namespace BoardGameBackend.Models
         public required HeroCard RightSide {get; set;}
     }
 
+    public class HeroCardCombinedFromJson
+    {
+        public required int Id {get; set;}
+        public required int LeftSide {get; set;}
+        public required int RightSide {get; set;}
+        public required int NumPlayers {get; set;}
+    }
+
     public class Fraction
     {
         public required int Id { get; set; }
@@ -71,7 +81,6 @@ namespace BoardGameBackend.Models
         public static readonly Fraction Yellow = new Fraction { Id = 3, Name = "Yellow" };
         public static readonly Fraction Blue = new Fraction { Id = 4, Name = "Blue" };
 
-        // Optionally, you can add a method to get all fractions or find by Id
         public static List<Fraction> GetAllFractions()
         {
             return new List<Fraction> { Red, Blue, Yellow, Green };

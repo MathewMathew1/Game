@@ -69,7 +69,24 @@ namespace BoardGameBackend.Managers.EventListeners
             gameContext.EventManager.Subscribe("BlockTileMiniPhaseEnded", (MiniPhaseDataWithDifferentPlayer data) =>
             {
                 BroadcastEndBlockTileMiniPhase(gameId, data);
-            }, priority: 0);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("RoyalMiniPhaseStarted", () =>
+            {
+                BroadcastRoyalCardPickMiniPhaseStart(gameId);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("RoyalMiniPhaseEnded", () =>
+            {
+                BroadcastRoyalCardPickMiniPhaseEnded(gameId);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("RerollMercenaryMiniPhaseStarted", () =>
+            {
+                BroadcastRerollMercenaryMiniPhase(gameId);
+            }, priority: 1);
+
+            
 
         }
 
@@ -77,6 +94,18 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("TeleportationMiniPhaseStarted");
+        }
+
+        public void BroadcastRoyalCardPickMiniPhaseStart(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RoyalMiniPhaseStarted");
+        }
+
+        public void BroadcastRoyalCardPickMiniPhaseEnded(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RoyalMiniPhaseEnded");
         }
 
         public void BroadcastArtifactPickMiniPhaseEnded(string gameId)
@@ -125,6 +154,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BuffHeroMiniPhaseEnded");
+        }
+
+        public void BroadcastRerollMercenaryMiniPhase(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RerollMercenaryMiniPhaseStarted");
         }
 
         public void BroadcastStartBlockTileMiniPhase(string gameId, MiniPhaseDataWithDifferentPlayer data)

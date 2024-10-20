@@ -119,7 +119,7 @@ namespace BoardGameBackend.Managers
 
             if (!canPlayArtifact) return false;
 
-            var artifactRewardClass = RewardFactory.GetReward(effectId);
+            var artifactRewardClass = RewardFactory.GetRewardById(effectId);
             var artifactRewards = artifactRewardClass.OnReward();
 
             player.PlayedArtifact(artifactId);
@@ -154,14 +154,15 @@ namespace BoardGameBackend.Managers
         {
             if (player.Artifacts.Count == 0 && _gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))
             {
-                SetUpNewArtifactsWithoutCondition(player);
+                SetUpNewArtifactsWithoutCondition(3, player);
             }
         }
 
-        public void SetUpNewArtifactsWithoutCondition(PlayerInGame? player = null)
+        public void SetUpNewArtifactsWithoutCondition(int amountOfArtifacts, PlayerInGame? player = null)
         {
+            HowManyMercenariesToPick = amountOfArtifacts - 1;
             PlayerInGame playerToSelectArtifact = player != null ? player : _gameContext.TurnManager.CurrentPlayer; 
-            SetArtifactsToPickFrom();
+            SetArtifactsToPickFrom(amountOfArtifacts);
             ArtifactToPickFromData artifactToPickFromData = new ArtifactToPickFromData
             {
                 ArtifactsLeft = _artifacts.Count,
@@ -172,11 +173,11 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Broadcast("ArtifactsToPick", ref artifactToPickFromData);
         }
 
-        private void SetArtifactsToPickFrom()
+        private void SetArtifactsToPickFrom(int amountOfArtifacts)
         {
             ArtifactsToPickFrom.Clear();
 
-            while (ArtifactsToPickFrom.Count < 3)
+            while (ArtifactsToPickFrom.Count < amountOfArtifacts)
             {
                 if (_artifacts.Count == 0)
                 {

@@ -23,19 +23,20 @@ namespace BoardGameBackend.Managers
                 HandleMoveOnTile(moveOnTileData.TileReward);
             }, priority: 5);
 
-            _gameContext.EventManager.Subscribe<GetCurrentTileReward>("GetCurrentTileReward",  getCurrentTileReward =>
+            _gameContext.EventManager.Subscribe<GetCurrentTileReward>("GetCurrentTileReward", getCurrentTileReward =>
             {
                 HandleMoveOnTile(getCurrentTileReward.TileReward);
             }, priority: 5);
 
 
-             _gameContext.EventManager.Subscribe<MercenaryRerolled>("MercenaryRerolled", rerollMercenaryData =>
-            {
-                if(CurrentMiniPhase is RerollMercenaryMiniPhase){
-                    EndCurrentMiniPhase();
-                }
-                
-            }, priority: 20);
+            _gameContext.EventManager.Subscribe<MercenaryRerolled>("MercenaryRerolled", rerollMercenaryData =>
+           {
+               if (CurrentMiniPhase is RerollMercenaryMiniPhase)
+               {
+                   EndCurrentMiniPhase();
+               }
+
+           }, priority: 20);
             gameContext.EventManager.Subscribe("ArtifactsTaken", (ArtifactsTaken data) =>
             {
                 if (CurrentMiniPhase?.GetType() == typeof(ArtifactPickMiniPhase))
@@ -69,21 +70,28 @@ namespace BoardGameBackend.Managers
                 {
                     EndCurrentMiniPhase();
                 }
-            }, priority: 5);  
+            }, priority: 5);
 
             gameContext.EventManager.Subscribe<MercenaryPicked>("MercenaryPicked", mercenaryPicked =>
-            {            
-                if(mercenaryPicked.Card.LockedByPlayerInfo != null){
+            {
+                if (mercenaryPicked.Card.LockedByPlayerInfo != null)
+                {
                     StartLockCardMiniPhase();
                 };
-            }, priority: 15);   
+            }, priority: 15);
 
-             gameContext.EventManager.Subscribe<BlockedTileData>("BlockedTileEvent", data =>
-            {            
-                if(CurrentMiniPhase is BlockTileMiniPhase){
+            gameContext.EventManager.Subscribe<BlockedTileData>("BlockedTileEvent", data =>
+            {
+                if (CurrentMiniPhase is BlockTileMiniPhase)
+                {
                     EndCurrentMiniPhase();
                 };
-            }, priority: 0);   
+            }, priority: 0);
+
+            gameContext.EventManager.Subscribe<RoyalCardPlayed>("RolayCardPlayed", data =>
+            {             
+                EndCurrentMiniPhase();                     
+            }, priority: 2);
         }
 
         private void StartCurrentMiniPhase(MiniPhase miniPhase)
@@ -94,48 +102,69 @@ namespace BoardGameBackend.Managers
 
         public void EndCurrentMiniPhase()
         {
-            if(CurrentMiniPhase != null){
+            if (CurrentMiniPhase != null)
+            {
                 CurrentMiniPhase.EndMiniPhase();
             }
             CurrentMiniPhase = null;
         }
 
-        public void HandleMoveOnTile(TileReward tileReward){
-         
-            if(tileReward.RerollMercenaryAction != null &&tileReward.RerollMercenaryAction == true){      
+        public void HandleMoveOnTile(TileReward tileReward)
+        {
+
+            if (tileReward.RerollMercenaryAction != null && tileReward.RerollMercenaryAction == true)
+            {
                 var miniPhaseClass = new RerollMercenaryMiniPhase(_gameContext);
-                
+
                 StartCurrentMiniPhase(miniPhaseClass);
             }
         }
 
-        public void StartTeleportMiniPhase(){
+        public void StartTeleportMiniPhase()
+        {
             var miniPhaseClass = new TeleportMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 
-        public void StartArtifactPickMiniPhase(){
+        public void StartArtifactPickMiniPhase()
+        {
             var miniPhaseClass = new ArtifactPickMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 
-        public void StartMercenaryFulfillMiniPhase(){
+        public void StartMercenaryFulfillMiniPhase()
+        {
             var miniPhaseClass = new FulfillProphecyMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 
-        public void StartLockCardMiniPhase(){
+        public void StartLockCardMiniPhase()
+        {
             var miniPhaseClass = new LockCardMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 
-        public void StartBuffHeroMiniPhase(){
+        public void StartBuffHeroMiniPhase()
+        {
             var miniPhaseClass = new BuffHeroMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 
-        public void StartBlockTileMiniPhase(){
+        public void StartBlockTileMiniPhase()
+        {
             var miniPhaseClass = new BlockTileMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StarRoyalCardPickMiniPhase()
+        {
+            var miniPhaseClass = new RoyalCardPickMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StarRerollMercenaryMiniPhase()
+        {
+            var miniPhaseClass = new RerollMercenaryMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 

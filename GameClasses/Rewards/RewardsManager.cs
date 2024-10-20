@@ -1,4 +1,6 @@
+using System.Text.Json;
 using BoardGameBackend.Managers;
+using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Models
 {
@@ -11,7 +13,9 @@ namespace BoardGameBackend.Models
         public List<AuraTypeWithLongevity> AurasTypes { get; set; }
         public List<EndGameAuraType> EndGameAura { get; set; }
         public List<EffectType> Effects { get; set; }
-        public int? Morale {get; set;}
+        public bool EmptyReward {get; set;} = false;
+        
+        public int? Morale { get; set; }
 
 
         public Reward()
@@ -29,31 +33,51 @@ namespace BoardGameBackend.Models
         Reward OnReward();
     }
 
-    public class ThreeGold : IGetReward
+    public abstract class BaseReward : IGetReward
     {
-        public Reward OnReward()
+        public int Value1 { get; set; }
+        public int Value2 { get; set; }
+
+        public BaseReward(int value1, int value2)
+        {
+            Value1 = value1;
+            Value2 = value2;
+        }
+
+        public abstract Reward OnReward();
+    }
+
+    public class ThreeGold : BaseReward
+    {
+        public ThreeGold(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Gold, 3) },
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, Value1) },
             };
         }
     }
 
-    public class FiveGold : IGetReward
+    public class FiveGold : BaseReward
     {
-        public Reward OnReward()
+        public FiveGold(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Gold, 5) },
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, Value1) },
             };
         }
     }
 
-    public class SevenGold : IGetReward
+    public class SevenGold : BaseReward
     {
-        public Reward OnReward()
+        public SevenGold(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -62,9 +86,11 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class DefaultRewardReward : IGetReward
+    public class DefaultRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public DefaultRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -73,60 +99,70 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class FullMovementRewardReward : IGetReward
+    public class FullMovementRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public FullMovementRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
                 Resources = new List<Resource> { },
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = true}}
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = true } }
             };
         }
     }
 
-    public class EmptyMovementRewardReward : IGetReward
+    public class EmptyMovementRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public EmptyMovementRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
                 Resources = new List<Resource> { },
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.ONE_EMPTY_MOVEMENT, Permanent = false}} 
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ONE_EMPTY_MOVEMENT, Permanent = false } }
             };
         }
     }
 
-    public class AllBasicsResourceReward : IGetReward
+    public class AllBasicsResourceReward : BaseReward
     {
-        public Reward OnReward()
+        public AllBasicsResourceReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Resources = new List<Resource> { 
-                new Resource(ResourceType.Niter, 1), 
-                new Resource(ResourceType.Wood, 1), 
-                new Resource(ResourceType.Iron, 1), 
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Niter, 1),
+                new Resource(ResourceType.Wood, 1),
+                new Resource(ResourceType.Iron, 1),
                 new Resource(ResourceType.Gems, 1) },
             };
         }
     }
 
-    public class EmptyMovesIntoFullRewardReward : IGetReward
+    public class EmptyMovesIntoFullRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public EmptyMovesIntoFullRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
                 Resources = new List<Resource> { },
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.EMPTY_MOVES_INTO_FULL, Permanent = false}}
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVES_INTO_FULL, Permanent = false } }
             };
         }
     }
 
-    public class SiegeRewardReward : IGetReward
+    public class SiegeRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public SiegeRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -135,9 +171,11 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class MagicRewardReward : IGetReward
+    public class MagicRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public MagicRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -146,9 +184,11 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class ArmyRewardReward : IGetReward
+    public class ArmyRewardReward : BaseReward
     {
-        public Reward OnReward()
+        public ArmyRewardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -157,108 +197,141 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class ReturnMidAfterMovementReward : IGetReward
+    public class ReturnMidAfterMovementReward : BaseReward
     {
-        public Reward OnReward()
+        public ReturnMidAfterMovementReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.RETURN_TO_CENTER_ON_MOVEMENT, Permanent = false}} 
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.RETURN_TO_CENTER_ON_MOVEMENT, Permanent = false } }
             };
         }
     }
 
-    public class NoFractionMovementReward : IGetReward
+    public class NoFractionMovementReward : BaseReward
     {
-        public Reward OnReward()
+        public NoFractionMovementReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.NO_FRACTION_MOVEMENT, Permanent = true}}   
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.NO_FRACTION_MOVEMENT, Permanent = true } }
             };
         }
     }
 
-    public class ReturnMidReward : IGetReward
+    public class ReturnMidReward : BaseReward
     {
-        public Reward OnReward()
+        public ReturnMidReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.RETURN_TO_CENTER}
+                Effects = new List<EffectType>() { EffectType.RETURN_TO_CENTER }
             };
         }
     }
 
-    public class RefreshMercenariesReward : IGetReward
+    public class RefreshMercenariesReward : BaseReward
     {
-        public Reward OnReward()
+        public RefreshMercenariesReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.REFRESH_MERCENARIES}
+                Effects = new List<EffectType>() { EffectType.REFRESH_MERCENARIES }
             };
         }
     }
 
-    public class CummulativePointsReward : IGetReward
+    public class CummulativePointsReward : BaseReward
     {
-        public Reward OnReward()
+        public CummulativePointsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                EndGameAura = new List<EndGameAuraType>() { EndGameAuraType.CUMMULATIVE_POINTS}
+                EndGameAura = new List<EndGameAuraType>() { EndGameAuraType.CUMMULATIVE_POINTS }
             };
         }
     }
 
-    public class GetRewardFromCurrentTileReward : IGetReward
+    public class GetRewardFromCurrentTileReward : BaseReward
     {
-        public Reward OnReward()
+        public GetRewardFromCurrentTileReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.GET_REWARD_FROM_TILE}
+                Effects = new List<EffectType>() { EffectType.GET_REWARD_FROM_TILE }
             };
         }
     }
 
-    public class TeleportToPortalReward : IGetReward
+    public class TeleportToPortalReward : BaseReward
     {
-        public Reward OnReward()
+        public TeleportToPortalReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.START_TELEPORT_MINI_PHASE}
+                Effects = new List<EffectType>() { EffectType.START_TELEPORT_MINI_PHASE }
             };
         }
     }
 
-    public class TakeThreeArtifactsReward : IGetReward
+    public class TakeThreeArtifactsReward : BaseReward
     {
-        public Reward OnReward()
+        public TakeThreeArtifactsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.TAKE_THREE_ARTIFACTS}
+                Effects = new List<EffectType>() { EffectType.TAKE_THREE_ARTIFACTS }
             };
         }
     }
 
-    public class StartArtifactPickMiniPhaseReward : IGetReward
+    public class StartArtifactPickMiniPhaseReward : BaseReward
     {
-        public Reward OnReward()
+        public StartArtifactPickMiniPhaseReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.START_PICK_ARTIFACT_MINI_PHASE}
+                Effects = new List<EffectType>() { EffectType.START_PICK_ARTIFACT_MINI_PHASE }
             };
         }
     }
 
-    public class MoraleReward : IGetReward
+    public class StartArtifactsPickMiniPhaseReward : BaseReward
     {
-        public Reward OnReward()
+        public StartArtifactsPickMiniPhaseReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.START_PICK_ARTIFACTS_MINI_PHASE }
+            };
+        }
+    }
+
+    public class MoraleReward : BaseReward
+    {
+        public MoraleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -267,20 +340,24 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class SignetsIntoPointsReward : IGetReward
+    public class SignetsIntoPointsReward : BaseReward
     {
-        public Reward OnReward()
+        public SignetsIntoPointsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                EndGameAura = new List<EndGameAuraType>() { EndGameAuraType.SIGNETS_INTO_POINTS}
+                EndGameAura = new List<EndGameAuraType>() { EndGameAuraType.SIGNETS_INTO_POINTS }
             };
         }
     }
 
-    public class MoraleAndSignetReward : IGetReward
+    public class MoraleAndSignetReward : BaseReward
     {
-        public Reward OnReward()
+        public MoraleAndSignetReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
@@ -290,121 +367,459 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class FulfillProphecyReward : IGetReward
+    public class FulfillProphecyReward : BaseReward
     {
-        public Reward OnReward()
+        public FulfillProphecyReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.FULFILL_PROPHECY}
+                Effects = new List<EffectType>() { EffectType.FULFILL_PROPHECY }
             };
         }
     }
 
-    public class LockMercenaryReward : IGetReward
+    public class LockMercenaryReward : BaseReward
     {
-        public Reward OnReward()
+        public LockMercenaryReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.LOCK_CARD}
+                Effects = new List<EffectType>() { EffectType.LOCK_CARD }
             };
         }
     }
 
-    public class BuffHeroReward : IGetReward
+    public class RerollMercenaryReward : BaseReward
     {
-        public Reward OnReward()
-        {
-            return new Reward
-            {
-                Effects = new List<EffectType>() { EffectType.BUFF_HERO}
-            };
-        }
-    }    
+        public RerollMercenaryReward(int value1, int value2) : base(value1, value2) { }
 
-    public class TeleportationRewardOneFreeMovementReward : IGetReward
-    {
-        public Reward OnReward()
+        public override Reward OnReward()
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.TELEPORTATION_REWARD_ONE_FREE_MOVEMENT, Permanent = true}}   
+                Effects = new List<EffectType>() { EffectType.REROLL_MERCENARY }
             };
         }
     }
 
-    public class BuyCardsByAnyResourceReward : IGetReward
+    public class BuffHeroReward : BaseReward
     {
-        public Reward OnReward()
+        public BuffHeroReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.BLOCK_TILE, Permanent = true}}   
+                Effects = new List<EffectType>() { EffectType.BUFF_HERO }
             };
         }
     }
 
-    public class BlockTileReward : IGetReward
+    public class TeleportationRewardOneFreeMovementReward : BaseReward
     {
-        public Reward OnReward()
+        public TeleportationRewardOneFreeMovementReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity{Aura = AurasType.BLOCK_TILE, Permanent = true}}   
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.TELEPORTATION_REWARD_ONE_FREE_MOVEMENT, Permanent = true } }
             };
         }
     }
 
-    public class NoReward : IGetReward
+    public class TeleportationRewardOneFreeNotPermanentMovementReward : BaseReward
     {
-        public Reward OnReward()
+        public TeleportationRewardOneFreeNotPermanentMovementReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
         {
             return new Reward
             {
-                
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.TELEPORTATION_REWARD_ONE_FREE_MOVEMENT, Permanent = false } }
             };
         }
     }
 
-    
+    public class BuyCardsByAnyResourceReward : BaseReward
+    {
+        public BuyCardsByAnyResourceReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.BLOCK_TILE, Permanent = true } }
+            };
+        }
+    }
+
+    public class BlockTileReward : BaseReward
+    {
+        public BlockTileReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.BLOCK_TILE, Permanent = true } }
+            };
+        }
+    }
+
+    public class AdditionalMovementBasedOnFactionReward : BaseReward
+    {
+        public AdditionalMovementBasedOnFactionReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.ADD_ADDITIONAL_MOVEMENT_BASED_ON_FRACTION, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class CheaperMercenaryBasedOnFactionReward : BaseReward
+    {
+        public CheaperMercenaryBasedOnFactionReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.MAKE_CHEAPER_MERCENARIES, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class GoldOnTilesWithoutGoldReward : BaseReward
+    {
+        public GoldOnTilesWithoutGoldReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITHOUT_GOLD, Permanent = false, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class WoodReward : BaseReward
+    {
+        public WoodReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Wood, 1)
+                }
+            };
+        }
+    }
+
+    public class IronReward : BaseReward
+    {
+        public IronReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Iron, 1)
+                }
+            };
+        }
+    }
+
+    public class GemsReward : BaseReward
+    {
+        public GemsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Gems, 1)
+                }
+            };
+        }
+    }
+
+    public class NiterReward : BaseReward
+    {
+        public NiterReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Niter, 1)
+                }
+            };
+        }
+    }
+
+    public class MysticFogReward : BaseReward
+    {
+        public MysticFogReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.MysticFog, 1)
+                }
+            };
+        }
+    }
+
+    public class FullMovementIntoEmptyReward : BaseReward
+    {
+        public FullMovementIntoEmptyReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.FULL_MOVEMENT_INTO_EMPTY, Permanent = false }
+                }
+            };
+        }
+    }
+
+    public class GoldIntoMovementEmptyReward : BaseReward
+    {
+        public GoldIntoMovementEmptyReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_FOR_MOVEMENT, Permanent = false }
+                }
+            };
+        }
+    }
+
+
+
+    public class NoReward : BaseReward
+    {
+        public NoReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                EmptyReward = true
+            };
+        }
+    }
+
+
     public static class RewardFactory
     {
-        public static IGetReward GetReward(int id)
+        private static readonly Dictionary<int, BaseReward> _rewards;
+
+        static RewardFactory()
         {
-            return id switch
+            string filePath = "Data/SpecialEffect.json";
+            List<ReqProphecies> rewardDataList = new List<ReqProphecies>();
+
+            if (File.Exists(filePath))
             {
-                1 => new ReturnMidReward(),
-                2 => new ReturnMidAfterMovementReward(),
-                3 => new EmptyMovesIntoFullRewardReward(),
-                4 => new AllBasicsResourceReward(),
-                5 => new EmptyMovementRewardReward(),
-                6 => new FullMovementRewardReward(),
-                7 => new ThreeGold(),
-                8 => new FiveGold(),
-                9 => new TeleportToPortalReward(),
-                10 => new NoFractionMovementReward(),
-                11 => new GetRewardFromCurrentTileReward(),
-                12 => new CummulativePointsReward(),
-                13 => new RefreshMercenariesReward(),
-                14 => new MoraleReward(),
-                15 => new SiegeRewardReward(),
-                16 => new ArmyRewardReward(),
-                17 => new MagicRewardReward(),
-                18 => new StartArtifactPickMiniPhaseReward(),
-                19 => new TakeThreeArtifactsReward(),
-                41 => new MoraleAndSignetReward(),
-                42 => new BlockTileReward(),
-                43 => new BuffHeroReward(),
-                44 => new BuyCardsByAnyResourceReward(),
-                45 => new TeleportationRewardOneFreeMovementReward(),
-                46 => new SignetsIntoPointsReward(),
-                47 => new SevenGold(),
-                48 => new FulfillProphecyReward(),
-                49 => new LockMercenaryReward(),
-                85 => new NoReward(),
-                _ => new StartArtifactPickMiniPhaseReward()
-            };
+                string jsonData = File.ReadAllText(filePath);
+                rewardDataList = JsonSerializer.Deserialize<List<ReqProphecies>>(jsonData) ?? new List<ReqProphecies>();
+            }
+
+            _rewards = new Dictionary<int, BaseReward>();
+
+            foreach (var rewardData in rewardDataList)
+            {
+                switch (rewardData.Id)
+                {
+                    case 1:
+                        _rewards.Add(rewardData.Id, new ReturnMidReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 2:
+                        _rewards.Add(rewardData.Id, new ReturnMidAfterMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 3:
+                        _rewards.Add(rewardData.Id, new EmptyMovesIntoFullRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 4:
+                        _rewards.Add(rewardData.Id, new AllBasicsResourceReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 5:
+                        _rewards.Add(rewardData.Id, new EmptyMovementRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 6:
+                        _rewards.Add(rewardData.Id, new FullMovementRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 7:
+                        _rewards.Add(rewardData.Id, new ThreeGold(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 8:
+                        _rewards.Add(rewardData.Id, new FiveGold(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 9:
+                        _rewards.Add(rewardData.Id, new TeleportToPortalReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 10:
+                        _rewards.Add(rewardData.Id, new NoFractionMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 11:
+                        _rewards.Add(rewardData.Id, new GetRewardFromCurrentTileReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 12:
+                        _rewards.Add(rewardData.Id, new CummulativePointsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 13:
+                        _rewards.Add(rewardData.Id, new RefreshMercenariesReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 14:
+                        _rewards.Add(rewardData.Id, new MoraleReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 15:
+                        _rewards.Add(rewardData.Id, new SiegeRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 16:
+                        _rewards.Add(rewardData.Id, new ArmyRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 17:
+                        _rewards.Add(rewardData.Id, new MagicRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 18:
+                        _rewards.Add(rewardData.Id, new StartArtifactsPickMiniPhaseReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 19:
+                        _rewards.Add(rewardData.Id, new TakeThreeArtifactsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 41:
+                        _rewards.Add(rewardData.Id, new MoraleAndSignetReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 42:
+                        _rewards.Add(rewardData.Id, new BlockTileReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 43:
+                        _rewards.Add(rewardData.Id, new BuffHeroReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 44:
+                        _rewards.Add(rewardData.Id, new BuyCardsByAnyResourceReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 45:
+                        _rewards.Add(rewardData.Id, new TeleportationRewardOneFreeMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 46:
+                        _rewards.Add(rewardData.Id, new SignetsIntoPointsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 47:
+                        _rewards.Add(rewardData.Id, new SevenGold(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 48:
+                        _rewards.Add(rewardData.Id, new FulfillProphecyReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 49:
+                        _rewards.Add(rewardData.Id, new LockMercenaryReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 50:
+                        _rewards.Add(rewardData.Id, new WoodReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 51:
+                        _rewards.Add(rewardData.Id, new IronReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 52:
+                        _rewards.Add(rewardData.Id, new GemsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 53:
+                        _rewards.Add(rewardData.Id, new NiterReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 54:
+                        _rewards.Add(rewardData.Id, new MysticFogReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 55:
+                        _rewards.Add(rewardData.Id, new RerollMercenaryReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 57:
+                        _rewards.Add(rewardData.Id, new StartArtifactPickMiniPhaseReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 58:
+                        _rewards.Add(rewardData.Id, new GetRewardFromCurrentTileReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 60:
+                        _rewards.Add(rewardData.Id, new FullMovementIntoEmptyReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 61:
+                        _rewards.Add(rewardData.Id, new GoldIntoMovementEmptyReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 62:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithoutGoldReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 77:
+                        _rewards.Add(rewardData.Id, new AdditionalMovementBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 78:
+                        _rewards.Add(rewardData.Id, new AdditionalMovementBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 79:
+                        _rewards.Add(rewardData.Id, new AdditionalMovementBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 80:
+                        _rewards.Add(rewardData.Id, new AdditionalMovementBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 81:
+                        _rewards.Add(rewardData.Id, new CheaperMercenaryBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 82:
+                        _rewards.Add(rewardData.Id, new CheaperMercenaryBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 83:
+                        _rewards.Add(rewardData.Id, new CheaperMercenaryBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 84:
+                        _rewards.Add(rewardData.Id, new CheaperMercenaryBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 85:
+                        _rewards.Add(rewardData.Id, new NoReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 96:
+                        _rewards.Add(rewardData.Id, new TeleportationRewardOneFreeNotPermanentMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                        
+                }
+            }
+        }
+
+
+        public static BaseReward GetRewardById(int id)
+        {
+            _rewards.TryGetValue(id, out var reward);
+            return reward!;
+        }
+
+        public static IEnumerable<BaseReward> GetAllRewards()
+        {
+            return _rewards.Values;
         }
     }
 }

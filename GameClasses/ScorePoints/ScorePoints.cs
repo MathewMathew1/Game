@@ -46,7 +46,9 @@ namespace BoardGameBackend.Managers
                                            scoreTable.MagicPoints.Points +
                                            scoreTable.MercenaryPoints +
                                            scoreTable.OraclePoints +
+                                           scoreTable.RoyalCardPoints+
                                            scoreTable.HeroPoints +
+                                           scoreTable.TokenPoints +
                                            scoreTable.SygnetPoints +
                                            scoreTable.ArtefactPoints;
             }
@@ -82,6 +84,8 @@ namespace BoardGameBackend.Managers
             {
                 var mercenariesPoints = 0;
                 var heroPoints = 0;
+                var royalCardsPoints = 0;
+
                 p.PlayerMercenaryManager.Mercenaries.ForEach(mercenary =>
                 {
                     mercenariesPoints += mercenary.ScorePoints;
@@ -99,11 +103,15 @@ namespace BoardGameBackend.Managers
                     heroPoints += hero.ScorePoints;
                 });
 
+                p.PlayerRolayCardManager.RolayCards.ForEach(card =>
+                {
+                    royalCardsPoints += card.ScorePoints;
+                });
 
                 playerScores[p.Id].SygnetPoints = p.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Signet);
                 playerScores[p.Id].HeroPoints = heroPoints;
                 playerScores[p.Id].MercenaryPoints = mercenariesPoints;
-
+                playerScores[p.Id].RoyalCardPoints = royalCardsPoints;
                 playerScores[p.Id] = _gameContext.EndGameEffectManager.GetPoints(p.EndGameAuras,p, playerScores[p.Id]);
                 
             });

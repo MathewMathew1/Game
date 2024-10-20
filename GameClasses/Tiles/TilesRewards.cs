@@ -23,6 +23,9 @@ namespace BoardGameBackend.Models
         public bool? RerollMercenaryAction {get; set;}
         public bool? GetRandomArtifact  { get; set; }
         public Artifact? Artifact { get; set; }
+        public bool EmptyReward { get; set; } = false;
+        public bool EmptyMovement { get; set; } = false;
+        public bool TempSignet { get; set; } = false;
 
         public TileReward()
         {
@@ -140,7 +143,7 @@ namespace BoardGameBackend.Models
         {
             return new TileReward
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Wood, 1) },
+                EmptyReward = true
             };
         }
     }
@@ -180,13 +183,35 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class EmptyMovementTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward
+            {
+                EmptyMovement = true,
+            };
+        }
+    }
+
+     public class SignetTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward
+            {
+                TempSignet = true
+            };
+        }
+    }
+
     public class DefaultTileAction : ITileAction
     {
         public TileReward OnEnterReward()
         {
             return new TileReward
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Gems, 1) },
+                Resources = new List<Resource> {  },
             };
         }
     }
@@ -209,6 +234,8 @@ namespace BoardGameBackend.Models
                 11 => new GetRandomMercenaryTileAction(),
                 12 => new RerollMercenaryTileAction(),
                 13 => new CastleTileAction(),
+                14 => new SignetTileAction(),
+                15 => new EmptyMovementTileAction(),
                 _ => new DefaultTileAction() // Default if no specific ID is matched
             };
         }

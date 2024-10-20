@@ -40,6 +40,13 @@ namespace BoardGameBackend.Managers
                 Player = player,
             };
 
+            if (tileReward.EmptyMovement && player.PlayerHeroCardManager.CurrentHeroCard != null)
+            {
+                player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
+            }
+
+            PossiblyAddTemporarySignet(tileReward.TempSignet, player);
+
             player.ResourceManager.AddResources(tileReward.Resources);
 
             if (_currentTile.TileTypeId == TileHelper.MagicTileId && player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic) >= TileHelper.MinimumMagic)
@@ -70,6 +77,64 @@ namespace BoardGameBackend.Managers
             };
 
             _gameContext.EventManager.Broadcast("TeleportationEvent", ref eventArgs);
+
+            return true;
+        }
+
+        public bool FullMovementIntoEmptyMovement(PlayerInGame player)
+        {
+            var auraIndex = player.AurasTypes.FindIndex(a => a.Aura == AurasType.FULL_MOVEMENT_INTO_EMPTY);
+
+            if (auraIndex == -1) return false;
+
+            if (player.PlayerHeroCardManager.CurrentHeroCard == null) return false;
+
+            var canBuy = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft > 0;
+
+            if (canBuy == false) return false;
+
+            player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft -= 1;
+            player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 2;
+            player.AurasTypes.RemoveAt(auraIndex);
+
+
+            var eventArgs = new FullMovementIntoEmptyEventData
+            {
+                PlayerId = player.Id,
+                MovementFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft,
+                MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft
+            };
+
+            _gameContext.EventManager.Broadcast("FullMovementIntoEmptyEvent", ref eventArgs);
+
+            return true;
+        }
+
+        public bool GoldIntoMovement(PlayerInGame player)
+        {
+            var auraIndex = player.AurasTypes.FindIndex(a => a.Aura == AurasType.GOLD_FOR_MOVEMENT);
+
+            if (auraIndex == -1) return false;
+
+            List<ResourceInfo> resource = new List<ResourceInfo> { new ResourceInfo { Name = ResourceType.Gold, Amount = 2 } };
+            var canBuy = player.ResourceManager.CheckForResourceAndRemoveThem(resource);
+
+            if (canBuy == false) return false;
+
+            if (player.PlayerHeroCardManager.CurrentHeroCard == null) return false;
+
+            player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft += 1;
+            player.AurasTypes.RemoveAt(auraIndex);
+
+
+            var eventArgs = new GoldIntoMovementEventData
+            {
+                GoldLeft = player.ResourceManager.GetResourceAmount(ResourceType.Gold),
+                PlayerId = player.Id,
+                MovementFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft
+            };
+
+            _gameContext.EventManager.Broadcast("GoldIntoMovementEvent", ref eventArgs);
 
             return true;
         }
@@ -105,12 +170,8 @@ namespace BoardGameBackend.Managers
 
                 tileReward.TeleportedTileId = TeleportationTileId;
 
-                var teleportAura = player.AurasTypes.FindIndex(aura => aura.Aura == AurasType.TELEPORTATION_REWARD_ONE_FREE_MOVEMENT);
-                if (teleportAura == -1)
-                {
-                    player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft -= 1;
-                }
-
+                var teleportAuras = player.AurasTypes.Count(aura => aura.Aura == AurasType.TELEPORTATION_REWARD_ONE_FREE_MOVEMENT);
+                player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft - 1 + teleportAuras;
 
                 var eventArgsMagic = new MoveOnTile
                 {
@@ -148,6 +209,11 @@ namespace BoardGameBackend.Managers
                 {
                     ITileAction tileAction = TileActionFactory.GetTileAction(tile.TileTypeId);
                     tileReward = tileAction.OnEnterReward();
+                    if (tileReward.EmptyMovement)
+                    {
+                        player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
+                    }
+                    PossiblyAddTemporarySignet(tileReward.TempSignet, player);
                 }
             }
             else
@@ -179,6 +245,13 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Broadcast("MoveOnTile", ref eventArgs);
 
             return true;
+        }
+
+        public void PossiblyAddTemporarySignet(bool addSignet, PlayerInGame player){
+            if (!addSignet) return;
+
+            player.ResourceHeroManager.AddResource(ResourceHeroType.Signet, 1);
+            player.AurasTypes.Add(new AuraTypeWithLongevity{Permanent = false, Aura = AurasType.TEMPORARY_SIGNET});
         }
 
         public bool SetBlockTile(int tileId, PlayerInGame player)
@@ -223,7 +296,7 @@ namespace BoardGameBackend.Managers
 
         private void GetRewardFromToken(Tile tile, TileReward tileReward, PlayerInGame player)
         {
-            tileReward.TokenReward = new TokenReward { Reward = RewardFactory.GetReward(tile.Token.EffectID).OnReward() };
+            tileReward.TokenReward = new TokenReward { Reward = RewardFactory.GetRewardById(tile.Token.EffectID).OnReward() };
             _gameContext.RewardHandlerManager.HandleReward(player, tileReward.TokenReward.Reward);
 
             if (tile.Token.Dummy != true)

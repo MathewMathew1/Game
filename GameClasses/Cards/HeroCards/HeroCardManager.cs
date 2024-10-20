@@ -18,14 +18,11 @@ namespace BoardGameBackend.Models
         {
             _gameContext = gameContext;
             _moreCardsPerRound = moreCardsPerRound;
-            _heroCards = GenerateRandomHeroCards();
-            if (lessCards)
-            {
-                int cardLimit = GetCardLimitBasedOnPlayers(_gameContext.PlayerManager.Players.Count);
-                _heroCards = _heroCards.Take(cardLimit).ToList();
-            }
-            _heroCardCombinedList = CombineHeroCards(_heroCards);
+
+            // Generate and filter hero cards based on players and lessCards flag
+            _heroCardCombinedList = GenerateAndCombineHeroCards(gameContext.PlayerManager.Players.Count, lessCards);
             _takenCards = new Dictionary<int, PlayerInGame?>();
+
             ShuffleHeroCardCombinedList();
 
             foreach (var card in _heroCardCombinedList)
@@ -39,45 +36,33 @@ namespace BoardGameBackend.Models
             }, priority: 5);
         }
 
-        private int GetCardLimitBasedOnPlayers(int playerCount)
+        private List<HeroCardCombined> GenerateAndCombineHeroCards(int playerCount, bool lessCards)
         {
-            return playerCount switch
+            // Retrieve the combined card data from JSON
+            var combinedFromJsonList = HeroesCardsFromJson.HeroesCombinedFromJsonList;
+
+            if (lessCards)
             {
-                2 => 24,
-                3 => 24,
-                4 => 36,
-                5 => 48,
-                _ => 24
-            };
-        }
-
-        private List<HeroCard> GenerateRandomHeroCards()
-        {
-            var heroCardsJson = HeroesFromJson.HeroesFromJsonList;
-
-            List<HeroCard> heroCards = heroCardsJson
-                .Select(heroCardJson => GameMapper.Instance.Map<HeroCard>(heroCardJson))
-                .ToList();
-
-            return heroCards;
-        }
-
-        private List<HeroCardCombined> CombineHeroCards(List<HeroCard> heroCards)
-        {
-            var combinedList = new List<HeroCardCombined>();
-
-            for (int i = 0; i < heroCards.Count - 1; i += 2)
-            {
-                var combinedCard = new HeroCardCombined
-                {
-                    Id = i + 1,
-                    LeftSide = heroCards[i],
-                    RightSide = heroCards[i + 1]
-                };
-                combinedList.Add(combinedCard);
+                combinedFromJsonList = combinedFromJsonList
+                    .Where(card => card.NumPlayers <= playerCount)
+                    .ToList();
             }
 
-            return combinedList;
+            var combinedHeroCards = combinedFromJsonList.Select(jsonCard => new HeroCardCombined
+            {
+                Id = jsonCard.Id,
+                LeftSide = GetHeroCardById(jsonCard.LeftSide),
+                RightSide = GetHeroCardById(jsonCard.RightSide)
+            }).ToList();
+
+            return combinedHeroCards;
+        }
+
+        private HeroCard GetHeroCardById(int id)
+        {
+            // Assuming _gameContext or some data source has the list of HeroCards to fetch by ID
+            var heroCardsJson = HeroesFromJson.HeroesFromJsonList;
+            return GameMapper.Instance.Map<HeroCard>(heroCardsJson.FirstOrDefault(h => h.Id == id));
         }
 
         private void ShuffleHeroCardCombinedList()
@@ -92,13 +77,16 @@ namespace BoardGameBackend.Models
 
             for (int i = 0; i < n; i++)
             {
-                int index = (_currentPosition + i) % _heroCardCombinedList.Count;
-                if(_heroCardCombinedList[index] != null){
-                    takenCards.Add(_heroCardCombinedList[index]);
-                }      
+                _currentPosition += 1;
+                if (_heroCardCombinedList[_currentPosition] != null)
+                {
+                    takenCards.Add(_heroCardCombinedList[_currentPosition]);
+                }
+                else
+                {
+                    break;
+                }
             }
-
-            _currentPosition = (_currentPosition + n) % _heroCardCombinedList.Count;
 
             return takenCards;
         }
@@ -177,7 +165,15 @@ namespace BoardGameBackend.Models
             {
                 player.SetCurrentHeroCard(heroCard, leftSide);
                 _gameContext.PlayerManager.AddMoraleToPlayer(player, heroCard.Morale);
-                var eventArgs = new HeroCardPicked(heroCard, player);
+
+                Reward? reward = null;
+                if(heroCard.EffectId != null){
+                    var heroRewardClass = RewardFactory.GetRewardById(heroCard.EffectId.Value);
+                    reward = heroRewardClass.OnReward();
+                    _gameContext.RewardHandlerManager.HandleReward(player, reward);
+                }
+            
+                var eventArgs = new HeroCardPicked(heroCard, player, reward);
                 _gameContext.EventManager.Broadcast("HeroCardPicked", ref eventArgs);
             }
             return heroCard;
@@ -191,7 +187,8 @@ namespace BoardGameBackend.Models
             if (_gameContext.TurnManager.CurrentTurn % 2 != 0)
             {
                 var amount = _gameContext.PlayerManager.Players.Count * 2;
-                if(_moreCardsPerRound == true){
+                if (_moreCardsPerRound == true)
+                {
                     amount = amount + 1;
                 }
                 newCards = _gameContext.HeroCardManager.TakeTopNHeroCards(amount);

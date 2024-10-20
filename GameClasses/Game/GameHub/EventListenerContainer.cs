@@ -15,6 +15,7 @@ namespace BoardGameBackend.Managers.EventListeners
             _listeners.Add( new PhaseEventListener(hubContextProvider));
             _listeners.Add( new MiniPhaseEventListener(hubContextProvider));
             _listeners.Add( new OtherEventListener(hubContextProvider));
+            _listeners.Add( new RoyalCardListener(hubContextProvider));
         }
 
         public void SubscribeAll(GameContext gameContext)

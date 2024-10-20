@@ -14,6 +14,7 @@ namespace BoardGameBackend.Models
         public List<AuraTypeWithLongevity> AurasTypes { get; set; } = new List<AuraTypeWithLongevity>();
         public List<EndGameAuraType> EndGameAuras { get; set; } = new List<EndGameAuraType>();
         public PlayerHeroCardManager PlayerHeroCardManager = new PlayerHeroCardManager();
+        public PlayerRolayCardManager PlayerRolayCardManager = new PlayerRolayCardManager();
         public ResourceHeroManager ResourceHeroManager { get; set; }
         public int Points { get; set; } = 0;
         public bool AlreadyPlayedCurrentPhase = false;
@@ -70,6 +71,10 @@ namespace BoardGameBackend.Models
                 {
                     addedEmptyMovements += 1;
                 }
+                else if (aura.Aura == AurasType.ADD_ADDITIONAL_MOVEMENT_BASED_ON_FRACTION && card.Faction.Id == aura.Value1)
+                {
+                    addedEmptyMovements += 1;
+                }
             }
 
             var FullMovement = card.MovementFull + addedFullMovements;
@@ -118,6 +123,8 @@ namespace BoardGameBackend.Models
 
         public void ResetAura()
         {
+            var tempSignets = AurasTypes.Count(aura => aura.Aura == AurasType.TEMPORARY_SIGNET);
+            ResourceHeroManager.SubtractResource(ResourceHeroType.Signet, tempSignets);
             AurasTypes = AurasTypes.FindAll(aura => aura.Permanent == true);
         }
 
@@ -130,6 +137,14 @@ namespace BoardGameBackend.Models
                 Artifacts.Remove(artifact);
                 ArtifactsPlayed.Add(artifact);
             }
+        }
+
+        public void AddRoyalCard(RolayCard rolayCard){
+            PlayerRolayCardManager.AddRolayCard(rolayCard);
+            ResourceHeroManager.AddResource(ResourceHeroType.Siege, rolayCard.Siege);
+            ResourceHeroManager.AddResource(ResourceHeroType.Army, rolayCard.Army);
+            ResourceHeroManager.AddResource(ResourceHeroType.Magic, rolayCard.Magic);
+            Points += rolayCard.ScorePoints;
         }
 
         public void RerollArtifact(int artifactId, Artifact artifactRerolled)

@@ -24,7 +24,7 @@ namespace BoardGameBackend.Managers.EventListeners
 
             gameContext.EventManager.Subscribe<HeroCardPicked>("HeroCardPicked", args =>
             {
-                BroadcastHeroCardPicked(args.Card, args.Player, gameId);
+                BroadcastHeroCardPicked( args, gameId);
             }, priority: 10);
 
             gameContext.EventManager.Subscribe<NewCardsSetupData>("NewCardsSetup", data =>
@@ -35,10 +35,10 @@ namespace BoardGameBackend.Managers.EventListeners
 
         }
 
-        public void BroadcastHeroCardPicked(HeroCard card, PlayerInGame player, string gameId)
+        public void BroadcastHeroCardPicked(HeroCardPicked data, string gameId)
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
-            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("CardPicked", player, card);
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("CardPicked", data);
         }
 
         public void BroadcastNewCardsSetup(NewCardsSetupData data, string gameId)

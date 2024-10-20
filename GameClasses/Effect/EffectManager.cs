@@ -25,9 +25,11 @@ namespace BoardGameBackend.Managers
                 { EffectType.START_TELEPORT_MINI_PHASE, StartTeleportMiniPhase },
                 { EffectType.TAKE_THREE_ARTIFACTS, TakeThreeArtifacts },
                 { EffectType.START_PICK_ARTIFACT_MINI_PHASE, StartPickArtifactMiniPhase},
+                { EffectType.START_PICK_ARTIFACTS_MINI_PHASE, StartPickArtifactsMiniPhase},
                 { EffectType.FULFILL_PROPHECY, FulfillProphecyReward},
                 {EffectType.LOCK_CARD, StartLockCardMiniPhase},
-                {EffectType.BUFF_HERO, StartBuffHeroMiniPhase}
+                {EffectType.BUFF_HERO, StartBuffHeroMiniPhase},
+                {EffectType.REROLL_MERCENARY, StartRerollMercenary}
             };
         }
 
@@ -71,9 +73,20 @@ namespace BoardGameBackend.Managers
             _gameContext.ArtifactManager.AddArtifactsToPlayer(3, player);
         }
 
+        private void StartRerollMercenary(EffectType effect, PlayerInGame player){
+            _gameContext.MiniPhaseManager.StarRerollMercenaryMiniPhase();
+        }
+
         private void StartPickArtifactMiniPhase(EffectType effect, PlayerInGame player)
         {
             _gameContext.MiniPhaseManager.StartArtifactPickMiniPhase();
+            _gameContext.ArtifactManager.SetUpNewArtifactsWithoutCondition(2);
+        }
+
+        private void StartPickArtifactsMiniPhase(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StartArtifactPickMiniPhase();
+            _gameContext.ArtifactManager.SetUpNewArtifactsWithoutCondition(3);
         }
 
         private void StartLockCardMiniPhase(EffectType effect, PlayerInGame player)

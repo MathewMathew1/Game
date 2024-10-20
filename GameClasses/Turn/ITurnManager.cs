@@ -7,6 +7,7 @@ namespace BoardGameBackend.Managers
         PlayerInGame? CurrentPlayer { get; }
         int CurrentRound { get; }
         int CurrentTurn { get; }
+        bool BlockNextPlayerTurn { get; set; }
 
         void EndTurn();
         void ResetCurrentPlayer();

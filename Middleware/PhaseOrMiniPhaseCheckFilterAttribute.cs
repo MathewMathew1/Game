@@ -32,7 +32,9 @@ namespace BoardGameBackend.MiddleWare
             
             if (routeValues.TryGetValue("id", out var lobbyIdValue) && lobbyIdValue is string lobbyId)
             {
-                var lobby = LobbyManager.GetLobbyById(lobbyId);
+                var lobbyInfo = LobbyManager.GetLobbyById(lobbyId);
+                var lobby = lobbyInfo?.Lobby;
+                
                 if (lobby == null || string.IsNullOrEmpty(lobby.GameId))
                 {
                     context.Result = new NotFoundObjectResult("Lobby or game not found.");

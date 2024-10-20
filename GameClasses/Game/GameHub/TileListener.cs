@@ -43,6 +43,18 @@ namespace BoardGameBackend.Managers.EventListeners
             {            
                 BroadcastBlockTileEvent(gameId, data);
             }, priority: 5);   
+
+            gameContext.EventManager.Subscribe<GoldIntoMovementEventData>("GoldIntoMovementEvent", data =>
+            {            
+                BroadcastGoldIntoMovementEvent(gameId, data);
+            }, priority: 5);  
+
+            gameContext.EventManager.Subscribe<FullMovementIntoEmptyEventData>("FullMovementIntoEmptyEvent", data =>
+            {            
+                BroadcastFullMovementIntoEmptyEvent(gameId, data);
+            }, priority: 5);
+
+
         }
 
         public void BroadcastMoveToTile(MoveOnTile moveOnTile, string gameId)
@@ -93,6 +105,18 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("MoveOnTileOnEvent", moveOnTileOnEvent);
+        }
+
+        public void BroadcastGoldIntoMovementEvent(string gameId, GoldIntoMovementEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("GoldIntoMovementEvent", data);
+        }
+
+        public void BroadcastFullMovementIntoEmptyEvent(string gameId, FullMovementIntoEmptyEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("FullMovementIntoEmptyEvent", data);
         }
 
       

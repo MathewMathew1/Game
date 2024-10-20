@@ -5,16 +5,18 @@ namespace BoardGameBackend.Managers
     public abstract class BaseTurnManager : ITurnManager
     {
         protected readonly GameContext _gameContext;
+        public bool BlockNextPlayerTurn { get; set; } = false;
         protected PlayerInGame? _currentPlayer;
         protected int _currentRound = 1;
         protected int _currentTurn = 1;
         protected PlayerInGame? realCurrentPlayer;
-        public readonly int MAX_ROUNDS = 5;
+        public readonly int MAX_ROUNDS = 1;
 
         public BaseTurnManager(GameContext gameContext)
         {
             _gameContext = gameContext;
             _currentPlayer = _gameContext.PlayerManager.Players.FirstOrDefault();
+            _currentPlayer.AlreadyPlayedCurrentPhase = true;
             SubscribeEvents();
         }
 
@@ -25,10 +27,7 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Subscribe<HeroTurnEnded>("HeroTurnEnded", args => EndTurn(), priority: 0);
             _gameContext.EventManager.Subscribe("ArtifactsTaken", (ArtifactsTaken data) =>
             {
-                if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))
-                {
-                    EndTurn();
-                }
+                EndTurn();
             }, priority: 0);
             _gameContext.EventManager.Subscribe("ArtifactRerolled", (ArtifactRerolledData data) => EndTurn(), priority: 0);
             _gameContext.EventManager.Subscribe("ArtifactPlayed", (ArtifactPlayed data) => EndTurn(), priority: 0);
@@ -53,17 +52,38 @@ namespace BoardGameBackend.Managers
                     EndTurn();
                 }
             }, priority: 0);
+
+            _gameContext.EventManager.Subscribe<MercenaryRerolled>("MercenaryRerolled", data =>
+            {
+                if (_gameContext.PhaseManager.CurrentPhase.GetType() != typeof(BoardPhase))
+                {
+                    EndTurn();
+                }
+            }, priority: 0);
+            _gameContext.EventManager.Subscribe("BlockTileMiniPhaseEnded", (MiniPhaseDataWithDifferentPlayer data) =>
+            {
+                AfterEndPlayerTurn();
+            }, priority: 0);
+
+            _gameContext.EventManager.Subscribe<RoyalCardPlayed>("RolayCardPlayed", data =>
+            {             
+                EndTurn();                    
+            }, priority: 1);
+
         }
 
-        public abstract void EndTurn();  // To be implemented by specific turn managers
+        public abstract void EndTurn(); 
+        public abstract void AfterEndPlayerTurn();
 
         public void ResetCurrentPlayer()
         {
             _currentPlayer = realCurrentPlayer;
+            BlockNextPlayerTurn = false;
         }
 
         public void TemporarySetCurrentPlayer(PlayerInGame player)
         {
+            BlockNextPlayerTurn = true;
             realCurrentPlayer = _currentPlayer;
             _currentPlayer = player;
         }

@@ -11,9 +11,11 @@ namespace BoardGameBackend.Managers
         private int BuyableMercenariesCount = 3;
         private int _nextInGameIndex = 1;
         private GameContext _gameContext;
+        private bool _removePropheciesAtLastRound = false;
 
-        public MercenaryManager(GameContext gameContext)
+        public MercenaryManager(GameContext gameContext, bool removePropheciesAtLastRound)
         {
+            _removePropheciesAtLastRound = removePropheciesAtLastRound;
             _gameContext = gameContext;
             _mercenaries = new List<Mercenary>();
 
@@ -49,7 +51,7 @@ namespace BoardGameBackend.Managers
                 data.EndOfRoundMercenaryData.Mercenaries = BuyableMercenaries;
 
             }, priority: 5);
-            
+
         }
 
         private void ShuffleMercenaries()
@@ -67,27 +69,34 @@ namespace BoardGameBackend.Managers
             }
 
             var boughtMercenary = BuyableMercenaries[boughtMercenaryIndex];
-            var ResourcesToSpend = boughtMercenary.ResourcesNeeded;
+            List<ResourceInfo> ResourcesToSpend = new List<ResourceInfo>(boughtMercenary.ResourcesNeeded);
 
-            if(boughtMercenary.Req != null){
+            ReduceRequiredResourcesByAura(ResourcesToSpend, player, boughtMercenary);
+
+            if (boughtMercenary.Req != null)
+            {
                 var requirement = RequirementMovementStore.GetRequirementById(boughtMercenary.Req.Value);
-                if(requirement != null){
+                if (requirement != null)
+                {
                     var fulifiedRequirement = requirement.CheckRequirements(player);
-                    if(!fulifiedRequirement) return false;
-                }            
+                    if (!fulifiedRequirement) return false;
+                }
             }
 
-            if(boughtMercenary.LockedByPlayerInfo != null && boughtMercenary.LockedByPlayerInfo.PlayerId != player.Id ) return false;
-            
+            if (boughtMercenary.LockedByPlayerInfo != null && boughtMercenary.LockedByPlayerInfo.PlayerId != player.Id) return false;
+
 
             var canBuyMercenary = false;
 
-            if(player.AurasTypes.FindIndex(aura => aura.Aura == AurasType.BUY_CARDS_BY_ANY_RESOURCE) == -1){
+            if (player.AurasTypes.FindIndex(aura => aura.Aura == AurasType.BUY_CARDS_BY_ANY_RESOURCE) == -1)
+            {
                 canBuyMercenary = player.ResourceManager.CheckForResourceAndRemoveThem(ResourcesToSpend);
-            }else{
+            }
+            else
+            {
                 canBuyMercenary = player.ResourceManager.CheckForResourceAndRemoveThemWithSubstitue(ResourcesToSpend);
             }
-            
+
 
             if (!canBuyMercenary)
             {
@@ -103,7 +112,7 @@ namespace BoardGameBackend.Managers
             {
                 _gameContext.PlayerManager.AddMoraleToPlayer(player, boughtMercenary.Morale);
             }
-            
+
             _gameContext.PlayerManager.AddMoraleToPlayer(player, boughtMercenary.Morale);
             var eventArgs = new MercenaryPicked
             {
@@ -141,12 +150,13 @@ namespace BoardGameBackend.Managers
 
         public void EndOfRound()
         {
+            if (_removePropheciesAtLastRound && _gameContext.TurnManager.CurrentRound == 5) RemoveProphecyMercenaries();
             BuyableMercenariesCount += 1;
             var mercenariesToRemove = new List<Mercenary>();
 
             BuyableMercenaries.ForEach(mercenary =>
             {
-                if(mercenary.LockedByPlayerInfo != null) return;
+                if (mercenary.LockedByPlayerInfo != null) return;
                 mercenary.GoldDecrease += 1;
                 var goldNeeded = mercenary.ResourcesNeeded.Find(x => x.Name == ResourceType.Gold);
 
@@ -170,18 +180,24 @@ namespace BoardGameBackend.Managers
             }
         }
 
+        public void RemoveProphecyMercenaries()
+        {
+            BuyableMercenaries = BuyableMercenaries.Where(m => m.TypeCard != 3 || m.LockedByPlayerInfo != null).ToList();
+            TossedAwayMercenaries = TossedAwayMercenaries.Where(m => m.TypeCard != 3).ToList();
+        }
+
         public bool RerollMercenary(int mercenaryInGameIndex, PlayerInGame player)
         {
             var boughtMercenaryIndex = BuyableMercenaries.FindIndex(mercenary => mercenary.InGameIndex == mercenaryInGameIndex);
             if (boughtMercenaryIndex == -1)
             {
                 return false;
-            }     
+            }
 
             var replacedMercenary = BuyableMercenaries[boughtMercenaryIndex];
 
-            if(replacedMercenary.LockedByPlayerInfo != null && replacedMercenary.LockedByPlayerInfo.PlayerId != player.Id ) return false;
-            
+            if (replacedMercenary.LockedByPlayerInfo != null && replacedMercenary.LockedByPlayerInfo.PlayerId != player.Id) return false;
+
             TossedAwayMercenaries.Add(replacedMercenary);
             BuyableMercenaries.RemoveAt(boughtMercenaryIndex);
 
@@ -234,7 +250,8 @@ namespace BoardGameBackend.Managers
             };
         }
 
-        public bool FulfillProphecy(PlayerInGame player, int mercenaryId){
+        public bool FulfillProphecy(PlayerInGame player, int mercenaryId)
+        {
             player.PlayerMercenaryManager.SetMercenaryProphecyFulfill(mercenaryId);
 
             var eventArgs = new FulfillProphecy
@@ -247,24 +264,42 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
-        public bool LockMercenary(PlayerInGame player, int mercenaryId){
+        public bool LockMercenary(PlayerInGame player, int mercenaryId)
+        {
             var lockedMercenary = BuyableMercenaries.Find(mercenary => mercenary.InGameIndex == mercenaryId);
             if (lockedMercenary == null)
             {
                 return false;
             }
 
-            var lockedByPlayerInfo = new LockedByPlayerInfo {PlayerId = player.Id, PlayerName = player.Name};
+            var lockedByPlayerInfo = new LockedByPlayerInfo { PlayerId = player.Id, PlayerName = player.Name };
             lockedMercenary.LockedByPlayerInfo = lockedByPlayerInfo;
-            
+
             var eventArgs = new LockMercenaryData
             {
                 LockMercenary = lockedByPlayerInfo,
                 MercenaryId = mercenaryId
             };
-            
+
             _gameContext.EventManager.Broadcast("LockMercenary", ref eventArgs);
             return true;
+        }
+
+        public void ReduceRequiredResourcesByAura(List<ResourceInfo> resources, PlayerInGame player, Mercenary mercenary)
+        {
+            player.AurasTypes.ForEach(a =>
+            {
+                if (a.Aura == AurasType.MAKE_CHEAPER_MERCENARIES && a.Value1 == mercenary.Faction.Id)
+                {
+                    resources.ForEach(r =>
+                    {
+                        if (r.Name == ResourceType.Gold && r.Amount > 0)
+                        {
+                            r.Amount -= 1;
+                        }
+                    });
+                }
+            });
         }
     }
 }

@@ -129,7 +129,62 @@ namespace BoardGameBackend.Controllers
                 Console.WriteLine(ex);
                 return BadRequest(new { Error = "Unexpected error" });
             }
+        }
 
+            [HttpGet("goldIntoMovement/{id}")]
+            [Authorize]
+            [PhaseCheckFilter(typeof(BoardPhase))]
+            public ActionResult GoldIntoMovement(string id)
+            {
+                try
+                {
+                    UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                    var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                    var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                    var successfullyConvertedGoldIntoMovement = gameContext.PawnManager.GoldIntoMovement(player);
+
+                    if (!successfullyConvertedGoldIntoMovement)
+                    {
+                        return BadRequest(new { Error = "Unable to convert gold into movement." });
+                    }
+
+                    return Ok(new { Message = "Converted gold into movement successfully." });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return BadRequest(new { Error = "Unexpected error" });
+                }
+
+            }
+
+            [HttpGet("convertMovement/{id}")]
+            [Authorize]
+            [PhaseCheckFilter(typeof(BoardPhase))]
+            public ActionResult convertMovement(string id)
+            {
+                try
+                {
+                    UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                    var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                    var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                    var successfullyConvertedMovements = gameContext.PawnManager.FullMovementIntoEmptyMovement(player);
+
+                    if (!successfullyConvertedMovements)
+                    {
+                        return BadRequest(new { Error = "Unable to convert full movement into empty." });
+                    }
+
+                    return Ok(new { Message = "Converted full movement into empty movement successfully." });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return BadRequest(new { Error = "Unexpected error" });
+                }
+
+            }
         }
     }
-}

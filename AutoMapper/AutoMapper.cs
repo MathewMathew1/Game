@@ -61,6 +61,8 @@ namespace BoardGameBackend.Mappers
             .ForMember(dest => dest.Faction, opt => opt.MapFrom(src => Fractions.GetFractionById(src.Faction)));
 
             CreateMap<ArtifactFromJson, Artifact>();
+            CreateMap<RolayCardFromJson, RolayCard>().
+            ForMember(dest => dest.Faction, opt => opt.MapFrom(src => Fractions.GetFractionById(src.FactionId)));
             
             CreateMap<ArtifactToPickFromData, ArtifactToPickFromDataForOtherUsers>()
                 .ForMember(dest => dest.ArtifactsAmount, opt => opt.MapFrom(src => src.Artifacts.Count));

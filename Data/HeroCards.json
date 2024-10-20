@@ -1,0 +1,8 @@
+[{"Id" : 1, "LeftSide" : 5, "RightSide" : 9, "NumPlayers" : 0},
+{"Id" : 2, "LeftSide" : 19, "RightSide" : 28, "NumPlayers" : 0},
+{"Id" : 3, "LeftSide" : 29, "RightSide" : 41, "NumPlayers" : 0},
+{"Id" : 4, "LeftSide" : 46, "RightSide" : 47, "NumPlayers" : 0},
+{"Id" : 5, "LeftSide" : 59, "RightSide" : 61, "NumPlayers" : 3},
+{"Id" : 6, "LeftSide" : 65, "RightSide" : 66, "NumPlayers" : 3},
+{"Id" : 7, "LeftSide" : 88, "RightSide" : 82, "NumPlayers" : 4},
+{"Id" : 8, "LeftSide" : 92, "RightSide" : 96, "NumPlayers" : 4}]

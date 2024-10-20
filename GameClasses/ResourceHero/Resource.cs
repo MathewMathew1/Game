@@ -3,8 +3,8 @@ namespace BoardGameBackend.Models
     public enum ResourceHeroType
     {
         Siege,
-        Magic,
         Army,
+        Magic,
         Signet
     }
 

@@ -73,8 +73,8 @@ namespace BoardGameBackend.Controllers
             try
             {
                 UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
-                var lobby = LobbyManager.LeaveLobby(id, user);
-                if (lobby == null)
+                var lobbyInfo = LobbyManager.LeaveLobby(id, user);
+                if (lobbyInfo == null)
                 {
                     await _hubContext.Clients.Group(id).SendAsync("LobbyDestroyed");
                     return Ok("Lobby destroyed or player left.");
@@ -82,7 +82,7 @@ namespace BoardGameBackend.Controllers
                 else
                 {
                     await _hubContext.Clients.Group(id).SendAsync("PlayerLeft", _mapper.Map<Player>(user));
-                    return Ok(new { lobbyId = lobby.Id, players = lobby.Players });
+                    return Ok(new { lobbyId = lobbyInfo.Lobby.Id, players = lobbyInfo.Lobby.Players });
                 }
             }
             catch (Exception ex)
@@ -163,6 +163,29 @@ namespace BoardGameBackend.Controllers
                     return NotFound($"Lobby with ID {id} not found.");
                 }
                 return Ok(lobby);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
+        
+        [Authorize]
+        [HttpPatch("updateInfo/{id}")]
+        public async Task<IActionResult> UpdateLobbyInformation(string id, [FromBody] StartGameModel startGameModel)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var infoChanged = LobbyManager.ChangeLobbyInfo(id, startGameModel, user.Id);
+                if(infoChanged == false){
+                    return NotFound();
+                }
+                await _hubContext.Clients.Group(id).SendAsync("UpdateLobbyInfo", startGameModel);
+               
+                return Ok();
             }
             catch (Exception ex)
             {

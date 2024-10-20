@@ -2,13 +2,15 @@ namespace BoardGameBackend.Models
 {
     public class HeroCardPicked
     {
-        public HeroCard Card { get; }
-        public PlayerInGame Player { get; }
+        public HeroCard Card { get; set;}
+        public PlayerInGame Player { get; set;}
+        public Reward? Reward { get; set;}
 
-        public HeroCardPicked(HeroCard card, PlayerInGame player)
+        public HeroCardPicked(HeroCard card, PlayerInGame player, Reward? reward = null)
         {
             Card = card;
             Player = player;
+            Reward = reward;
         }
     }
 
@@ -129,6 +131,7 @@ namespace BoardGameBackend.Models
         public bool? RerollMercenaryAction { get; set; }
         public bool? GetRandomArtifact { get; set; }
         public bool? GotArtifact { get; set; }
+        public TokenReward? TokenReward {get; set;}
     }
 
     public class ArtifactPlayed
@@ -184,6 +187,7 @@ namespace BoardGameBackend.Models
         public required List<PlayerViewModel> Players {get; set; }
         public required string GameId {get; set;}
         public required List<TokenTileInfo> TokenSetup {get; set;}
+        public required List<RolayCard> RolayCards {get; set;}
     }
 
     public class FulfillProphecy{
@@ -219,6 +223,25 @@ namespace BoardGameBackend.Models
 
     public class EndOfPlayerTurn{
         public required PlayerInGame Player {get; set;}
+    }
+
+    public class RoyalCardPlayed{
+        public required RolayCard RoyalCard { get; set; }
+        public required Reward? Reward { get; set; }
+        public required Guid PlayerId {get; set;}
+        public required int AmountOfSignetsForNextRoyalCard {get; set;}
+    }
+
+    public class GoldIntoMovementEventData{
+        public required int MovementFullLeft {get; set;}
+        public required int GoldLeft {get; set;}
+        public required Guid PlayerId {get; set;}
+    }
+
+    public class FullMovementIntoEmptyEventData{
+        public required int MovementFullLeft {get; set;}
+        public required int MovementUnFullLeft {get; set;}
+        public required Guid PlayerId {get; set;}
     }
 
 }

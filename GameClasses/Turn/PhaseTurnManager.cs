@@ -18,8 +18,14 @@ namespace BoardGameBackend.Managers
             if(_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(MercenaryPhase)){
                 EndOfPlayerTurn data = new EndOfPlayerTurn { Player = CurrentPlayer! };
                 _gameContext.EventManager.Broadcast("EndOfPlayerTurn", ref data);
+                if(BlockNextPlayerTurn == true) return;
             }
 
+            AfterEndPlayerTurn();
+        }
+
+        public override void AfterEndPlayerTurn()
+        {
             var nextPlayer = _gameContext.PlayerManager.GetNextPlayerForPhase();
 
             if (nextPlayer == null)

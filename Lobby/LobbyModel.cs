@@ -16,6 +16,12 @@ namespace BoardGameBackend.Models
         public bool GameHasStarted { get; set; }
     }
 
+    public class LobbyManagerInfo
+    {
+        public required Lobby Lobby { get; set; }
+        public StartGameModel StartGameModel { get; set; } = new StartGameModel();
+    }
+
     public class CreateLobbyDto
     {
         public required string LobbyName { get; set; } // User who is subscribing    
@@ -44,13 +50,13 @@ namespace BoardGameBackend.Models
         public required string Message { get; set; }
     }
 
-        public class LobbyJoinResult
-        {
-            public Lobby? Lobby { get; set; }
-            public string? ErrorMessage { get; set; }
-            public bool Success => Lobby != null && string.IsNullOrEmpty(ErrorMessage);
-        }
+    public class LobbyJoinResult
+    {
+        public Lobby? Lobby { get; set; }
+        public string? ErrorMessage { get; set; }
+        public bool Success => Lobby != null && string.IsNullOrEmpty(ErrorMessage);
+    }
 
 
-    
+
 }

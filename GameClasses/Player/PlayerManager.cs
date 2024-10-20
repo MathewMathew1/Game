@@ -24,17 +24,29 @@ namespace BoardGameBackend.Managers
                 EndTurn(data.Player);
             }, priority: 5);
 
-
-
             _gameContext.EventManager.Subscribe<HeroTurnEnded>("HeroTurnEnded", moveOnTileData =>
             {
-                CheckOnMovementEvents();
+                CheckAfterMovementEvents();
+                CheckOnSignets();
             }, priority: 1);
+
+            _gameContext.EventManager.Subscribe("ArtifactsTaken", (ArtifactsTaken data) =>
+            {
+                if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))
+                {
+                    CheckOnSignets();
+                }
+            }, priority: 1);
+            _gameContext.EventManager.Subscribe("ArtifactRerolled", (ArtifactRerolledData data) => CheckOnSignets(), priority: 1);
+            _gameContext.EventManager.Subscribe("ArtifactPlayed", (ArtifactPlayed data) => CheckOnSignets(), priority: 1);
 
             gameContext.EventManager.Subscribe<MercenaryPicked>("MercenaryPicked", mercenaryPicked =>
             {
                 CheckForAurasOnMercenaryPicked(mercenaryPicked);
             }, priority: 1);
+
+            _gameContext.EventManager.Subscribe("MoveOnTile", (MoveOnTile data) => CheckOnMovementEvents(data), priority: 1);
+            
         }
 
         public void CheckForAurasOnMercenaryPicked(MercenaryPicked mercenaryPicked)
@@ -65,7 +77,36 @@ namespace BoardGameBackend.Managers
             return Players.FirstOrDefault(p => p.Id == playerId);
         }
 
-        public void CheckOnMovementEvents()
+        public void CheckOnSignets(){
+            var player = Players.FirstOrDefault(p => p.Id == _gameContext.TurnManager.CurrentPlayer?.Id);
+
+            if(player == null) return;
+
+            var newSignet = player.PlayerRolayCardManager.IsNewRolayCardToPick(player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Signet));
+            if(newSignet == true){
+                _gameContext.MiniPhaseManager.StarRoyalCardPickMiniPhase();
+            }
+        }
+
+        public void CheckOnMovementEvents(MoveOnTile data)
+        {
+            var player = _gameContext.TurnManager.CurrentPlayer;
+
+            if (player == null) return;
+
+            var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.GOLD_ON_TILES_WITHOUT_GOLD);
+
+            if (amountOfAuras > 0)
+            {
+                var noGoldReward = (data.TileReward.EmptyReward == false && data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1) ||
+                (data.TileReward.TokenReward != null && data.TileReward.TokenReward.Reward.EmptyReward == false && data.TileReward.TokenReward.Reward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1);
+                if(noGoldReward){
+                    data.TileReward.Resources.Add(new Resource(ResourceType.Gold, amountOfAuras ));
+                }
+            }
+        }
+
+        public void CheckAfterMovementEvents()
         {
             var player = _gameContext.TurnManager.CurrentPlayer;
 
