@@ -69,6 +69,15 @@ namespace BoardGameBackend.Managers
             {             
                 EndTurn();                    
             }, priority: 1);
+            _gameContext.EventManager.Subscribe<ArtifactPlayed>("ArtifactRePlayed", data =>
+            {
+                EndTurn();    
+            }, priority: 0);
+
+            _gameContext.EventManager.Subscribe<ReplaceNextHeroEventData>("ReplaceNextHeroEvent", data =>
+            {             
+                EndTurn();                     
+            }, priority: 1);
 
         }
 

@@ -13,8 +13,8 @@ namespace BoardGameBackend.Models
         public List<AuraTypeWithLongevity> AurasTypes { get; set; }
         public List<EndGameAuraType> EndGameAura { get; set; }
         public List<EffectType> Effects { get; set; }
-        public bool EmptyReward {get; set;} = false;
-        
+        public bool EmptyReward { get; set; } = false;
+
         public int? Morale { get; set; }
 
 
@@ -393,6 +393,19 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class ReplaceNextHeroCardReward : BaseReward
+    {
+        public ReplaceNextHeroCardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.REPLACE_HERO }
+            };
+        }
+    }
+
     public class RerollMercenaryReward : BaseReward
     {
         public RerollMercenaryReward(int value1, int value2) : base(value1, value2) { }
@@ -415,6 +428,32 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 Effects = new List<EffectType>() { EffectType.BUFF_HERO }
+            };
+        }
+    }
+
+    public class GetRandomArtifactReward : BaseReward
+    {
+        public GetRandomArtifactReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.GET_RANDOM_ARTIFACT }
+            };
+        }
+    }
+
+    public class ReplayArtifactReward : BaseReward
+    {
+        public ReplayArtifactReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.REPLAY_ARTIFACT }
             };
         }
     }
@@ -516,6 +555,143 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class GoldOnTilesWithIronReward : BaseReward
+    {
+        public GoldOnTilesWithIronReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_IRON, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class GoldOnTilesWithWoodReward : BaseReward
+    {
+        public GoldOnTilesWithWoodReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_WOOD, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+
+    public class GoldOnTilesWithGemsReward : BaseReward
+    {
+        public GoldOnTilesWithGemsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_GEMS, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+
+    public class GoldOnTilesWithNiterReward : BaseReward
+    {
+        public GoldOnTilesWithNiterReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_NITER, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class GoldOnTilesWithMysticFogReward : BaseReward
+    {
+        public GoldOnTilesWithMysticFogReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_MYSTIC_FOG, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class GoldOnTilesWithSignetFogReward : BaseReward
+    {
+        public GoldOnTilesWithSignetFogReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_SIGNET, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class GoldOnTilesWithArtifactReward : BaseReward
+    {
+        public GoldOnTilesWithArtifactReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_ARTIFACT, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class GoldOnTilesWithRerollReward : BaseReward
+    {
+        public GoldOnTilesWithRerollReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_REROLL, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
+    public class EmptyMoveOnTilesWithSignetReward : BaseReward
+    {
+        public EmptyMoveOnTilesWithSignetReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVE_ON_TILES_WITH_SIGNET, Permanent = true, Value1 = Value1 }
+                }
+            };
+        }
+    }
+
     public class WoodReward : BaseReward
     {
         public WoodReward(int value1, int value2) : base(value1, value2) { }
@@ -591,6 +767,21 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class SignetsReward : BaseReward
+    {
+        public SignetsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                HeroResources = new List<HeroResource> {
+                new HeroResource(ResourceHeroType.Signet, 2)
+                }
+            };
+        }
+    }
+
     public class FullMovementIntoEmptyReward : BaseReward
     {
         public FullMovementIntoEmptyReward(int value1, int value2) : base(value1, value2) { }
@@ -616,6 +807,96 @@ namespace BoardGameBackend.Models
             {
                 AurasTypes = new List<AuraTypeWithLongevity>() {
                     new AuraTypeWithLongevity { Aura = AurasType.GOLD_FOR_MOVEMENT, Permanent = false }
+                }
+            };
+        }
+    }
+
+    public class ArtifactWhenCloseToCastleReward : BaseReward
+    {
+        public ArtifactWhenCloseToCastleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.ARTIFACT_WHEN_CLOSE_TO_CASTLE, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class FullMoveWhenCloseToCastleReward : BaseReward
+    {
+        public FullMoveWhenCloseToCastleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.FULL_MOVE_WHEN_CLOSE_TO_CASTLE, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class EmptyMoveWhenCloseToCastleReward : BaseReward
+    {
+        public EmptyMoveWhenCloseToCastleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVE_WHEN_CLOSE_TO_CASTLE, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class ArtifactOnRoyalCardReward : BaseReward
+    {
+        public ArtifactOnRoyalCardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.ARTIFACT_ON_ROYAL_CARD, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class CheaperBuildingsAuraReward : BaseReward
+    {
+        public CheaperBuildingsAuraReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.CHEAPER_BUILDINGS, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class ChangeHeroSidesAfterPlayReward : BaseReward
+    {
+        public ChangeHeroSidesAfterPlayReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.CHANGE_SIDES_OF_HERO_AFTER_PLAY, Permanent = false }
                 }
             };
         }
@@ -760,11 +1041,17 @@ namespace BoardGameBackend.Models
                     case 55:
                         _rewards.Add(rewardData.Id, new RerollMercenaryReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
+                    case 56:
+                        _rewards.Add(rewardData.Id, new GetRandomArtifactReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
                     case 57:
                         _rewards.Add(rewardData.Id, new StartArtifactPickMiniPhaseReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 58:
                         _rewards.Add(rewardData.Id, new GetRewardFromCurrentTileReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 59:
+                        _rewards.Add(rewardData.Id, new CheaperBuildingsAuraReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 60:
                         _rewards.Add(rewardData.Id, new FullMovementIntoEmptyReward(rewardData.IntValue1, rewardData.IntValue2));
@@ -774,6 +1061,27 @@ namespace BoardGameBackend.Models
                         break;
                     case 62:
                         _rewards.Add(rewardData.Id, new GoldOnTilesWithoutGoldReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 63:
+                        _rewards.Add(rewardData.Id, new SignetsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 68:
+                        _rewards.Add(rewardData.Id, new ReplayArtifactReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 69:
+                        _rewards.Add(rewardData.Id, new ArtifactWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 71:
+                        _rewards.Add(rewardData.Id, new FullMoveWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 72:
+                        _rewards.Add(rewardData.Id, new EmptyMovementRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 73:
+                        _rewards.Add(rewardData.Id, new ReplaceNextHeroCardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 76:
+                        _rewards.Add(rewardData.Id, new ChangeHeroSidesAfterPlayReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 77:
                         _rewards.Add(rewardData.Id, new AdditionalMovementBasedOnFactionReward(rewardData.IntValue1, rewardData.IntValue2));
@@ -802,10 +1110,40 @@ namespace BoardGameBackend.Models
                     case 85:
                         _rewards.Add(rewardData.Id, new NoReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
+                    case 86:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithArtifactReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 87:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithRerollReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 88:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithWoodReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 89:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithGemsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 90:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithIronReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 91:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithNiterReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 92:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithNiterReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 93:
+                        _rewards.Add(rewardData.Id, new GoldOnTilesWithMysticFogReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 94:
+                        _rewards.Add(rewardData.Id, new EmptyMoveOnTilesWithSignetReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 95:
+                        _rewards.Add(rewardData.Id, new ArtifactOnRoyalCardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
                     case 96:
                         _rewards.Add(rewardData.Id, new TeleportationRewardOneFreeNotPermanentMovementReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
-                        
+
                 }
             }
         }

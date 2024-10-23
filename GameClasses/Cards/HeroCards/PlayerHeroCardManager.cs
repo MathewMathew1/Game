@@ -12,7 +12,24 @@ namespace BoardGameBackend.Managers
         public void AddHeroCardLeft(HeroCard heroCard)
         {
             HeroCardsLeft.Add(heroCard);
+        }
 
+        public HeroFullInfo? GetHeroCardById(int heroCardId){
+            var onLeft = true;
+            var hero = HeroCardsLeft.FirstOrDefault(x => x.Id == heroCardId);
+            if(hero == null){
+                onLeft = false;
+                hero = HeroCardsRight.FirstOrDefault(x => x.Id == heroCardId);
+            }
+
+            if(hero == null) return null;
+
+            return new HeroFullInfo {HeroCard = hero, LeftSide = onLeft};
+        }
+
+        public void RemoveHeroCardById(int heroCardId){
+            HeroCardsLeft.RemoveAll(x => x.Id == heroCardId);
+            HeroCardsRight.RemoveAll(x => x.Id == heroCardId);
         }
 
         public void ResetCurrentHeroCard()
@@ -26,6 +43,45 @@ namespace BoardGameBackend.Managers
             else
             {
                 HeroCardsRight.Add(CurrentHeroCard.HeroCard);
+            }
+
+            if(CurrentHeroCard.ReplacedHeroCard != null){
+                if (CurrentHeroCard.ReplacedHeroCard.WasOnLeftSide)
+                {
+                    HeroCardsLeft.Add(CurrentHeroCard.ReplacedHeroCard.HeroCard);
+                }
+                else
+                {
+                    HeroCardsRight.Add(CurrentHeroCard.ReplacedHeroCard.HeroCard);
+                }
+            }
+            
+
+            CurrentHeroCard = null;
+        }
+
+        public void ResetCurrentHeroCardReverse()
+        {
+            if (CurrentHeroCard == null) return;
+
+            if (CurrentHeroCard.LeftSide)
+            {
+                HeroCardsRight.Add(CurrentHeroCard.UnUsedHeroCard);
+            }
+            else
+            {
+                HeroCardsLeft.Add(CurrentHeroCard.UnUsedHeroCard);
+            }
+
+             if(CurrentHeroCard.ReplacedHeroCard != null){
+                if (CurrentHeroCard.ReplacedHeroCard.WasOnLeftSide)
+                {
+                    HeroCardsLeft.Add(CurrentHeroCard.ReplacedHeroCard.HeroCard);
+                }
+                else
+                {
+                    HeroCardsRight.Add(CurrentHeroCard.ReplacedHeroCard.HeroCard);
+                }
             }
 
             CurrentHeroCard = null;

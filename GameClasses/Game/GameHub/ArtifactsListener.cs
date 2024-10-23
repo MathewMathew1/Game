@@ -36,6 +36,10 @@ namespace BoardGameBackend.Managers.EventListeners
             {
                 BroadcastArtifactPlayed(gameId, data);
             }, priority: 0);
+            gameContext.EventManager.Subscribe("ArtifactRePlayed", (ArtifactPlayed data) =>
+            {
+                BroadcastArtifactRePlayed(gameId, data);
+            }, priority: 2);
             gameContext.EventManager.Subscribe("ArtifactRerolled", (ArtifactRerolledData data) =>
             {
                 BroadcastArtifactRerolled(gameId, data);
@@ -99,6 +103,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ArtifactPlayed", ArtifactPlayed);
+        }
+
+        public void BroadcastArtifactRePlayed(string gameId, ArtifactPlayed ArtifactPlayed)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ArtifactRePlayed", ArtifactPlayed);
         }
     }
 }

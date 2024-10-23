@@ -124,9 +124,32 @@ namespace BoardGameBackend.Models
             return true;
         }
 
+        public bool SetReplacementForNextHero(PlayerInGame player, int heroCardId){
+            HeroFullInfo? heroCardInfo = player.PlayerHeroCardManager.GetHeroCardById(heroCardId);
+            
+            if(heroCardInfo == null) return false;
+
+            HeroCard? heroCard = heroCardInfo.HeroCard;
+
+            AuraTypeWithLongevity replacementHeroAura = new AuraTypeWithLongevity {Aura = AurasType.REPLACE_NEXT_HERO, Value1=heroCardId, Permanent = false};
+            
+            player.AurasTypes.Add(replacementHeroAura);
+            ReplaceNextHeroEventData replaceNextHeroData = new ReplaceNextHeroEventData
+            {
+                Hero = heroCard,
+                PlayerId = player.Id,
+                ReplacementHeroAura = replacementHeroAura,
+            };
+
+            _gameContext.EventManager.Broadcast("ReplaceNextHeroEvent", ref replaceNextHeroData);
+
+            return true;
+        }
+
         public HeroCard? TakeHeroCard(PlayerInGame player, int heroCardId)
         {
             HeroCard? heroCard = null;
+            HeroCard? unusedHeroCard = null;
             bool leftSide = false;
             for (var i = 0; i < _heroCardCombinedList.Count; i++)
             {
@@ -142,6 +165,7 @@ namespace BoardGameBackend.Models
                     }
 
                     heroCard = leftCard;
+                    unusedHeroCard = _heroCardCombinedList[i].RightSide;
                     leftSide = true;
                     _takenCards[id] = player;
                     break;
@@ -155,16 +179,22 @@ namespace BoardGameBackend.Models
                         break;
                     }
 
+                    unusedHeroCard = _heroCardCombinedList[i].LeftSide;
                     heroCard = rightCard;
                     _takenCards[id] = player;
                     break;
                 }
 
             }
-            if (heroCard != null)
+            if (heroCard != null && unusedHeroCard != null)
             {
-                player.SetCurrentHeroCard(heroCard, leftSide);
-                _gameContext.PlayerManager.AddMoraleToPlayer(player, heroCard.Morale);
+                var preEventArgs = new PreHeroCardPickedEventData{PlayerId = player.Id, HeroCard = heroCard, WasOnLeftSide = leftSide};
+                _gameContext.EventManager.Broadcast("PreHeroCardPicked", ref preEventArgs);
+                var replacedHero = preEventArgs.ReplacedHero;
+                heroCard = preEventArgs.HeroCard;
+                leftSide = preEventArgs.WasOnLeftSide;
+
+                var currentHeroCard = player.SetCurrentHeroCard(heroCard, leftSide, _gameContext, unusedHeroCard, replacedHero);
 
                 Reward? reward = null;
                 if(heroCard.EffectId != null){
@@ -173,7 +203,7 @@ namespace BoardGameBackend.Models
                     _gameContext.RewardHandlerManager.HandleReward(player, reward);
                 }
             
-                var eventArgs = new HeroCardPicked(heroCard, player, reward);
+                var eventArgs = new HeroCardPicked(heroCard, player, currentHeroCard, reward);
                 _gameContext.EventManager.Broadcast("HeroCardPicked", ref eventArgs);
             }
             return heroCard;

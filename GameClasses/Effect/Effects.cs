@@ -12,7 +12,10 @@ namespace BoardGameBackend.Models
         FULFILL_PROPHECY,
         LOCK_CARD,
         BUFF_HERO,
-        REROLL_MERCENARY
+        REROLL_MERCENARY,
+        GET_RANDOM_ARTIFACT,
+        REPLAY_ARTIFACT,
+        REPLACE_HERO
     }
 
     public class GameEffect

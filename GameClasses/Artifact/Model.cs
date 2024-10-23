@@ -13,7 +13,7 @@ namespace BoardGameBackend.Models
         public required int Effect2 { get; set; }
         public required string BackgroundAtlas { get; set; }
         public required int BackgroundIndex { get; set; }
-        public required int TypEfektu { get; set; }
+        public required int EffectType { get; set; }
         public required bool SecondEffectSuperior { get; set; }
     }
 
@@ -31,7 +31,7 @@ namespace BoardGameBackend.Models
         public int InGameIndex { get; set; }
         public required string BackgroundAtlas { get; set; }
         public required int BackgroundIndex { get; set; }
-        public required int TypEfektu { get; set; }
+        public required int EffectType { get; set; }
         public required bool SecondEffectSuperior { get; set; }
         
     }

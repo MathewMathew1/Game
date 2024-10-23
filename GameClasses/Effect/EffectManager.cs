@@ -29,7 +29,10 @@ namespace BoardGameBackend.Managers
                 { EffectType.FULFILL_PROPHECY, FulfillProphecyReward},
                 {EffectType.LOCK_CARD, StartLockCardMiniPhase},
                 {EffectType.BUFF_HERO, StartBuffHeroMiniPhase},
-                {EffectType.REROLL_MERCENARY, StartRerollMercenary}
+                {EffectType.REROLL_MERCENARY, StartRerollMercenary},
+                {EffectType.GET_RANDOM_ARTIFACT, AddRandomArtifact},
+                {EffectType.REPLAY_ARTIFACT, ReplayArtifact},
+                {EffectType.REPLACE_HERO, ReplaceNextHero}
             };
         }
 
@@ -73,7 +76,8 @@ namespace BoardGameBackend.Managers
             _gameContext.ArtifactManager.AddArtifactsToPlayer(3, player);
         }
 
-        private void StartRerollMercenary(EffectType effect, PlayerInGame player){
+        private void StartRerollMercenary(EffectType effect, PlayerInGame player)
+        {
             _gameContext.MiniPhaseManager.StarRerollMercenaryMiniPhase();
         }
 
@@ -94,9 +98,24 @@ namespace BoardGameBackend.Managers
             _gameContext.MiniPhaseManager.StartLockCardMiniPhase();
         }
 
+        private void ReplayArtifact(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.ReplayArtifactMiniPhase(player);
+        }
+
+        private void ReplaceNextHero(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StarReplaceHeroMiniPhase();
+        }
+
         private void StartBuffHeroMiniPhase(EffectType effect, PlayerInGame player)
         {
             _gameContext.MiniPhaseManager.StartBuffHeroMiniPhase();
+        }
+
+        private void AddRandomArtifact(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.ArtifactManager.AddArtifactsToPlayer(1, player);
         }
 
         private void FulfillProphecyReward(EffectType effect, PlayerInGame player)
@@ -106,7 +125,7 @@ namespace BoardGameBackend.Managers
             {
                 var eventArgs = new AddAura
                 {
-                    Aura = new AuraTypeWithLongevity { Aura =setMiniPhaseData.aurasType.Value, Permanent = true},
+                    Aura = new AuraTypeWithLongevity { Aura = setMiniPhaseData.aurasType.Value, Permanent = true },
                     PlayerId = player.Id
                 };
                 _gameContext.EventManager.Broadcast("AddAura", ref eventArgs);

@@ -37,6 +37,13 @@ namespace BoardGameBackend.Managers
                     CheckOnSignets();
                 }
             }, priority: 1);
+            _gameContext.EventManager.Subscribe("ArtifactsTaken", (ArtifactsTaken data) =>
+            {
+                if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))
+                {
+                    CheckOnSignets();
+                }
+            }, priority: 1);
             _gameContext.EventManager.Subscribe("ArtifactRerolled", (ArtifactRerolledData data) => CheckOnSignets(), priority: 1);
             _gameContext.EventManager.Subscribe("ArtifactPlayed", (ArtifactPlayed data) => CheckOnSignets(), priority: 1);
 
@@ -46,7 +53,56 @@ namespace BoardGameBackend.Managers
             }, priority: 1);
 
             _gameContext.EventManager.Subscribe("MoveOnTile", (MoveOnTile data) => CheckOnMovementEvents(data), priority: 1);
-            
+
+            _gameContext.EventManager.Subscribe<RoyalCardPlayed>("RolayCardPlayed", data =>
+            {             
+                CheckOnRoyalCardEvent(data);                     
+            }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<MoraleAdded>("MoraleAdded", data =>
+            {             
+                UpdatePlayersBasedOnMorale(data.Player);        
+            }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<PreHeroCardPickedEventData>("PreHeroCardPicked", data =>
+            {             
+                PreHeroCardPickedEventData(data);        
+            }, priority: 1);
+
+
+        }
+
+        public void PreHeroCardPickedEventData(PreHeroCardPickedEventData data){
+            var player = GetPlayerById(data.PlayerId);
+            if (player == null) return;
+
+            var aura = player.AurasTypes.Find(a => a.Aura == AurasType.REPLACE_NEXT_HERO);
+
+            if (aura == null || aura?.Value1 == null) return;
+
+            data.ReplacedHero = new ReplacedHero{HeroCard = data.HeroCard, WasOnLeftSide = data.WasOnLeftSide };
+            var heroInfo = player.PlayerHeroCardManager.GetHeroCardById(aura.Value1.Value)!;
+
+            if(heroInfo == null) return;
+
+            player.PlayerHeroCardManager.RemoveHeroCardById(aura.Value1.Value);
+            data.HeroCard = heroInfo.HeroCard;
+            data.WasOnLeftSide = heroInfo.LeftSide;
+        }
+
+
+        public void CheckOnRoyalCardEvent(RoyalCardPlayed data)
+        {
+            var player = _gameContext.TurnManager.CurrentPlayer;
+
+            if (player == null) return;
+
+            var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.ARTIFACT_ON_ROYAL_CARD);
+
+            for(int i = 0; i<amountOfAuras; i++){
+                _gameContext.ArtifactManager.AddArtifactsToPlayer(1, player);
+            }
+        
         }
 
         public void CheckForAurasOnMercenaryPicked(MercenaryPicked mercenaryPicked)
@@ -77,13 +133,15 @@ namespace BoardGameBackend.Managers
             return Players.FirstOrDefault(p => p.Id == playerId);
         }
 
-        public void CheckOnSignets(){
+        public void CheckOnSignets()
+        {
             var player = Players.FirstOrDefault(p => p.Id == _gameContext.TurnManager.CurrentPlayer?.Id);
 
-            if(player == null) return;
+            if (player == null) return;
 
             var newSignet = player.PlayerRolayCardManager.IsNewRolayCardToPick(player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Signet));
-            if(newSignet == true){
+            if (newSignet == true)
+            {
                 _gameContext.MiniPhaseManager.StarRoyalCardPickMiniPhase();
             }
         }
@@ -94,17 +152,57 @@ namespace BoardGameBackend.Managers
 
             if (player == null) return;
 
-            var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.GOLD_ON_TILES_WITHOUT_GOLD);
-
-            if (amountOfAuras > 0)
-            {
-                var noGoldReward = (data.TileReward.EmptyReward == false && data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1) ||
+           
+            var condition = (data.TileReward.EmptyReward == false && data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1) ||
                 (data.TileReward.TokenReward != null && data.TileReward.TokenReward.Reward.EmptyReward == false && data.TileReward.TokenReward.Reward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1);
-                if(noGoldReward){
-                    data.TileReward.Resources.Add(new Resource(ResourceType.Gold, amountOfAuras ));
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITHOUT_GOLD, condition);
+
+            condition = data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Iron) != -1;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_IRON, condition);
+
+            condition = data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Wood) != -1;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_WOOD, condition);
+
+            condition = data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Gems) != -1;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_GEMS, condition);
+
+            condition = data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Niter) != -1;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_NITER, condition);
+
+            condition = data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.MysticFog) != -1;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_MYSTIC_FOG, condition);
+
+            condition = data.TileReward.TempSignet == true;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_SIGNET, condition);
+
+            condition = data.TileReward.RerollMercenaryAction == true;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_REROLL, condition);
+
+            condition = data.TileReward.GetRandomArtifact == true;
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_ARTIFACT, condition);
+
+            var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.EMPTY_MOVE_ON_TILES_WITH_SIGNET);
+            if(amountOfAuras > 0){
+                if(data.TileReward.TempSignet == true && player.PlayerHeroCardManager.CurrentHeroCard != null){
+                    player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1; 
+                    data.MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft;
                 }
             }
         }
+
+        void ApplyAuraReward(PlayerInGame player, MoveOnTile data, AurasType auraType, bool hasReward)
+        {
+            var amountOfAuras = player.AurasTypes.Count(a => a.Aura == auraType);
+
+            if (amountOfAuras > 0)
+            {
+                if (hasReward)
+                {
+                    data.TileReward.Resources.Add(new Resource(ResourceType.Gold, amountOfAuras));
+                }
+            }
+        }
+
 
         public void CheckAfterMovementEvents()
         {

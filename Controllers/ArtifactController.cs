@@ -49,7 +49,7 @@ namespace BoardGameBackend.Controllers
 
         [HttpPost("play/{id}")]
         [Authorize]
-        [PhaseCheckFilter(typeof(ArtifactPhase))]
+        [PhaseOrMiniPhaseCheckFilter(typeof(ArtifactPhase), typeof(ArtifactReplayMiniPhase))]
         public ActionResult PlayedArtifact(string id, [FromBody] ArtifactPlayModel artifactPlayModel)
         {
             try
@@ -58,7 +58,7 @@ namespace BoardGameBackend.Controllers
                 var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
                 var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
            
-                var correctlyPlayedArtifact = gameContext.ArtifactManager.PlayArtifactByIndex(artifactPlayModel.ArtifactId, player, artifactPlayModel.IsFirstEffect);
+                var correctlyPlayedArtifact = gameContext.ArtifactManager.HandleArtifactPlay(artifactPlayModel.ArtifactId, player, artifactPlayModel.IsFirstEffect, artifactPlayModel.ReplayArtifact);
                 if(correctlyPlayedArtifact == false){
                     return BadRequest(new { Error = "Unable to play artifact." });
                 }

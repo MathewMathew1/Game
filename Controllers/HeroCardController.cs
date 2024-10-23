@@ -47,6 +47,32 @@ namespace BoardGameBackend.Controllers
 
         }
 
+        [HttpPost("replaceNext/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(ReplaceNextHeroMiniPhase))]
+        public ActionResult ReplaceCard(string id, [FromBody] HeroCardPickModel heroCardPickModel)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+           
+                var replaced = gameContext.HeroCardManager.SetReplacementForNextHero(player, heroCardPickModel.HeroCardId);
+                if(replaced == false){
+                    return BadRequest(new { Error = "Unable to replace next hero card." });
+                }
+
+                return Ok(new { Message = "Replaced hero card successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
+
         [HttpPost("buff/{id}")]
         [Authorize]
         [MiniPhaseCheckFilter(typeof(BuffHeroMiniPhase))]

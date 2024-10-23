@@ -14,6 +14,7 @@ namespace BoardGameBackend.Managers
         public BoardManager BoardManager { get; set; }
         public EventManager EventManager { get; }
         public PawnManager PawnManager { get; private set; }
+        public TimerManager TimerManager { get; private set; }
         public GameTiles GameTiles { get; private set; }
         public MercenaryManager MercenaryManager { get; private set; }
         public MiniPhaseManager MiniPhaseManager { get; private set; }
@@ -40,6 +41,7 @@ namespace BoardGameBackend.Managers
             MiniPhaseManager = new MiniPhaseManager(this);
             ArtifactManager = new ArtifactManager(this);
             EffectManager = new EffectManager(this);
+            TimerManager = new TimerManager(this);
             ScorePointsManager = new ScorePointsManager(this);
             EndGameEffectManager = new EndGameEffectManager(this);
             RewardHandlerManager = new RewardHandlerManager(this);
@@ -85,8 +87,12 @@ namespace BoardGameBackend.Managers
         public void EndGame()
         {
             var ScorePoints = ScorePointsManager.FinalScore();
+            
+            TimerManager.EndTimer();
+            var gameTimeSpan = TimerManager.GetTotalGameTime();
+            var playerTimeSpan = TimerManager.GetPlayerTimes();
 
-            EndOfGame data = new EndOfGame { PlayerScores = ScorePoints };
+            EndOfGame data = new EndOfGame { PlayerScores = ScorePoints, GameTimeSpan = gameTimeSpan, PlayerTimeSpan = playerTimeSpan };
 
             EventManager.Broadcast("EndOfGame", ref data);
         }

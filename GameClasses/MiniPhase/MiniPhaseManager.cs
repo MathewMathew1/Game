@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Managers
@@ -64,6 +65,15 @@ namespace BoardGameBackend.Managers
 
             }, priority: 5);
 
+            gameContext.EventManager.Subscribe<ArtifactPlayed>("ArtifactRePlayed", data =>
+            {
+                if (CurrentMiniPhase is ArtifactReplayMiniPhase)
+                {
+                    EndCurrentMiniPhase();
+                }
+
+            }, priority: 1);
+
             gameContext.EventManager.Subscribe<LockMercenaryData>("LockMercenary", data =>
             {
                 if (CurrentMiniPhase is LockCardMiniPhase)
@@ -92,6 +102,12 @@ namespace BoardGameBackend.Managers
             {             
                 EndCurrentMiniPhase();                     
             }, priority: 2);
+
+            gameContext.EventManager.Subscribe<ReplaceNextHeroEventData>("ReplaceNextHeroEvent", data =>
+            {             
+                EndCurrentMiniPhase();                     
+            }, priority: 2);
+            
         }
 
         private void StartCurrentMiniPhase(MiniPhase miniPhase)
@@ -165,6 +181,34 @@ namespace BoardGameBackend.Managers
         public void StarRerollMercenaryMiniPhase()
         {
             var miniPhaseClass = new RerollMercenaryMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StarReplaceHeroMiniPhase()
+        {
+            var miniPhaseClass = new ReplaceNextHeroMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void ReplayArtifactMiniPhase(PlayerInGame player)
+        {
+            var instantArtifacts = player.ArtifactsPlayed.Where(a => a.EffectType == EffectHelper.InstantEffect).ToList();
+
+            if(instantArtifacts.Count() == 0) return;
+
+            
+            if(instantArtifacts.Count() == 1 ){
+                if(instantArtifacts[0]!.Effect2 == -1){
+                    _gameContext.ArtifactManager.HandleArtifactPlay(instantArtifacts[0].InGameIndex, player, true, true);
+                    return;
+                }
+                if(instantArtifacts[0]!.SecondEffectSuperior){
+                    _gameContext.ArtifactManager.HandleArtifactPlay(instantArtifacts[0].InGameIndex, player, false, true);
+                    return;
+                }
+            }
+
+            var miniPhaseClass = new ArtifactReplayMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 

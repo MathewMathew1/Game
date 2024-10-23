@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Managers;
 
 namespace BoardGameBackend.Models
@@ -43,7 +44,7 @@ namespace BoardGameBackend.Models
 
             if (mercenaries.Count == 0)
             {
-                AurasTypes.Add(new AuraTypeWithLongevity{Aura = AurasType.FULFILL_PROPHECY, Permanent = true});
+                AurasTypes.Add(new AuraTypeWithLongevity { Aura = AurasType.FULFILL_PROPHECY, Permanent = true });
                 return new MercenaryFulfillProphecyReturnData { MercenaryId = null, aurasType = AurasType.FULFILL_PROPHECY };
             }
 
@@ -56,10 +57,12 @@ namespace BoardGameBackend.Models
             return new MercenaryFulfillProphecyReturnData { MercenaryId = null };
         }
 
-        public void SetCurrentHeroCard(HeroCard card, bool left)
+        public CurrentHeroCard SetCurrentHeroCard(HeroCard card, bool left, GameContext gameContext, HeroCard unusedHeroCard, ReplacedHero? replacedHero)
         {
             var addedFullMovements = 0;
             var addedEmptyMovements = 0;
+            var noFractionMovement = AurasTypes.Any(a => a.Aura == AurasType.NO_FRACTION_MOVEMENT);
+            var tile = gameContext.PawnManager._currentTile;
 
             foreach (var aura in AurasTypes)
             {
@@ -75,30 +78,82 @@ namespace BoardGameBackend.Models
                 {
                     addedEmptyMovements += 1;
                 }
+                else if (aura.Aura == AurasType.EMPTY_MOVE_WHEN_CLOSE_TO_CASTLE && TileDistanceHelper.IsInRange(2, tile, card.Faction.Id) && noFractionMovement == false)
+                {
+                    addedEmptyMovements += 1;
+                }
+                else if (aura.Aura == AurasType.FULL_MOVE_WHEN_CLOSE_TO_CASTLE && TileDistanceHelper.IsInRange(1, tile, card.Faction.Id) && noFractionMovement == false)
+                {
+                    addedFullMovements += 1;
+                }
+                else if (aura.Aura == AurasType.ARTIFACT_WHEN_CLOSE_TO_CASTLE && TileDistanceHelper.IsInRange(2, tile, card.Faction.Id) && noFractionMovement == false)
+                {
+                    gameContext.ArtifactManager.AddArtifactsToPlayer(1, this);
+                }
             }
 
-            var FullMovement = card.MovementFull + addedFullMovements;
-            var EmptyMovement = card.MovementEmpty + addedEmptyMovements;
+            var fullMovement = card.MovementFull + addedFullMovements;
+            var emptyMovement = card.MovementEmpty + addedEmptyMovements;
             if (AurasTypes.Any(a => a.Aura == AurasType.EMPTY_MOVES_INTO_FULL))
             {
-                FullMovement = FullMovement + EmptyMovement;
-                EmptyMovement = 0;
+                fullMovement = fullMovement + emptyMovement;
+                emptyMovement = 0;
             }
-
-            var NoFractionMovement = AurasTypes.Any(a => a.Aura == AurasType.NO_FRACTION_MOVEMENT);
 
             PlayerHeroCardManager.CurrentHeroCard = new CurrentHeroCard
             {
                 HeroCard = card,
+                UnUsedHeroCard = unusedHeroCard,
                 LeftSide = left,
-                MovementFullLeft = FullMovement,
-                MovementUnFullLeft = EmptyMovement,
-                NoFractionMovement = NoFractionMovement
+                ReplacedHeroCard = replacedHero,
+                MovementFullLeft = fullMovement,
+                MovementUnFullLeft = emptyMovement,
+                NoFractionMovement = noFractionMovement
             };
-            ResourceHeroManager.AddResource(ResourceHeroType.Siege, card.Siege);
-            ResourceHeroManager.AddResource(ResourceHeroType.Army, card.Army);
-            ResourceHeroManager.AddResource(ResourceHeroType.Magic, card.Magic);
+
+            var cardAddedResourceFrom = replacedHero != null? replacedHero.HeroCard: card;
+
+            ResourceHeroManager.AddResource(ResourceHeroType.Siege, cardAddedResourceFrom.Siege);
+            ResourceHeroManager.AddResource(ResourceHeroType.Army, cardAddedResourceFrom.Army);
+            ResourceHeroManager.AddResource(ResourceHeroType.Magic, cardAddedResourceFrom.Magic);
+
+            return PlayerHeroCardManager.CurrentHeroCard;
+        }
+
+        public void ResetCurrentHeroCard(EventManager eventManager)
+        {
+            if (PlayerHeroCardManager.CurrentHeroCard == null) return;
+
+            var changeHeroSides = AurasTypes.Any(a => a.Aura == AurasType.CHANGE_SIDES_OF_HERO_AFTER_PLAY);
+
+            var card = PlayerHeroCardManager.CurrentHeroCard.HeroCard;
+            if (changeHeroSides)
+            {
+                ResourceHeroManager.SubtractResource(ResourceHeroType.Siege, card.Siege);
+                ResourceHeroManager.SubtractResource(ResourceHeroType.Army, card.Army);
+                ResourceHeroManager.SubtractResource(ResourceHeroType.Magic, card.Magic);
+
+                card = PlayerHeroCardManager.CurrentHeroCard.UnUsedHeroCard;
+
+                ResourceHeroManager.AddResource(ResourceHeroType.Siege, card.Siege);
+                ResourceHeroManager.AddResource(ResourceHeroType.Army, card.Army);
+                ResourceHeroManager.AddResource(ResourceHeroType.Magic, card.Magic);
+
+                PlayerHeroCardManager.ResetCurrentHeroCardReverse();
+            }
+            card = PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard != null? PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard: card;
+
             ResourceHeroManager.AddResource(ResourceHeroType.Signet, card.RoyalSignet);
+            Morale += card.Morale;
+
+            var eventArgs = new MoraleAdded
+            {
+                Player = this
+            };
+
+            eventManager.Broadcast("MoraleAdded", ref eventArgs);
+
+            PlayerHeroCardManager.ResetCurrentHeroCard();
         }
 
         public void AddMercenary(Mercenary mercenary)
@@ -139,7 +194,8 @@ namespace BoardGameBackend.Models
             }
         }
 
-        public void AddRoyalCard(RolayCard rolayCard){
+        public void AddRoyalCard(RolayCard rolayCard)
+        {
             PlayerRolayCardManager.AddRolayCard(rolayCard);
             ResourceHeroManager.AddResource(ResourceHeroType.Siege, rolayCard.Siege);
             ResourceHeroManager.AddResource(ResourceHeroType.Army, rolayCard.Army);

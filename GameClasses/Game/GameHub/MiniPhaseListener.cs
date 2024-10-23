@@ -86,8 +86,26 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastRerollMercenaryMiniPhase(gameId);
             }, priority: 1);
 
-            
+            gameContext.EventManager.Subscribe("ReplayArtifactPhaseStarted", () =>
+            {
+                BroadcastStartReplayArtifactMiniPhase(gameId);
+            }, priority: 1);    
 
+            gameContext.EventManager.Subscribe("ReplayArtifactPhaseEnded", () =>
+            {
+                BroadcastEndReplayArtifactMiniPhase(gameId);
+            }, priority: 1);    
+
+            gameContext.EventManager.Subscribe("ReplaceHeroMiniPhaseStarted", () =>
+            {
+                BroadcastStartReplaceHeroMiniPhase(gameId);
+            }, priority: 1);  
+
+            gameContext.EventManager.Subscribe("ReplaceHeroMiniPhaseEnded", () =>
+            {
+                BroadcastEndReplaceHeroMiniPhase(gameId);
+            }, priority: 1);  
+            
         }
 
         public void BroadcastTeleportationMiniPhaseStart(string gameId)
@@ -172,6 +190,30 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BlockTileMiniEnded", data);
+        }
+
+        public void BroadcastStartReplayArtifactMiniPhase(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplayArtifactPhaseStarted");
+        }
+
+        public void BroadcastEndReplayArtifactMiniPhase(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplayArtifactPhaseEnded");
+        }
+
+        public void BroadcastStartReplaceHeroMiniPhase(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplaceHeroMiniPhaseStarted");
+        }
+
+        public void BroadcastEndReplaceHeroMiniPhase(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplaceHeroMiniPhaseEnded");
         }
     }
 }

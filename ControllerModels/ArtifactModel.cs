@@ -9,6 +9,7 @@ namespace BoardGameBackend.Models
     {
         public required int ArtifactId { get; set; }
         public required bool IsFirstEffect { get; set; }
+        public required bool ReplayArtifact {get; set;}
     }
 
     public class ArtifactRerollModel

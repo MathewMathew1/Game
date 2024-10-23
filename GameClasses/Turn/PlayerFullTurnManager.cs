@@ -52,11 +52,8 @@ namespace BoardGameBackend.Managers
                     EndRound();
                 }
 
-                _gameContext.PhaseManager.EndCurrentPhase(true);
-                if (_gameContext.MiniPhaseManager.CurrentMiniPhase?.GetType() != typeof(BlockTileMiniPhase))
-                {
-                    _gameContext.EventManager.Broadcast("New player turn", ref _currentPlayer);
-                }
+                _gameContext.PhaseManager.EndCurrentPhase(true);            
+                _gameContext.EventManager.Broadcast("New player turn", ref _currentPlayer);          
             }
             else
             {

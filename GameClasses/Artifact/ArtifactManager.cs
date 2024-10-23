@@ -1,9 +1,6 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Mappers;
 using BoardGameBackend.Models;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BoardGameBackend.Managers
 {
@@ -100,23 +97,24 @@ namespace BoardGameBackend.Managers
                 Player = player,
                 ArtifactRerolled = artifactRerolled
             };
-          
+
             _gameContext.EventManager.Broadcast("ArtifactRerolled", ref artifactPlayedData);
 
             return true;
         }
 
-        public bool PlayArtifactByIndex(int artifactId, PlayerInGame player, bool isFirstEffect)
+        public bool HandleArtifactPlay(int artifactId, PlayerInGame player, bool isFirstEffect, bool isReplay)
         {
-            var artifact = player.Artifacts.Find(artifact => artifact.InGameIndex == artifactId);
-
+            var artifact = isReplay? player.ArtifactsPlayed.Find(artifact => artifact.InGameIndex == artifactId): player.Artifacts.Find(artifact => artifact.InGameIndex == artifactId);
             if (artifact == null) return false;
+
+            // Check if it's a replay and validate the effect type for instant replay
+            if (isReplay && artifact.EffectType != EffectHelper.InstantEffect) return false;
 
             var effectId = isFirstEffect ? artifact.Effect1 : artifact.Effect2;
             if (effectId == -1) return false;
 
             var canPlayArtifact = CanPlayArtifact(effectId, player);
-
             if (!canPlayArtifact) return false;
 
             var artifactRewardClass = RewardFactory.GetRewardById(effectId);
@@ -126,7 +124,6 @@ namespace BoardGameBackend.Managers
 
             _gameContext.RewardHandlerManager.HandleReward(player, artifactRewards);
 
-
             ArtifactPlayed artifactPlayedData = new ArtifactPlayed
             {
                 Artifact = artifact,
@@ -135,7 +132,9 @@ namespace BoardGameBackend.Managers
                 Reward = artifactRewards
             };
 
-            _gameContext.EventManager.Broadcast("ArtifactPlayed", ref artifactPlayedData);
+            // Broadcast the correct event based on whether it's a replay or regular play
+            string eventName = isReplay ? "ArtifactRePlayed" : "ArtifactPlayed";
+            _gameContext.EventManager.Broadcast(eventName, ref artifactPlayedData);
 
             return true;
         }
@@ -143,7 +142,7 @@ namespace BoardGameBackend.Managers
         private bool CanPlayArtifact(int effectId, PlayerInGame player)
         {
             var req = EffectsFactory.GetReqById(effectId);
-            if(req == -1 || req == null) return true;
+            if (req == -1 || req == null) return true;
 
             var requirement = RequirementMovementStore.GetRequirementById(req.Value);
             bool fulfillThisRequirement = requirement.CheckRequirements(player);
@@ -161,7 +160,7 @@ namespace BoardGameBackend.Managers
         public void SetUpNewArtifactsWithoutCondition(int amountOfArtifacts, PlayerInGame? player = null)
         {
             HowManyMercenariesToPick = amountOfArtifacts - 1;
-            PlayerInGame playerToSelectArtifact = player != null ? player : _gameContext.TurnManager.CurrentPlayer; 
+            PlayerInGame playerToSelectArtifact = player != null ? player : _gameContext.TurnManager.CurrentPlayer;
             SetArtifactsToPickFrom(amountOfArtifacts);
             ArtifactToPickFromData artifactToPickFromData = new ArtifactToPickFromData
             {

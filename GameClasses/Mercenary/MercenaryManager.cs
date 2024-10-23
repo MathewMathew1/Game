@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Mappers;
 using BoardGameBackend.Models;
 
@@ -113,9 +114,18 @@ namespace BoardGameBackend.Managers
                 _gameContext.PlayerManager.AddMoraleToPlayer(player, boughtMercenary.Morale);
             }
 
+            Reward? reward = null;
+            if (boughtMercenary.EffectId != null && boughtMercenary.TypeCard != MercenaryHelper.ProphecyCardType)
+            {
+                var mercenaryRewardClass = RewardFactory.GetRewardById(boughtMercenary.EffectId.Value);
+                reward = mercenaryRewardClass.OnReward();
+                _gameContext.RewardHandlerManager.HandleReward(player, reward);
+            }
+
             _gameContext.PlayerManager.AddMoraleToPlayer(player, boughtMercenary.Morale);
             var eventArgs = new MercenaryPicked
             {
+                Reward = reward,
                 Card = boughtMercenary,
                 Player = player,
                 ResourcesSpend = ResourcesToSpend,
@@ -287,9 +297,27 @@ namespace BoardGameBackend.Managers
 
         public void ReduceRequiredResourcesByAura(List<ResourceInfo> resources, PlayerInGame player, Mercenary mercenary)
         {
+            resources.ForEach(r =>
+            {
+                if (r.Name == ResourceType.Gold)
+                {
+                    r.Amount = Math.Max(r.Amount - mercenary.GoldDecrease, 0);
+                }
+            });
+
             player.AurasTypes.ForEach(a =>
             {
-                if (a.Aura == AurasType.MAKE_CHEAPER_MERCENARIES && a.Value1 == mercenary.Faction.Id)
+                if (a.Aura == AurasType.CHEAPER_BUILDINGS && mercenary.TypeCard == MercenaryHelper.BuildingCardType)
+                {
+                    resources.ForEach(r =>
+                    {
+                        if (r.Name == ResourceType.Gold && r.Amount > 0)
+                        {
+                            r.Amount = Math.Max(r.Amount - 2, 0);
+                        }
+                    });
+                }
+                if (a.Value1 != null && a.Aura == AurasType.MAKE_CHEAPER_MERCENARIES && a.Value1 == mercenary.Faction?.Id)
                 {
                     resources.ForEach(r =>
                     {

@@ -47,10 +47,17 @@ namespace BoardGameBackend.Models
     public class CurrentHeroCard{
         public required bool LeftSide { get; set; }
         public required HeroCard HeroCard {get; set;}
+        public required HeroCard UnUsedHeroCard {get; set;}
+        public ReplacedHero? ReplacedHeroCard {get; set;}
         public required int MovementFullLeft { get; set; }
         public required int MovementUnFullLeft { get; set; }
         public bool NoFractionMovement {get; set;} = false;
         public List<int> VisitedPlaces {get; set;} = new List<int>();
+    }
+
+    public class HeroFullInfo{
+        public required HeroCard HeroCard{get; set;}
+        public required bool LeftSide{get; set;}
     }
 
     public class HeroCardCombined
@@ -72,6 +79,12 @@ namespace BoardGameBackend.Models
     {
         public required int Id { get; set; }
         public required string Name { get; set; }
+    }
+
+    public class ReplacedHero
+    {
+        public required HeroCard HeroCard { get; set;}
+        public required bool WasOnLeftSide { get; set;}
     }
 
     public static class Fractions

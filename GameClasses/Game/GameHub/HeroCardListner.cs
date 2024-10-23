@@ -32,6 +32,10 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastNewCardsSetup(data, gameId);
             }, priority: 10);
 
+            gameContext.EventManager.Subscribe<ReplaceNextHeroEventData>("ReplaceNextHeroEvent", data =>
+            {             
+                BroadcastHeroCardReplaced(data, gameId);                     
+            }, priority: 2);
 
         }
 
@@ -51,6 +55,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("HeroCardBuffed", data);
+        }
+
+        public void BroadcastHeroCardReplaced(ReplaceNextHeroEventData data, string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("HeroCardReplaced", data);
         }
 
     }

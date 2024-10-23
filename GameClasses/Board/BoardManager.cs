@@ -14,7 +14,7 @@ namespace BoardGameBackend.Managers
         public void EndTurn()
         {
             var player = _gameContext.TurnManager.CurrentPlayer;
-            player!.PlayerHeroCardManager.ResetCurrentHeroCard();
+            player!.ResetCurrentHeroCard(_gameContext.EventManager);
             var eventArgs = new HeroTurnEnded{Player=player};
             _gameContext.EventManager.Broadcast("HeroTurnEnded", ref eventArgs);
         }

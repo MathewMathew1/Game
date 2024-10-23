@@ -125,7 +125,7 @@ namespace BoardGameBackend.Models
 
     public class BuffHeroMiniPhase : MiniPhase
     {
-        public override string Name => "LockCardMiniPhase";
+        public override string Name => "BuffHeroMiniPhase";
 
         public BuffHeroMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -147,7 +147,7 @@ namespace BoardGameBackend.Models
 
     public class BlockTileMiniPhase : MiniPhase
     {
-        public override string Name => "LockCardMiniPhase";
+        public override string Name => "BlockTileMiniPhase";
 
         public BlockTileMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -181,7 +181,7 @@ namespace BoardGameBackend.Models
 
     public class RoyalCardPickMiniPhase : MiniPhase
     {
-        public override string Name => "LockCardMiniPhase";
+        public override string Name => "RoyalCardPickMiniPhase";
 
         public RoyalCardPickMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -198,6 +198,50 @@ namespace BoardGameBackend.Models
         {
             _gameContext.EventManager.Broadcast("RoyalMiniPhaseEnded");
             Console.WriteLine("RoyalMiniPhaseEnded.");
+        }
+    }
+
+    public class ArtifactReplayMiniPhase : MiniPhase
+    {
+        public override string Name => "ArtifactReplayMiniPhase";
+
+        public ArtifactReplayMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("ReplayArtifactPhaseStarted");
+            Console.WriteLine("ReplayArtifactPhaseStarted started.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("ReplayArtifactPhaseEnded");
+            Console.WriteLine("ReplayArtifactPhaseEnded.");
+        }
+    }
+
+    public class ReplaceNextHeroMiniPhase : MiniPhase
+    {
+        public override string Name => "ReplaceHeroMiniPhase";
+
+        public ReplaceNextHeroMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("ReplaceHeroMiniPhaseStarted");
+            Console.WriteLine("ReplaceHeroMiniPhase started.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("ReplaceHeroMiniPhaseEnded");
+            Console.WriteLine("ReplaceHeroMiniPhaseEnded.");
         }
     }
 

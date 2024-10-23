@@ -4,13 +4,15 @@ namespace BoardGameBackend.Models
     {
         public HeroCard Card { get; set;}
         public PlayerInGame Player { get; set;}
+        public CurrentHeroCard CurrentHeroCard { get; set;}
         public Reward? Reward { get; set;}
 
-        public HeroCardPicked(HeroCard card, PlayerInGame player, Reward? reward = null)
+        public HeroCardPicked(HeroCard card, PlayerInGame player, CurrentHeroCard currentHeroCard, Reward? reward = null)
         {
             Card = card;
             Player = player;
             Reward = reward;
+            CurrentHeroCard = currentHeroCard;
         }
     }
 
@@ -31,8 +33,14 @@ namespace BoardGameBackend.Models
         public required EndOfRoundMercenaryData EndOfRoundMercenaryData { get; set; }
     }
 
+    public class MoraleAdded
+    {
+        public required PlayerInGame Player { get; set; }
+    }
+
     public class MercenaryPicked
     {
+        public Reward? Reward {get; set;}
         public required Mercenary Card { get; set; }
         public required PlayerInGame Player { get; set; }
         public required List<ResourceInfo> ResourcesSpend { get; set; }
@@ -180,6 +188,13 @@ namespace BoardGameBackend.Models
 
     public class EndOfGame{
         public required Dictionary<Guid, ScorePointsTable> PlayerScores {get; set;}
+        public required Dictionary<Guid, TimeSpan> PlayerTimeSpan {get; set;}
+        public TimeSpan GameTimeSpan {get; set;}
+    }
+
+    public class NewTurnEventData{
+        public required PlayerInGame Player { get; set; }
+        public required PlayerInGame TimeSpendByLastPlayer { get; set; }
     }
 
     public class StartOfGame{
@@ -242,6 +257,19 @@ namespace BoardGameBackend.Models
         public required int MovementFullLeft {get; set;}
         public required int MovementUnFullLeft {get; set;}
         public required Guid PlayerId {get; set;}
+    }
+
+    public class ReplaceNextHeroEventData{
+        public required HeroCard Hero {get; set;}
+        public required AuraTypeWithLongevity ReplacementHeroAura {get; set;}
+        public required Guid PlayerId {get; set;}
+    }
+
+    public class PreHeroCardPickedEventData{
+        public required Guid PlayerId {get; set;}
+        public required HeroCard HeroCard {get; set;}
+        public required bool WasOnLeftSide {get; set;}
+        public ReplacedHero? ReplacedHero {get; set;}
     }
 
 }
