@@ -44,14 +44,14 @@ namespace BoardGameBackend.Models
         public required Mercenary Card { get; set; }
         public required PlayerInGame Player { get; set; }
         public required List<ResourceInfo> ResourcesSpend { get; set; }
-        public required Mercenary MercenaryReplacement { get; set; }
+        public required Mercenary? MercenaryReplacement { get; set; }
         public required MercenariesLeftData MercenariesLeftData { get; set; }
     }
 
     public class MercenaryRerolled
     {
         public required Mercenary Card { get; set; }
-        public required Mercenary MercenaryReplacement { get; set; }
+        public required Mercenary? MercenaryReplacement { get; set; }
         public required MercenariesLeftData MercenariesLeftData { get; set; }
     }
 
@@ -63,6 +63,11 @@ namespace BoardGameBackend.Models
     public class HeroTurnEnded
     {
         public required PlayerInGame Player { get; set; }
+    }
+
+    public class ArtifactPhaseSkipped
+    {
+        public required Guid PlayerId { get; set; }
     }
 
     public class NewCardsSetupData

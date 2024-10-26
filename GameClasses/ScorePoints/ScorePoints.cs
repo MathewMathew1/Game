@@ -49,7 +49,6 @@ namespace BoardGameBackend.Managers
                                            scoreTable.RoyalCardPoints+
                                            scoreTable.HeroPoints +
                                            scoreTable.TokenPoints +
-                                           scoreTable.SygnetPoints +
                                            scoreTable.ArtefactPoints;
             }
 
@@ -68,7 +67,7 @@ namespace BoardGameBackend.Managers
                     if(mercenary.EffectId != null){
                         var req = ProphecyRequirementStore.GetRequirementById(mercenary.EffectId.Value);
                         if(req != null){
-                            points = req.GetProphecyPoints(p, mercenary);
+                            points += req.GetProphecyPoints(p, mercenary);
                         }              
                     }                  
                 });
@@ -108,7 +107,7 @@ namespace BoardGameBackend.Managers
                     royalCardsPoints += card.ScorePoints;
                 });
 
-                playerScores[p.Id].SygnetPoints = p.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Signet);
+
                 playerScores[p.Id].HeroPoints = heroPoints;
                 playerScores[p.Id].MercenaryPoints = mercenariesPoints;
                 playerScores[p.Id].RoyalCardPoints = royalCardsPoints;

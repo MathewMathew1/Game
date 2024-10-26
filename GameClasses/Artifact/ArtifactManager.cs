@@ -56,6 +56,19 @@ namespace BoardGameBackend.Managers
             }
         }
 
+        public bool EndArtifactTurn(PlayerInGame player)
+        {
+            if(ArtifactsToPickFrom.Count > 0){
+                return false;
+            }
+
+            ArtifactPhaseSkipped artifactPhaseSkipped = new ArtifactPhaseSkipped{PlayerId = player.Id};
+            
+            _gameContext.EventManager.Broadcast("PlayerSkippedArtifactPhase", ref artifactPhaseSkipped);
+
+            return true;
+        }
+
         public void AddArtifactsToPlayer(int amount, PlayerInGame player)
         {
             List<Artifact> artifacts = new List<Artifact>();
@@ -207,6 +220,7 @@ namespace BoardGameBackend.Managers
 
         public ArtifactInfo GetArtifactLeftInfo(){
             return new ArtifactInfo {
+                ArtifactToPickFrom = ArtifactsToPickFrom,
                 ArtifactsLeftAmount = _artifacts.Count,
                 ArtifactsTossedAwayAmount = TossedAwayArtifacts.Count
             };

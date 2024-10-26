@@ -16,7 +16,6 @@ namespace BoardGameBackend.Models
         public int MercenaryPoints { get; set;} = 0;
         public int OraclePoints { get; set;} = 0;
         public int HeroPoints { get; set;} = 0;
-        public int SygnetPoints { get; set;} = 0;
         public int RoyalCardPoints { get; set;} = 0;
         public int ArtefactPoints { get; set;} = 0;
         public int TokenPoints { get; set;} = 0;

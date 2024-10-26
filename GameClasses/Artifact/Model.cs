@@ -42,6 +42,7 @@ namespace BoardGameBackend.Models
     }
 
     public class ArtifactInfo{
+        public required List<Artifact> ArtifactToPickFrom {get; set;}
         public required int ArtifactsLeftAmount { get; set;}
         public required int ArtifactsTossedAwayAmount { get; set;}
     }

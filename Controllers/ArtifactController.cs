@@ -73,6 +73,32 @@ namespace BoardGameBackend.Controllers
 
         }
 
+        [HttpGet("skip/{id}")]
+        [Authorize]
+        [PhaseCheckFilter(typeof(ArtifactPhase))]
+        public ActionResult SkipArtifactPhase(string id)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+           
+                var correctlySkippedPhase = gameContext.ArtifactManager.EndArtifactTurn(player);
+                if(correctlySkippedPhase == false){
+                    return BadRequest(new { Error = "Unable to skip artifact phase." });
+                }
+
+                return Ok(new { Message = "Artifact phase skipped successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
+
         [HttpPost("reroll/{id}")]
         [Authorize]
         [PhaseCheckFilter(typeof(ArtifactPhase))]

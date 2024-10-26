@@ -108,7 +108,7 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 Resources = new List<Resource> { },
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = true } }
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = false } }
             };
         }
     }
@@ -217,7 +217,7 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.NO_FRACTION_MOVEMENT, Permanent = true } }
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.NO_FRACTION_MOVEMENT, Permanent = false } }
             };
         }
     }

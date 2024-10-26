@@ -79,6 +79,10 @@ namespace BoardGameBackend.Managers
                 EndTurn();                     
             }, priority: 1);
 
+            _gameContext.EventManager.Subscribe<ArtifactPhaseSkipped>("PlayerSkippedArtifactPhase", data =>
+            {             
+                EndTurn();                     
+            }, priority: 1);
         }
 
         public abstract void EndTurn(); 

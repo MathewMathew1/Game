@@ -14,7 +14,6 @@ namespace BoardGameBackend.Models
         public required ArtifactInfo ArtifactInfo {get; set;}
         public required List<Player> PlayerBasedOnMorales {get; set;}
         public required int PawnTilePosition {get; set;}
-        public required List<Artifact> ArtifactsToPickFrom  {get; set;}
         public required Guid CurrentPlayerId {get; set;}
     }
 

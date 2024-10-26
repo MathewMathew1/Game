@@ -310,8 +310,8 @@ namespace BoardGameBackend.Models
 
         protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
         {
-            var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
-            var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
+            var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count();
+            var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count();
 
             if (amountOfHerosWithFactionOnLeft >= Value2 && amountOfHerosWithFactionOnRight >= Value2) return Value1;
 

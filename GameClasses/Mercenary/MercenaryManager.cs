@@ -106,7 +106,7 @@ namespace BoardGameBackend.Managers
 
             BuyableMercenaries.RemoveAt(boughtMercenaryIndex);
 
-            Mercenary newMercenary = AddNewMercenary();
+            Mercenary? newMercenary = AddNewMercenary();
 
             player.AddMercenary(boughtMercenary);
             if (boughtMercenary.Morale != 0)
@@ -141,13 +141,18 @@ namespace BoardGameBackend.Managers
             return _mercenaries;
         }
 
-        public Mercenary AddNewMercenary()
+        public Mercenary? AddNewMercenary()
         {
-            Mercenary newMercenary;
+            Mercenary? newMercenary = null;
             if (_mercenaries.Count <= 0)
             {
                 _mercenaries = TossedAwayMercenaries;
                 TossedAwayMercenaries.Clear();
+            }
+
+             if (_mercenaries.Count <= 0)
+            {
+                return newMercenary;
             }
 
             newMercenary = _mercenaries[0];
@@ -205,12 +210,12 @@ namespace BoardGameBackend.Managers
 
             var replacedMercenary = BuyableMercenaries[boughtMercenaryIndex];
 
-            if (replacedMercenary.LockedByPlayerInfo != null && replacedMercenary.LockedByPlayerInfo.PlayerId != player.Id) return false;
+            if (replacedMercenary.LockedByPlayerInfo != null) return false;
 
             TossedAwayMercenaries.Add(replacedMercenary);
             BuyableMercenaries.RemoveAt(boughtMercenaryIndex);
 
-            Mercenary newMercenary = AddNewMercenary();
+            Mercenary? newMercenary = AddNewMercenary();
 
             var eventArgs = new MercenaryRerolled
             {

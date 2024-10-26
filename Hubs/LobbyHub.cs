@@ -128,7 +128,7 @@ namespace BoardGameBackend.Hubs
                     var lobby = LobbyManager.GetLobbyById(lobbyId);
                     if (lobby?.Lobby.GameId != null)
                     {
-                        var info = GameManager.GetGameData(lobby.Lobby.GameId);
+                        var info = GameManager.GetGameData(lobby.Lobby.GameId, player.Id);
 
                         await Clients.Caller.SendAsync("PlayerRejoinedData", info);
                     }

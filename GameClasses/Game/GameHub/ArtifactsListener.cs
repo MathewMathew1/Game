@@ -45,6 +45,11 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastArtifactRerolled(gameId, data);
             }, priority: 10);
             
+            gameContext.EventManager.Subscribe<ArtifactPhaseSkipped>("PlayerSkippedArtifactPhase", data =>
+            {             
+                BroadcastArtifactPhaseSkipped(gameId, data);                     
+            }, priority: 5);
+            
         }
 
         public void BroadcastArtifactsToPickFrom(string gameId, ArtifactToPickFromData artifactToPickFromData,
@@ -109,6 +114,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ArtifactRePlayed", ArtifactPlayed);
+        }
+
+        public void BroadcastArtifactPhaseSkipped(string gameId, ArtifactPhaseSkipped data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("PlayerSkippedArtifactPhase", data);
         }
     }
 }

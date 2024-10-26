@@ -76,6 +76,9 @@ namespace BoardGameBackend.Managers
 
         private void EndRound()
         {
+
+            _currentRound++;
+            _currentTurn = 1;
             EndOfRoundMercenaryData endOfRoundMercenaryData = new EndOfRoundMercenaryData
             {
                 MercenariesLeftData = new MercenariesLeftData { TossedMercenariesAmount = 0, MercenariesAmount = 0 },
@@ -84,9 +87,6 @@ namespace BoardGameBackend.Managers
 
             EndOfRoundData data = new EndOfRoundData { EndOfRoundMercenaryData = endOfRoundMercenaryData };
             _gameContext.EventManager.Broadcast("EndOfRound", ref data);
-
-            _currentRound++;
-            _currentTurn = 1;
         }
     }
 

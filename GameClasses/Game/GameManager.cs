@@ -49,7 +49,7 @@ namespace BoardGameBackend.Managers
             return null;
         }
 
-        public static FullGameData? GetGameData(string gameId)
+        public static FullGameData? GetGameData(string gameId, Guid playerId)
         {
             var gameContext = GetGameById(gameId);
 
@@ -59,6 +59,10 @@ namespace BoardGameBackend.Managers
             FillPlayerData(playerData, gameContext); 
 
             List<Player> playerBasedOnMorales = gameContext.PlayerManager.PlayersBasedOnMorale.Select(p=>GameMapper.Instance.Map<Player>(p)).ToList();
+            var artifactInfo = gameContext.ArtifactManager.GetArtifactLeftInfo();
+            if(gameContext.TurnManager.CurrentPlayer?.Id != playerId){
+                artifactInfo.ArtifactToPickFrom = new List<Artifact>();
+            }
 
             var fullGameData = new FullGameData {
                 GameId = gameId,
@@ -74,7 +78,6 @@ namespace BoardGameBackend.Managers
                 PlayersData = playerData,
                 PlayerBasedOnMorales = playerBasedOnMorales,
                 PawnTilePosition = gameContext.PawnManager._currentTile.Id,
-                ArtifactsToPickFrom = gameContext.ArtifactManager.ArtifactsToPickFrom,
                 CurrentPlayerId = gameContext.TurnManager.CurrentPlayer!.Id
             };
 
