@@ -65,6 +65,7 @@ namespace BoardGameBackend.Models
         public required int Id {get; set;}
         public required HeroCard LeftSide {get; set;}
         public required HeroCard RightSide {get; set;}
+        public PlayerViewModel? PlayerWhoPickedCard {get; set;}
     }
 
     public class HeroCardCombinedFromJson
@@ -85,6 +86,12 @@ namespace BoardGameBackend.Models
     {
         public required HeroCard HeroCard { get; set;}
         public required bool WasOnLeftSide { get; set;}
+    }
+
+    public class PlayerHeroData{
+        public required List<HeroCard> LeftHeroCards {get; set;}
+        public required List<HeroCard> RightHeroCards {get; set;}
+        public required CurrentHeroCard? CurrentHeroCard {get; set;}
     }
 
     public static class Fractions

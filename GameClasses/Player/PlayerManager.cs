@@ -64,6 +64,11 @@ namespace BoardGameBackend.Managers
                 UpdatePlayersBasedOnMorale(data.Player);        
             }, priority: 1);
 
+            _gameContext.EventManager.Subscribe<EndOfRoundData>("EndOfRound", (data) =>
+            {             
+                EndOfRound();        
+            }, priority: 2);
+
             _gameContext.EventManager.Subscribe<PreHeroCardPickedEventData>("PreHeroCardPicked", data =>
             {             
                 PreHeroCardPickedEventData(data);        
@@ -90,6 +95,9 @@ namespace BoardGameBackend.Managers
             data.WasOnLeftSide = heroInfo.LeftSide;
         }
 
+        public void EndOfRound(){
+            Players.ForEach(p => p.ResourceManager.EndOfRoundIncome());
+        }
 
         public void CheckOnRoyalCardEvent(RoyalCardPlayed data)
         {

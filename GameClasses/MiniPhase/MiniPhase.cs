@@ -4,7 +4,7 @@ namespace BoardGameBackend.Models
 {
     public abstract class MiniPhase
     {
-        public abstract string Name { get; }
+        public abstract MiniPhaseType Name { get; }
         public abstract void StartMiniPhase();
         public abstract void EndMiniPhase();
         protected readonly GameContext _gameContext;
@@ -17,7 +17,7 @@ namespace BoardGameBackend.Models
 
     public class RerollMercenaryMiniPhase : MiniPhase
     {
-        public override string Name => "RerollMercenaryMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.MercenaryRerollPhase;
 
         public RerollMercenaryMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -38,7 +38,7 @@ namespace BoardGameBackend.Models
 
     public class TeleportMiniPhase : MiniPhase
     {
-        public override string Name => "TeleportMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.TeleportationPhase;
 
         public TeleportMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -58,7 +58,7 @@ namespace BoardGameBackend.Models
 
     public class ArtifactPickMiniPhase : MiniPhase
     {
-        public override string Name => "ArtifactPickMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.ArtifactPickPhase;
 
         public ArtifactPickMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -81,7 +81,7 @@ namespace BoardGameBackend.Models
 
     public class FulfillProphecyMiniPhase : MiniPhase
     {
-        public override string Name => "FulfillProphecyMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.FulfilProphecyPhase;
 
         public FulfillProphecyMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -103,7 +103,7 @@ namespace BoardGameBackend.Models
 
     public class LockCardMiniPhase : MiniPhase
     {
-        public override string Name => "LockCardMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.LockMercenaryPhase;
 
         public LockCardMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -125,7 +125,7 @@ namespace BoardGameBackend.Models
 
     public class BuffHeroMiniPhase : MiniPhase
     {
-        public override string Name => "BuffHeroMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.BuffHeroPhase;
 
         public BuffHeroMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -147,7 +147,7 @@ namespace BoardGameBackend.Models
 
     public class BlockTileMiniPhase : MiniPhase
     {
-        public override string Name => "BlockTileMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.BlockTilePhase;
 
         public BlockTileMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -181,7 +181,7 @@ namespace BoardGameBackend.Models
 
     public class RoyalCardPickMiniPhase : MiniPhase
     {
-        public override string Name => "RoyalCardPickMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.RoyalCardPickMiniPhase;
 
         public RoyalCardPickMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -203,7 +203,7 @@ namespace BoardGameBackend.Models
 
     public class ArtifactReplayMiniPhase : MiniPhase
     {
-        public override string Name => "ArtifactReplayMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.ReplayArtifactMiniPhase;
 
         public ArtifactReplayMiniPhase(GameContext gameContext) : base(gameContext)
         {
@@ -225,7 +225,7 @@ namespace BoardGameBackend.Models
 
     public class ReplaceNextHeroMiniPhase : MiniPhase
     {
-        public override string Name => "ReplaceHeroMiniPhase";
+        public override MiniPhaseType Name => MiniPhaseType.ReplaceHeroMiniPhase;
 
         public ReplaceNextHeroMiniPhase(GameContext gameContext) : base(gameContext)
         {

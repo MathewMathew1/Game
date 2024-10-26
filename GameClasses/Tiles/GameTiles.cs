@@ -50,5 +50,19 @@ namespace BoardGameBackend.Managers
 
             return tokenTileInfos;
         }
+
+        public List<TokenTileInfo> GetTokenInfo(){
+            List<TokenTileInfo> tokenTileInfos = new List<TokenTileInfo>();
+
+            Tiles.ForEach(tile => {
+                if(tile.Token != null){
+                    TokenTileInfo tokenTileInfo =  new TokenTileInfo{Token = tile.Token, TileId = tile.Id};
+
+                    tokenTileInfos.Add(tokenTileInfo);
+                }
+            });
+
+            return tokenTileInfos;
+        }
     }
 }

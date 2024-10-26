@@ -9,9 +9,9 @@ namespace BoardGameBackend.Hubs
 {
     public class LobbyHub : Hub
     {
-        public static readonly ConcurrentDictionary<string, Player> ConnectionMappings = new ConcurrentDictionary<string, Player>();
+        public static readonly ConcurrentDictionary<string, PlayerInLobby> ConnectionMappings = new ConcurrentDictionary<string, PlayerInLobby>();
         private static readonly ConcurrentDictionary<string, LobbyInfo> Lobbies = new ConcurrentDictionary<string, LobbyInfo>();
-        private IAuthService _userService {get;set;}
+        private IAuthService _userService { get; set; }
         private readonly IMapper _mapper;
 
         public override async Task OnConnectedAsync()
@@ -19,38 +19,98 @@ namespace BoardGameBackend.Hubs
             await base.OnConnectedAsync();
         }
 
-        public LobbyHub(IAuthService userService, IMapper mapper){
+        public LobbyHub(IAuthService userService, IMapper mapper)
+        {
             _userService = userService;
             _mapper = mapper;
         }
 
+        public async Task MarkPlayerDisconnected(string lobbyId, PlayerInLobby player)
+        {
+            if (Lobbies.TryGetValue(lobbyId, out var lobbyInfo))
+            {
+                // Mark the player as disconnected instead of removing them if the game has started
+                var disconnectedPlayer = lobbyInfo.Players.FirstOrDefault(p => p == player.Id);
+                if (disconnectedPlayer != null)
+                {
+                    player.IsConnected = false;
+                    await Clients.Group(lobbyId).SendAsync("PlayerDisconnected", player);
+                }
+            }
+        }
+
+        public async Task Disconnect()
+        {
+            // Check if the connection ID is mapped to a player
+            if (ConnectionMappings.TryRemove(Context.ConnectionId, out var player))
+            {
+                // Get the lobby ID for the player
+                var lobbyId = GetLobbyIdForPlayer(player.Id);
+
+                if (lobbyId != null && Lobbies.TryGetValue(lobbyId, out var lobbyInfo))
+                {
+                    var fullLobbyInfo = LobbyManager.GetLobbyById(lobbyId);
+                    if (fullLobbyInfo?.Lobby.GameId != null)
+                    {
+
+                        player.IsConnected = false;
+                        await Clients.Group(lobbyId).SendAsync("PlayerDisconnected", player);
+                    }
+                    else
+                    {
+                        if (player.Id == lobbyInfo.HostId)
+                        {
+                            // If the player is the host and the game hasn't started, destroy the lobby
+                            LobbyManager.DestroyLobby(lobbyId);
+                            await DestroyLobby(lobbyId, player);
+                        }
+                        else
+                        {
+                            lobbyInfo.Players.Remove(player.Id);
+                            LobbyManager.LeaveLobby(lobbyId, player.Id);
+                            await Clients.Group(lobbyId).SendAsync("PlayerLeft", player);
+                        }
+
+                    }
+
+
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
+                }
+            }
+        }
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            Console.WriteLine(Context.ConnectionId);
-            // Find out which player is associated with this connection
             if (ConnectionMappings.TryRemove(Context.ConnectionId, out var disconnectedPlayer))
             {
                 var lobbyId = GetLobbyIdForPlayer(disconnectedPlayer.Id);
                 if (lobbyId != null && Lobbies.TryGetValue(lobbyId, out var lobbyInfo))
                 {
-                    // Handle lobby logic for disconnection
-                    if (disconnectedPlayer.Id == lobbyInfo.HostId && !lobbyInfo.GameHasStarted)
+
+                    var fullLobbyInfo = LobbyManager.GetLobbyById(lobbyId);
+                    if (fullLobbyInfo?.Lobby.GameId != null)
                     {
-                        // Host has disconnected and game has not started, destroy the lobby
-                        LobbyManager.DestroyLobby(lobbyId);
-                        await DestroyLobby(lobbyId, disconnectedPlayer);
+                        await MarkPlayerDisconnected(lobbyId, disconnectedPlayer);
                     }
                     else
                     {
-                        // Player has disconnected, remove from lobby
-                        lobbyInfo.Players.Remove(disconnectedPlayer.Id);
-                        await Clients.Group(lobbyId).SendAsync("PlayerLeft", disconnectedPlayer);
+                        if (disconnectedPlayer.Id == lobbyInfo.HostId)
+                        {
+                            LobbyManager.DestroyLobby(lobbyId);
+                            await DestroyLobby(lobbyId, disconnectedPlayer);
+                        }
+                        else
+                        {
+                            LobbyManager.LeaveLobby(lobbyId, disconnectedPlayer.Id);
+                            lobbyInfo.Players.Remove(disconnectedPlayer.Id);
+                            await Clients.Group(lobbyId).SendAsync("PlayerLeft", disconnectedPlayer);
+                        }
                     }
+
                     await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
                 }
             }
-            
-            
+
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -58,17 +118,40 @@ namespace BoardGameBackend.Hubs
         {
             var userIdClaim = Context.User?.FindFirst("id");
             var user = await _userService.GetUserById(Guid.Parse(userIdClaim!.Value));
-            Player player = _mapper.Map<Player>(user);
+            PlayerInLobby player = _mapper.Map<PlayerInLobby>(user);
 
-            var lobbyInfo = Lobbies.GetOrAdd(lobbyId, _ => new LobbyInfo
+            if (Lobbies.TryGetValue(lobbyId, out var lobbyInfo))
             {
-                Players = new List<Guid>(),
-                HostId = player.Id,
-                GameHasStarted = false
-            });
+                if (lobbyInfo.Players.Contains(player.Id))
+                {
+                    player.IsConnected = true;
+                    var lobby = LobbyManager.GetLobbyById(lobbyId);
+                    if (lobby?.Lobby.GameId != null)
+                    {
+                        var info = GameManager.GetGameData(lobby.Lobby.GameId);
 
-            lobbyInfo.Players.Add(player.Id);
-            ConnectionMappings[Context.ConnectionId] = player; 
+                        await Clients.Caller.SendAsync("PlayerRejoinedData", info);
+                    }
+
+                    await Clients.Group(lobbyId).SendAsync("PlayerRejoined", player);
+                }
+                else
+                {
+                    lobbyInfo.Players.Add(player.Id);
+                }
+            }
+            else
+            {
+                lobbyInfo = new LobbyInfo
+                {
+                    Players = new List<Guid> { player.Id },
+                    HostId = player.Id,
+                    GameHasStarted = false
+                };
+                Lobbies[lobbyId] = lobbyInfo;
+            }
+
+            ConnectionMappings[Context.ConnectionId] = player;
             await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
             await Clients.Group(lobbyId).SendAsync("PlayerJoined", new { player });
         }
@@ -85,7 +168,7 @@ namespace BoardGameBackend.Hubs
             return null;
         }
 
-        public async Task DestroyLobby(string lobbyId, Player player)
+        public async Task DestroyLobby(string lobbyId, PlayerInLobby player)
         {
             if (Lobbies.TryRemove(lobbyId, out var lobbyInfo))
             {

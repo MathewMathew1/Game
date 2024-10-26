@@ -32,6 +32,14 @@ namespace BoardGameBackend.Managers
             HeroCardsRight.RemoveAll(x => x.Id == heroCardId);
         }
 
+        public PlayerHeroData GetPlayerHeroData(){
+            return new PlayerHeroData{
+                LeftHeroCards = HeroCardsLeft,
+                RightHeroCards = HeroCardsRight,
+                CurrentHeroCard = CurrentHeroCard,
+            };
+        }
+
         public void ResetCurrentHeroCard()
         {
             if (CurrentHeroCard == null) return;

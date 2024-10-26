@@ -301,6 +301,7 @@ namespace BoardGameBackend.Managers
 
             if (tile.Token.Dummy != true)
             {
+                player.Tokens.Add(tile.Token);
                 tile.Token = null;
             }
         }

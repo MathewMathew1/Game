@@ -205,6 +205,13 @@ namespace BoardGameBackend.Managers
             return artifact;
         }
 
+        public ArtifactInfo GetArtifactLeftInfo(){
+            return new ArtifactInfo {
+                ArtifactsLeftAmount = _artifacts.Count,
+                ArtifactsTossedAwayAmount = TossedAwayArtifacts.Count
+            };
+        }
+
         public bool PickArtifacts(List<int> artifactIds, PlayerInGame player)
         {
             var artifactsToPickNumber = Math.Min(HowManyMercenariesToPick, ArtifactsToPickFrom.Count);

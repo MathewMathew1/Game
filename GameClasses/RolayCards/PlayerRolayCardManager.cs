@@ -18,6 +18,13 @@ namespace BoardGameBackend.Managers
             RolayCards.Add(card);
         }
 
+        public RoyalCardsPlayerData GetData(){
+            return new RoyalCardsPlayerData{
+                RoyalCards = RolayCards,
+                SignetsNeededForNextCard = SignetsNeededForNextCard
+            };
+        }
+
         public bool IsNewRolayCardToPick(int amountOfSignets){
             if(amountOfSignets<SignetsNeededForNextCard) return false;
 

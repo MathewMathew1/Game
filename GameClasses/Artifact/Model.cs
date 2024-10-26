@@ -40,4 +40,14 @@ namespace BoardGameBackend.Models
         public required Guid PlayerId { get; set;}
         public required string PlayerName { get; set;}
     }
+
+    public class ArtifactInfo{
+        public required int ArtifactsLeftAmount { get; set;}
+        public required int ArtifactsTossedAwayAmount { get; set;}
+    }
+
+    public class ArtifactPlayerData{
+        public required List<Artifact> ArtifactsPlayed {get; set;}
+        public required List<Artifact> ArtifactsOwned {get; set;}
+    }
 }

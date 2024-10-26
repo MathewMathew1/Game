@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using BoardGameBackend.Managers.EventListeners;
+using BoardGameBackend.Mappers;
 using BoardGameBackend.Models;
 using BoardGameBackend.Providers;
 
@@ -46,6 +47,59 @@ namespace BoardGameBackend.Managers
             }
 
             return null;
+        }
+
+        public static FullGameData? GetGameData(string gameId)
+        {
+            var gameContext = GetGameById(gameId);
+
+            if(gameContext == null) return null;
+
+            List<FullPlayerData> playerData =  new List<FullPlayerData> {}; 
+            FillPlayerData(playerData, gameContext); 
+
+            List<Player> playerBasedOnMorales = gameContext.PlayerManager.PlayersBasedOnMorale.Select(p=>GameMapper.Instance.Map<Player>(p)).ToList();
+
+            var fullGameData = new FullGameData {
+                GameId = gameId,
+                MercenaryData = gameContext.MercenaryManager.GetMercenaryData(),
+                RoyalCards = gameContext.RolayCardManager.GetRolayCards(),
+                Turn = gameContext.TurnManager.CurrentTurn,
+                Round = gameContext.TurnManager.CurrentRound,
+                HeroCards = gameContext.HeroCardManager.GetCurrentHeroCards(),
+                CurrentPhase = gameContext.PhaseManager.CurrentPhase.Name,
+                CurrentMiniPhase = gameContext.MiniPhaseManager.CurrentMiniPhase?.Name,
+                TokenSetup = gameContext.GameTiles.GetTokenInfo(),
+                ArtifactInfo = gameContext.ArtifactManager.GetArtifactLeftInfo(),
+                PlayersData = playerData,
+                PlayerBasedOnMorales = playerBasedOnMorales,
+                PawnTilePosition = gameContext.PawnManager._currentTile.Id,
+                ArtifactsToPickFrom = gameContext.ArtifactManager.ArtifactsToPickFrom,
+                CurrentPlayerId = gameContext.TurnManager.CurrentPlayer!.Id
+            };
+
+            return fullGameData;
+        }
+
+        public static void FillPlayerData(List<FullPlayerData> playersData, GameContext gameContext){
+            gameContext.PlayerManager.Players.ForEach(p => {
+                FullPlayerData playerData = new FullPlayerData {
+                    Player = new Player {Name = p.Name, Id = p.Id,},
+                    Auras = p.AurasTypes,
+                    Resources = p.ResourceManager.GetResources(),
+                    ResourceHero = p.ResourceHeroManager.GetResources(),
+                    Mercenaries = p.PlayerMercenaryManager.Mercenaries,
+                    RoyalCardsData = p.PlayerRolayCardManager.GetData(),
+                    Heroes = p.PlayerHeroCardManager.GetPlayerHeroData(),
+                    Tokens = p.Tokens,
+                    Artifacts = p.ArtifactPlayerData(),
+                    Morale = p.Morale,
+                    GoldIncome = p.ResourceManager.GoldIncome,
+                    AlreadyPlayedTurn = p.AlreadyPlayedCurrentPhase
+                };
+
+                playersData.Add(playerData);
+            });
         }
 
         public static void EndGame(string gameId)

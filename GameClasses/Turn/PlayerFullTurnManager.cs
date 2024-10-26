@@ -40,7 +40,12 @@ namespace BoardGameBackend.Managers
                 _currentPlayer = nextPlayer!;
                 _currentPlayer.AlreadyPlayedCurrentPhase = true;
                 _currentTurn++;
-                _gameContext.EventManager.Broadcast("EndOfTurn");
+
+                var eventArgs = new EndOfTurnEventData
+                {
+                    TurnCount = (_currentTurn & 2)
+                };
+                _gameContext.EventManager.Broadcast("EndOfTurn", ref eventArgs);
 
                 if (_currentTurn > 2)
                 {
@@ -52,8 +57,8 @@ namespace BoardGameBackend.Managers
                     EndRound();
                 }
 
-                _gameContext.PhaseManager.EndCurrentPhase(true);            
-                _gameContext.EventManager.Broadcast("New player turn", ref _currentPlayer);          
+                _gameContext.PhaseManager.EndCurrentPhase(true);
+                _gameContext.EventManager.Broadcast("New player turn", ref _currentPlayer);
             }
             else
             {

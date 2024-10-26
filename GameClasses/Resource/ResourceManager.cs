@@ -29,14 +29,23 @@ namespace BoardGameBackend.Models
         {
             foreach (var resource in _resources)
             {
+                if (resource.Key != ResourceType.Gold)
+                {
+                    _resources[resource.Key] = 0;
+                }
+
+            }
+        }
+
+        public void EndOfRoundIncome()
+        {
+            foreach (var resource in _resources)
+            {
                 if (resource.Key == ResourceType.Gold)
                 {
                     _resources[resource.Key] += GoldIncome;
                 }
-                else
-                {
-                    _resources[resource.Key] = 0;
-                }
+
             }
         }
 

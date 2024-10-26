@@ -29,7 +29,15 @@ namespace BoardGameBackend.Controllers
             try
             {
                 UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                
+                var userLobbies = LobbyManager.GetAllUserLobbies(user.Id);
+
+                if(userLobbies.Count>0){
+                    return BadRequest(new { Error = "You are already in a lobby" });
+                }
+
                 var lobby = LobbyManager.CreateLobby(user, createLobby);
+
                 return Ok(new { lobbyId = lobby.Id });
             }
             catch (Exception ex)
@@ -40,7 +48,6 @@ namespace BoardGameBackend.Controllers
 
         }
 
-        // POST: api/lobby/join
         [Authorize]
         [HttpPost("join/{id}")]
         public IActionResult JoinLobby(string id)
@@ -48,6 +55,17 @@ namespace BoardGameBackend.Controllers
             try
             {
                 UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                
+                var userLobbies = LobbyManager.GetAllUserLobbies(user.Id);
+                var playerIsInThatLobby = userLobbies.Any(l => l.Lobby.Id == id);
+                if(playerIsInThatLobby){
+                    return Ok(new { lobbyId = id, players = new List<PlayerInLobby> {} });
+                }
+
+                if(userLobbies.Count>0 && !playerIsInThatLobby){
+                    return BadRequest(new { Error = "You are already in a lobby" });
+                }
+
                 var result = LobbyManager.JoinLobby(id, user);
 
                 if (!result.Success)
@@ -73,7 +91,7 @@ namespace BoardGameBackend.Controllers
             try
             {
                 UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
-                var lobbyInfo = LobbyManager.LeaveLobby(id, user);
+                var lobbyInfo = LobbyManager.LeaveLobby(id, user.Id);
                 if (lobbyInfo == null)
                 {
                     await _hubContext.Clients.Group(id).SendAsync("LobbyDestroyed");
@@ -171,7 +189,7 @@ namespace BoardGameBackend.Controllers
             }
 
         }
-        
+
         [Authorize]
         [HttpPatch("updateInfo/{id}")]
         public async Task<IActionResult> UpdateLobbyInformation(string id, [FromBody] StartGameModel startGameModel)
@@ -180,11 +198,12 @@ namespace BoardGameBackend.Controllers
             {
                 UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
                 var infoChanged = LobbyManager.ChangeLobbyInfo(id, startGameModel, user.Id);
-                if(infoChanged == false){
+                if (infoChanged == false)
+                {
                     return NotFound();
                 }
                 await _hubContext.Clients.Group(id).SendAsync("UpdateLobbyInfo", startGameModel);
-               
+
                 return Ok();
             }
             catch (Exception ex)
@@ -193,6 +212,25 @@ namespace BoardGameBackend.Controllers
                 return BadRequest(new { Error = "Unexpected error" });
             }
 
+        }
+
+        [Authorize]
+        [HttpGet("myLobbies")]
+        public IActionResult GetUserLobbies()
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+
+                var userLobbies = LobbyManager.GetAllUserLobbies(user.Id);
+
+                return Ok(userLobbies);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
         }
     }
 }

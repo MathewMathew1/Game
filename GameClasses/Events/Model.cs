@@ -272,4 +272,8 @@ namespace BoardGameBackend.Models
         public ReplacedHero? ReplacedHero {get; set;}
     }
 
+    public class EndOfTurnEventData{
+        public required int TurnCount {get; set;}
+    }
+
 }

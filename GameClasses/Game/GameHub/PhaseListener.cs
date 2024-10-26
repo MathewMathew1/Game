@@ -50,9 +50,9 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastNewPlayerTurn(player, gameId);
             }, priority: 0);
 
-            gameContext.EventManager.Subscribe("EndOfTurn", () =>
+            gameContext.EventManager.Subscribe<EndOfTurnEventData>("EndOfTurn", (data) =>
             {
-                BroadcastEndOfTurn(gameId);
+                BroadcastEndOfTurn(gameId, data);
             });
 
             gameContext.EventManager.Subscribe("EndOfPlayerTurn", (EndOfPlayerTurn data) =>
@@ -114,10 +114,10 @@ namespace BoardGameBackend.Managers.EventListeners
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("HeroTurnEnded", player);
         }
 
-        public void BroadcastEndOfTurn(string gameId)
+        public void BroadcastEndOfTurn(string gameId, EndOfTurnEventData data)
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
-            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfTurn");
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfTurn", data);
         }
 
         public void BroadcastEndOfPlayerTurn(string gameId, EndOfPlayerTurn data)

@@ -40,5 +40,10 @@ namespace BoardGameBackend.Models
         public PlayerViewModel? PickedByPlayer {get; set;}
     }
 
+    public class RoyalCardsPlayerData{
+        public required List<RolayCard> RoyalCards{ get; set; }
+        public required int SignetsNeededForNextCard{ get; set; }
+    }
+
 
 }

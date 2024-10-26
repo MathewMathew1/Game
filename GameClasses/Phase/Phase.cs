@@ -5,7 +5,7 @@ namespace BoardGameBackend.Models
     // Abstract class representing a general phase
     public abstract class Phase
     {
-        public abstract string Name { get; }
+        public abstract PhaseType Name { get; }
         public abstract void StartPhase();
         public abstract void EndPhase();
         protected readonly GameContext _gameContext;
@@ -19,7 +19,7 @@ namespace BoardGameBackend.Models
     // HeroCardPickingPhase class
     public class HeroCardPickingPhase : Phase
     {
-        public override string Name => "HeroCardPickingPhase";
+        public override PhaseType Name => PhaseType.HeroCardPickingPhase;
 
         public HeroCardPickingPhase(GameContext gameContext) : base(gameContext)
         {
@@ -43,7 +43,7 @@ namespace BoardGameBackend.Models
 
     public class MercenaryPhase : Phase
     {
-        public override string Name => "MercenaryPhase";
+        public override PhaseType Name => PhaseType.MercenaryPhase;
 
         public MercenaryPhase(GameContext gameContext) : base(gameContext)
         {
@@ -67,7 +67,7 @@ namespace BoardGameBackend.Models
 
     public class DummyPhase : Phase
     {
-        public override string Name => "DummyPhase";
+        public override PhaseType Name => PhaseType.DummyPhase;
 
         public DummyPhase(GameContext gameContext) : base(gameContext)
         {
@@ -92,7 +92,7 @@ namespace BoardGameBackend.Models
 
     public class BoardPhase : Phase
     {
-        public override string Name => "BoardPhase";
+        public override PhaseType Name => PhaseType.BoardPhase;
 
         public BoardPhase(GameContext gameContext) : base(gameContext)
         {
@@ -116,7 +116,7 @@ namespace BoardGameBackend.Models
 
     public class ArtifactPhase : Phase
     {
-        public override string Name => "ArtifactPhase";
+        public override PhaseType Name => PhaseType.ArtifactPhase;
 
         public ArtifactPhase(GameContext gameContext) : base(gameContext)
         {

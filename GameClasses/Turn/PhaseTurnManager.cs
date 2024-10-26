@@ -15,10 +15,11 @@ namespace BoardGameBackend.Managers
 
             if (_gameContext.MiniPhaseManager.CurrentMiniPhase != null) return;
 
-            if(_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(MercenaryPhase)){
+            if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(MercenaryPhase))
+            {
                 EndOfPlayerTurn data = new EndOfPlayerTurn { Player = CurrentPlayer! };
                 _gameContext.EventManager.Broadcast("EndOfPlayerTurn", ref data);
-                if(BlockNextPlayerTurn == true) return;
+                if (BlockNextPlayerTurn == true) return;
             }
 
             AfterEndPlayerTurn();
@@ -36,7 +37,13 @@ namespace BoardGameBackend.Managers
                 if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(MercenaryPhase))
                 {
                     _currentTurn++;
-                    _gameContext.EventManager.Broadcast("EndOfTurn");
+
+                    var eventArgs = new EndOfTurnEventData
+                    {
+                        TurnCount = (_currentTurn & 2)
+                    };
+
+                    _gameContext.EventManager.Broadcast("EndOfTurn", ref eventArgs);
 
                     if (_currentTurn > 2)
                     {
@@ -48,7 +55,7 @@ namespace BoardGameBackend.Managers
                         EndRound();
                     }
 
-                
+
                 }
 
                 _gameContext.PhaseManager.EndCurrentPhase(true);
@@ -77,8 +84,6 @@ namespace BoardGameBackend.Managers
 
             EndOfRoundData data = new EndOfRoundData { EndOfRoundMercenaryData = endOfRoundMercenaryData };
             _gameContext.EventManager.Broadcast("EndOfRound", ref data);
-
-
 
             _currentRound++;
             _currentTurn = 1;

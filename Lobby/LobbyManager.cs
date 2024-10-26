@@ -13,10 +13,10 @@ public static class LobbyManager
     {
         lock (_lock)
         {
-            var player = new Player { Id = user.Id, Name = user.Username };
+            var player = new PlayerInLobby { Id = user.Id, Name = user.Username, IsConnected = false };
             var lobby = new Lobby { HostId = user.Id, LobbyName = createLobbyDto.LobbyName };
             lobby.Players.Add(player);
-            Lobbies.Add(new LobbyManagerInfo{Lobby = lobby});
+            Lobbies.Add(new LobbyManagerInfo { Lobby = lobby });
             return lobby;
         }
     }
@@ -64,20 +64,20 @@ public static class LobbyManager
             return new LobbyJoinResult { ErrorMessage = "Lobby is already started." };
         }
 
-        
 
-        var player = new Player { Id = user.Id, Name = user.Username };
+
+        var player = new PlayerInLobby { Id = user.Id, Name = user.Username, IsConnected = true };
         lobbyInfo.Lobby.Players.Add(player);
 
         return new LobbyJoinResult { Lobby = lobbyInfo.Lobby };
     }
 
-    public static LobbyManagerInfo? LeaveLobby(string lobbyId, UserModel user)
+    public static LobbyManagerInfo? LeaveLobby(string lobbyId, Guid id)
     {
         var lobbyInfo = Lobbies.FirstOrDefault(l => l.Lobby.Id == lobbyId);
         if (lobbyInfo != null)
         {
-            var player = lobbyInfo.Lobby.Players.FirstOrDefault(p => p.Id == user.Id);
+            var player = lobbyInfo.Lobby.Players.FirstOrDefault(p => p.Id == id);
             if (player != null)
             {
                 lobbyInfo.Lobby.Players.Remove(player);
@@ -127,7 +127,13 @@ public static class LobbyManager
         return lobbyInfo?.Lobby;
     }
 
-    public static GameContext? StartGame(string lobbyId, UserModel user,StartGameModel startGameModel)
+    public static List<LobbyManagerInfo> GetAllUserLobbies(Guid userId)
+    {
+        var userLobbies = Lobbies.Where(lobbyInfo => lobbyInfo.Lobby.Players.Any(player => player.Id == userId)).ToList();
+        return userLobbies; 
+    }
+
+    public static GameContext? StartGame(string lobbyId, UserModel user, StartGameModel startGameModel)
     {
         var lobbyInfo = Lobbies.FirstOrDefault(l => l.Lobby.Id == lobbyId);
         if (lobbyInfo != null && lobbyInfo.Lobby.HostId == user.Id)

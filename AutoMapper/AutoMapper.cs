@@ -7,6 +7,9 @@ public class MappingProfile : Profile
     {
         CreateMap<UserModel, Player>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Username));
+        CreateMap<UserModel, PlayerInLobby>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Username))
+            .ForMember(dest => dest.IsConnected, opt => opt.MapFrom(src => true));
         CreateMap<UserModel, UserModelDto>();
         CreateMap<PlayerInGame, PlayerViewModel>()
             .ForMember(dest => dest.ResourceManager, opt => opt.MapFrom(src => src.ResourceManager));
@@ -81,6 +84,8 @@ namespace BoardGameBackend.Mappers
             .ForMember(dest => dest.Resources, opt => opt.MapFrom(src => src.GetResources()));
             CreateMap<PlayerInGame, PlayerViewModel>()
             .ForMember(dest => dest.ResourceManager, opt => opt.MapFrom(src => src.ResourceManager));
+
+             CreateMap<PlayerInGame, Player>();
         }
 
         private List<ResourceInfo> MapResourcesNeeded(List<ResourceJsonInfo> resourcesJson)

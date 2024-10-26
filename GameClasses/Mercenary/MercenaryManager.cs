@@ -122,7 +122,6 @@ namespace BoardGameBackend.Managers
                 _gameContext.RewardHandlerManager.HandleReward(player, reward);
             }
 
-            _gameContext.PlayerManager.AddMoraleToPlayer(player, boughtMercenary.Morale);
             var eventArgs = new MercenaryPicked
             {
                 Reward = reward,
@@ -255,6 +254,7 @@ namespace BoardGameBackend.Managers
         {
             return new MercenaryData
             {
+                TossedMercenariesAmount = TossedAwayMercenaries.Count,
                 BuyableMercenaries = BuyableMercenaries,
                 RemainingMercenariesAmount = _mercenaries.Count
             };

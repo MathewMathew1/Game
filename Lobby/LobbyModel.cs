@@ -5,7 +5,7 @@ namespace BoardGameBackend.Models
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public required Guid HostId { get; set; }
         public required string LobbyName { get; set; }
-        public List<Player> Players { get; set; } = new List<Player>();
+        public List<PlayerInLobby> Players { get; set; } = new List<PlayerInLobby>();
         public string? GameId { get; set; }
     }
 

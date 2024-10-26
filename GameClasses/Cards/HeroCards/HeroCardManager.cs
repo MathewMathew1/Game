@@ -7,6 +7,7 @@ namespace BoardGameBackend.Models
     {
         private List<HeroCard> _heroCards;
         private List<HeroCardCombined> _heroCardCombinedList;
+        private List<HeroCardCombined> _currentHeroCards;
         private int _currentPosition = 0;
         private Dictionary<int, PlayerInGame?> _takenCards;
         private GameContext _gameContext;
@@ -88,7 +89,14 @@ namespace BoardGameBackend.Models
                 }
             }
 
+            _currentHeroCards = takenCards;
+
             return takenCards;
+        }
+
+        public List<HeroCardCombined> GetCurrentHeroCards()
+        {
+            return _currentHeroCards;
         }
 
         public bool? BuffHeroCard(PlayerInGame player, int heroCardId)
@@ -124,15 +132,16 @@ namespace BoardGameBackend.Models
             return true;
         }
 
-        public bool SetReplacementForNextHero(PlayerInGame player, int heroCardId){
+        public bool SetReplacementForNextHero(PlayerInGame player, int heroCardId)
+        {
             HeroFullInfo? heroCardInfo = player.PlayerHeroCardManager.GetHeroCardById(heroCardId);
-            
-            if(heroCardInfo == null) return false;
+
+            if (heroCardInfo == null) return false;
 
             HeroCard? heroCard = heroCardInfo.HeroCard;
 
-            AuraTypeWithLongevity replacementHeroAura = new AuraTypeWithLongevity {Aura = AurasType.REPLACE_NEXT_HERO, Value1=heroCardId, Permanent = false};
-            
+            AuraTypeWithLongevity replacementHeroAura = new AuraTypeWithLongevity { Aura = AurasType.REPLACE_NEXT_HERO, Value1 = heroCardId, Permanent = false };
+
             player.AurasTypes.Add(replacementHeroAura);
             ReplaceNextHeroEventData replaceNextHeroData = new ReplaceNextHeroEventData
             {
@@ -155,7 +164,6 @@ namespace BoardGameBackend.Models
             {
                 var id = _heroCardCombinedList[i].Id;
 
-
                 var leftCard = _heroCardCombinedList[i].LeftSide;
                 if (leftCard.Id == heroCardId)
                 {
@@ -166,6 +174,10 @@ namespace BoardGameBackend.Models
 
                     heroCard = leftCard;
                     unusedHeroCard = _heroCardCombinedList[i].RightSide;
+                    
+                    var playerViewModel = GameMapper.Instance.Map<PlayerViewModel>(player);
+                    _heroCardCombinedList[i].PlayerWhoPickedCard = playerViewModel;
+                    
                     leftSide = true;
                     _takenCards[id] = player;
                     break;
@@ -181,6 +193,10 @@ namespace BoardGameBackend.Models
 
                     unusedHeroCard = _heroCardCombinedList[i].LeftSide;
                     heroCard = rightCard;
+                    
+                    var playerViewModel = GameMapper.Instance.Map<PlayerViewModel>(player);
+                    _heroCardCombinedList[i].PlayerWhoPickedCard = playerViewModel;
+                    
                     _takenCards[id] = player;
                     break;
                 }
@@ -188,7 +204,7 @@ namespace BoardGameBackend.Models
             }
             if (heroCard != null && unusedHeroCard != null)
             {
-                var preEventArgs = new PreHeroCardPickedEventData{PlayerId = player.Id, HeroCard = heroCard, WasOnLeftSide = leftSide};
+                var preEventArgs = new PreHeroCardPickedEventData { PlayerId = player.Id, HeroCard = heroCard, WasOnLeftSide = leftSide };
                 _gameContext.EventManager.Broadcast("PreHeroCardPicked", ref preEventArgs);
                 var replacedHero = preEventArgs.ReplacedHero;
                 heroCard = preEventArgs.HeroCard;
@@ -197,12 +213,13 @@ namespace BoardGameBackend.Models
                 var currentHeroCard = player.SetCurrentHeroCard(heroCard, leftSide, _gameContext, unusedHeroCard, replacedHero);
 
                 Reward? reward = null;
-                if(heroCard.EffectId != null){
+                if (heroCard.EffectId != null)
+                {
                     var heroRewardClass = RewardFactory.GetRewardById(heroCard.EffectId.Value);
                     reward = heroRewardClass.OnReward();
                     _gameContext.RewardHandlerManager.HandleReward(player, reward);
                 }
-            
+
                 var eventArgs = new HeroCardPicked(heroCard, player, currentHeroCard, reward);
                 _gameContext.EventManager.Broadcast("HeroCardPicked", ref eventArgs);
             }

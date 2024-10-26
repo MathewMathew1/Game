@@ -121,7 +121,6 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                Resources = new List<Resource> { },
                 AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ONE_EMPTY_MOVEMENT, Permanent = false } }
             };
         }
@@ -1075,7 +1074,7 @@ namespace BoardGameBackend.Models
                         _rewards.Add(rewardData.Id, new FullMoveWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 72:
-                        _rewards.Add(rewardData.Id, new EmptyMovementRewardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        _rewards.Add(rewardData.Id, new EmptyMoveWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 73:
                         _rewards.Add(rewardData.Id, new ReplaceNextHeroCardReward(rewardData.IntValue1, rewardData.IntValue2));

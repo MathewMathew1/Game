@@ -67,6 +67,7 @@ namespace BoardGameBackend.Models
     {
         public required List<Mercenary> BuyableMercenaries { get; set; }
         public int RemainingMercenariesAmount { get; set; }
+        public required int TossedMercenariesAmount {get; set;}
     }
 
     public class MercenaryFulfillProphecyReturnData

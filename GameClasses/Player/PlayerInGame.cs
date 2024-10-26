@@ -17,6 +17,7 @@ namespace BoardGameBackend.Models
         public PlayerHeroCardManager PlayerHeroCardManager = new PlayerHeroCardManager();
         public PlayerRolayCardManager PlayerRolayCardManager = new PlayerRolayCardManager();
         public ResourceHeroManager ResourceHeroManager { get; set; }
+        public List<TokenFromJson> Tokens { get; set; } = new List<TokenFromJson>();
         public int Points { get; set; } = 0;
         public bool AlreadyPlayedCurrentPhase = false;
 
@@ -31,6 +32,15 @@ namespace BoardGameBackend.Models
         public void AddArtifacts(List<Artifact> artifacts)
         {
             artifacts.ForEach((artifact) => AddArtifact(artifact));
+        }
+
+        public ArtifactPlayerData ArtifactPlayerData()
+        {
+            return new ArtifactPlayerData
+            {
+                ArtifactsOwned = Artifacts,
+                ArtifactsPlayed = ArtifactsPlayed
+            };
         }
 
         private void AddArtifact(Artifact artifact)
@@ -111,7 +121,7 @@ namespace BoardGameBackend.Models
                 NoFractionMovement = noFractionMovement
             };
 
-            var cardAddedResourceFrom = replacedHero != null? replacedHero.HeroCard: card;
+            var cardAddedResourceFrom = replacedHero != null ? replacedHero.HeroCard : card;
 
             ResourceHeroManager.AddResource(ResourceHeroType.Siege, cardAddedResourceFrom.Siege);
             ResourceHeroManager.AddResource(ResourceHeroType.Army, cardAddedResourceFrom.Army);
@@ -141,17 +151,24 @@ namespace BoardGameBackend.Models
 
                 PlayerHeroCardManager.ResetCurrentHeroCardReverse();
             }
-            card = PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard != null? PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard: card;
+            else
+            {
+                card = PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard != null ? PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard : card;
+            }
 
             ResourceHeroManager.AddResource(ResourceHeroType.Signet, card.RoyalSignet);
-            Morale += card.Morale;
-
-            var eventArgs = new MoraleAdded
+            if (card.Morale > 0)
             {
-                Player = this
-            };
+                Morale += card.Morale;
 
-            eventManager.Broadcast("MoraleAdded", ref eventArgs);
+                var eventArgs = new MoraleAdded
+                {
+                    Player = this
+                };
+
+                eventManager.Broadcast("MoraleAdded", ref eventArgs);
+            }
+
 
             PlayerHeroCardManager.ResetCurrentHeroCard();
         }
