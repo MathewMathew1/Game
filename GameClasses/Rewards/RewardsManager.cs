@@ -491,7 +491,7 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.BLOCK_TILE, Permanent = true } }
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.BUY_CARDS_BY_ANY_RESOURCE, Permanent = false } }
             };
         }
     }
