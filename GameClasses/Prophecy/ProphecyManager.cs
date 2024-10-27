@@ -249,7 +249,7 @@ namespace BoardGameBackend.Models
             var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
             var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
 
-            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight > 5) return Value1;
+            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight >= 5) return Value1;
 
             return 0;
         }
@@ -265,7 +265,7 @@ namespace BoardGameBackend.Models
             var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
             var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
 
-            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight > 5) return Value1;
+            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight >= 5) return Value1;
 
             return 0;
         }
@@ -282,7 +282,7 @@ namespace BoardGameBackend.Models
             var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
             var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
 
-            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight > 5) return Value1;
+            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight >= 5) return Value1;
 
             return 0;
         }
@@ -298,7 +298,7 @@ namespace BoardGameBackend.Models
             var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
             var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
 
-            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight > 5) return Value1;
+            if (amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight >= 5) return Value1;
 
             return 0;
         }

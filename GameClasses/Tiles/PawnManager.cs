@@ -153,6 +153,7 @@ namespace BoardGameBackend.Managers
             TileReward tileReward = new TileReward
             {
                 Resources = new List<Resource> { },
+                EmptyReward = true,
             };
 
             if (tile.TileTypeId == TileHelper.MagicTileId && FullMovement)

@@ -198,6 +198,7 @@ namespace BoardGameBackend.Managers
         {
             BuyableMercenaries = BuyableMercenaries.Where(m => m.TypeCard != 3 || m.LockedByPlayerInfo != null).ToList();
             TossedAwayMercenaries = TossedAwayMercenaries.Where(m => m.TypeCard != 3).ToList();
+            _mercenaries = _mercenaries.Where(m => m.TypeCard != 3).ToList();
         }
 
         public bool RerollMercenary(int mercenaryInGameIndex, PlayerInGame player)

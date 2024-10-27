@@ -206,6 +206,7 @@ namespace BoardGameBackend.Managers
             {
                 if (hasReward)
                 {
+                    player.ResourceManager.AddResource(ResourceType.Gold, amountOfAuras);
                     data.TileReward.Resources.Add(new Resource(ResourceType.Gold, amountOfAuras));
                 }
             }

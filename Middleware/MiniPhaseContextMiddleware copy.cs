@@ -43,7 +43,7 @@ namespace BoardGameBackend.MiddleWare
                 }
 
                 var currentPlayer = gameContext!.TurnManager.CurrentPlayer;
-                if (currentPlayer== null && currentPlayer?.Id != user.Id)
+                if (currentPlayer== null || currentPlayer?.Id != user.Id)
                 {
                     context.Result = new ForbidResult("It's not your turn.");
                 }
