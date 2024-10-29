@@ -32,7 +32,11 @@ namespace BoardGameBackend.Managers
                 {EffectType.REROLL_MERCENARY, StartRerollMercenary},
                 {EffectType.GET_RANDOM_ARTIFACT, AddRandomArtifact},
                 {EffectType.REPLAY_ARTIFACT, ReplayArtifact},
-                {EffectType.REPLACE_HERO, ReplaceNextHero}
+                {EffectType.REPLACE_HERO, ReplaceNextHero},
+                {EffectType.GET_THREE_RANDOM_ARTIFACTS, AddThreeRandomArtifact},
+                {EffectType.GOLD_FOR_PROPHECY, AddThreeRandomArtifact},
+                {EffectType.BANISH_ROYAL_CARD, BanishRoyalCardHero},
+                {EffectType.SWAP_TOKENS, SwapTokens},
             };
         }
 
@@ -108,14 +112,44 @@ namespace BoardGameBackend.Managers
             _gameContext.MiniPhaseManager.StarReplaceHeroMiniPhase();
         }
 
+        private void SwapTokens(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StartSwapTokensMiniPhase();
+        }
+
+        private void BanishRoyalCardHero(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StarBanishRoyalCardMiniPhase();
+        }
+
         private void StartBuffHeroMiniPhase(EffectType effect, PlayerInGame player)
         {
             _gameContext.MiniPhaseManager.StartBuffHeroMiniPhase();
         }
 
+        private void GoldForEachProphecy(EffectType effect, PlayerInGame player)
+        {
+            var amountOfProphecy = player.PlayerMercenaryManager.Mercenaries.Count(m => m.TypeCard == 3);
+
+            player.ResourceManager.AddResource(ResourceType.Gold, amountOfProphecy);
+
+            ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
+            {
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, 1) },
+                ResourceInfo = $"has received {amountOfProphecy} gold for starting close to castle",
+                PlayerId = player.Id,
+            };
+            _gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
+        }
+
         private void AddRandomArtifact(EffectType effect, PlayerInGame player)
         {
             _gameContext.ArtifactManager.AddArtifactsToPlayer(1, player);
+        }
+
+        private void AddThreeRandomArtifact(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.ArtifactManager.AddArtifactsToPlayer(3, player);
         }
 
         private void FulfillProphecyReward(EffectType effect, PlayerInGame player)

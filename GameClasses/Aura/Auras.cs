@@ -22,6 +22,7 @@ namespace BoardGameBackend.Models
         GOLD_ON_TILES_WITH_REROLL,
         GOLD_ON_TILES_WITH_ARTIFACT,
         GOLD_ON_TILES_WITH_SIGNET,
+        GOLD_ON_TILE_TELEPORT,
         EMPTY_MOVE_ON_TILES_WITH_SIGNET,
         ARTIFACT_ON_ROYAL_CARD,
         FULL_MOVEMENT_INTO_EMPTY,
@@ -30,15 +31,28 @@ namespace BoardGameBackend.Models
         ARTIFACT_WHEN_CLOSE_TO_CASTLE,
         FULL_MOVE_WHEN_CLOSE_TO_CASTLE,
         EMPTY_MOVE_WHEN_CLOSE_TO_CASTLE,
+        GOLD_WHEN_CLOSE_TO_CASTLE,
         CHEAPER_BUILDINGS,
         CHANGE_SIDES_OF_HERO_AFTER_PLAY,
-        REPLACE_NEXT_HERO
+        REPLACE_NEXT_HERO,
+        EMPTY_MOVEMENT_WHEN_HERO_HAS_SIGNET,
+        EMPTY_MOVEMENT_WHEN_HERO_HAS_MORALE,
+        EMPTY_MOVEMENT_WHEN_HERO_HAS_EMPTY_MOVEMENT,
+        ADJACENT_TILE_REWARD
     }
 
     public enum EndGameAuraType
     {
         CUMMULATIVE_POINTS,   
-        SIGNETS_INTO_POINTS   
+        SIGNETS_INTO_POINTS,
+        THREE_POINTS,
+        POINTS_OF_MERCENARY_OF_FACTION 
+    }
+
+    public class EndGameAura
+    {
+        public EndGameAuraType Aura {get; set;}
+        public int? Value1 {get; set;}  
     }
 
     public class AuraTypeWithLongevity{

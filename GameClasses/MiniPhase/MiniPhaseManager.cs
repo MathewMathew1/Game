@@ -107,7 +107,17 @@ namespace BoardGameBackend.Managers
             {             
                 EndCurrentMiniPhase();                     
             }, priority: 2);
-            
+
+            _gameContext.EventManager.Subscribe<BanishRoyalCardEventData>("BanishRoyalCardEvent", data =>
+            {             
+                EndCurrentMiniPhase();                    
+            }, priority: 2);
+
+            _gameContext.EventManager.Subscribe<SwapTokensDataEventData>("SwapTokensDataEvent", data =>
+            {             
+                EndCurrentMiniPhase();                    
+            }, priority: 2);
+       
         }
 
         private void StartCurrentMiniPhase(MiniPhase miniPhase)
@@ -187,6 +197,28 @@ namespace BoardGameBackend.Managers
         public void StarReplaceHeroMiniPhase()
         {
             var miniPhaseClass = new ReplaceNextHeroMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StarBanishRoyalCardMiniPhase()
+        {
+            if(_gameContext.RolayCardManager.GetAvailableCardsToPick().Count <=0){
+                return;
+            }
+            var miniPhaseClass = new BanishCarMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+            
+        }
+
+        public void StartSwapTokensMiniPhase()
+        {
+            var tokenInfo = _gameContext.GameTiles.GetTokenInfo();
+            var tokensAmount = tokenInfo.Count(token => token.Token.Dummy == false);
+
+            if(tokensAmount < 2){
+                return;
+            }
+            var miniPhaseClass = new SwapTokenMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 

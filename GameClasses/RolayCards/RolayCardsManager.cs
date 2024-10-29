@@ -21,6 +21,34 @@ namespace BoardGameBackend.Models
             }
         }
 
+        public List<RolayCard> GetAvailableCardsToPick(){
+            return _cards.Where(card => card.BanishedCard == false && card.PickedByPlayer == null).ToList();
+        }
+
+        public RolayCard? BanishCard(PlayerInGame player, int royalCardId)
+        {
+            var pickedCard = _cards.FirstOrDefault(c => c.Id == royalCardId && c.PickedByPlayer == null);
+
+            if (pickedCard == null)
+            {
+                return null;
+            }
+
+            if(pickedCard.BanishedCard == true || pickedCard.PickedByPlayer != null) return null;
+
+            pickedCard.BanishedCard = true;
+
+            var eventArgs = new BanishRoyalCardEventData
+            {
+                RoyalCard = pickedCard,
+                PlayerId = player.Id
+            };
+
+            _gameContext.EventManager.Broadcast("BanishRoyalCardEvent", ref eventArgs);
+
+            return pickedCard;
+        }
+
         public RolayCard? PickCardForPlayer(PlayerInGame player, int rolayCardId)
         {
             var pickedCard = _cards.FirstOrDefault(c => c.Id == rolayCardId && c.PickedByPlayer == null);
@@ -29,6 +57,8 @@ namespace BoardGameBackend.Models
             {
                 return null;
             }
+
+            if(pickedCard.BanishedCard == true || pickedCard.PickedByPlayer != null) return null;
 
             var playerViewModel = GameMapper.Instance.Map<PlayerViewModel>(player);
             pickedCard.PickedByPlayer = playerViewModel;

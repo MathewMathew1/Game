@@ -15,7 +15,11 @@ namespace BoardGameBackend.Models
         REROLL_MERCENARY,
         GET_RANDOM_ARTIFACT,
         REPLAY_ARTIFACT,
-        REPLACE_HERO
+        REPLACE_HERO,
+        GET_THREE_RANDOM_ARTIFACTS,
+        GOLD_FOR_PROPHECY,
+        BANISH_ROYAL_CARD,
+        SWAP_TOKENS
     }
 
     public class GameEffect

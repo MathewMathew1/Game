@@ -15,6 +15,33 @@ namespace BoardGameBackend.Managers
             _gameContext = gameContext;
         }
 
+        public void StopSwappingTokens(){
+            _gameContext.MiniPhaseManager.EndCurrentMiniPhase();
+            _gameContext.TurnManager.EndTurn();
+        }
+
+        public bool SwapTokens(int tileIdOne, int tileIdTwo, PlayerInGame player){
+            var tile = _gameContext.GameTiles.GetTileById(tileIdOne);
+            var tileTwo = _gameContext.GameTiles.GetTileById(tileIdTwo);
+
+            if(tile == null || tileTwo == null) return false;
+
+            if(tile.Token == null || tile.Token.Dummy == true || tileTwo.Token == null || tileTwo.Token.Dummy == true) return false;
+
+            (tile.Token, tileTwo.Token) = (tileTwo.Token, tile.Token);
+
+            var eventArgs = new SwapTokensDataEventData
+            {
+                PlayerId = player.Id,
+                TileOneId = tile.Id,
+                TileTwoId = tileTwo.Id
+            };
+
+            _gameContext.EventManager.Broadcast("SwapTokensDataEvent", ref eventArgs);
+
+            return true;
+        }
+
         public void GetRewardFromCurrentTile(PlayerInGame player)
         {
             var tile = _currentTile;
@@ -139,9 +166,11 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
-        public bool SetCurrentTile(Tile tile, PlayerInGame player, bool FullMovement, int? TeleportationTileId)
+        public bool SetCurrentTile(Tile tile, PlayerInGame player, bool FullMovement, bool AdjacentMovement, int? TeleportationTileId)
         {
             if (!CanMoveToTile(tile, player)) return false;
+
+            if(AdjacentMovement && !player.AurasTypes.Any(aura => aura.Aura == AurasType.ADJACENT_TILE_REWARD)) return false;
 
 
             var fullBoot = player.PlayerHeroCardManager.CurrentHeroCard?.MovementFullLeft > 0 || false;
@@ -231,15 +260,18 @@ namespace BoardGameBackend.Managers
 
             tileReward.Resources = player.ResourceManager.AddResources(tileReward.Resources);
 
-            _currentTile = tile;
-
+            if(!AdjacentMovement){
+                _currentTile = tile;
+            }
+            
             var eventArgs = new MoveOnTile
             {
                 MovementFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft,
                 MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft,
                 TileReward = tileReward,
                 Player = player,
-                TileId = tile.Id
+                TileId = tile.Id,
+                AdjacentMovement = AdjacentMovement
             };
             player.PlayerHeroCardManager.CurrentHeroCard.VisitedPlaces.Add(tile.Id);
 

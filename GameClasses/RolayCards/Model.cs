@@ -38,6 +38,7 @@ namespace BoardGameBackend.Models
         public int? EffectTypeId {get; set;}
         public string? EffectToolTip {get; set;}
         public PlayerViewModel? PickedByPlayer {get; set;}
+        public bool BanishedCard {get; set;} = false;
     }
 
     public class RoyalCardsPlayerData{

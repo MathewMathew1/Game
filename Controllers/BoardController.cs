@@ -59,6 +59,7 @@ namespace BoardGameBackend.Controllers
                     gameContext.GameTiles.GetTileById(moveToTileDto.TileId),
                     player,
                     moveToTileDto.FullMovement,
+                    moveToTileDto.AdjacentMovement ?? false,
                     moveToTileDto.TeleportationPlace
                 );
 
@@ -131,60 +132,109 @@ namespace BoardGameBackend.Controllers
             }
         }
 
-            [HttpGet("goldIntoMovement/{id}")]
-            [Authorize]
-            [PhaseCheckFilter(typeof(BoardPhase))]
-            public ActionResult GoldIntoMovement(string id)
+        [HttpPost("swap/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(SwapTokenMiniPhase))]
+        public ActionResult SwapTokens(string id, [FromBody] SwapTokensData data)
+        {
+            try
             {
-                try
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                var swappedTokens = gameContext.PawnManager.SwapTokens(data.TileIdOne, data.TileIdTwo, player);
+
+                if (!swappedTokens)
                 {
-                    UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
-                    var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
-                    var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
-
-                    var successfullyConvertedGoldIntoMovement = gameContext.PawnManager.GoldIntoMovement(player);
-
-                    if (!successfullyConvertedGoldIntoMovement)
-                    {
-                        return BadRequest(new { Error = "Unable to convert gold into movement." });
-                    }
-
-                    return Ok(new { Message = "Converted gold into movement successfully." });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    return BadRequest(new { Error = "Unexpected error" });
+                    return BadRequest(new { Error = "Unable to swap tokens." });
                 }
 
+                return Ok(new { Message = "Swapped tokens successfully." });
             }
-
-            [HttpGet("convertMovement/{id}")]
-            [Authorize]
-            [PhaseCheckFilter(typeof(BoardPhase))]
-            public ActionResult convertMovement(string id)
+            catch (Exception ex)
             {
-                try
-                {
-                    UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
-                    var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
-                    var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
-
-                    var successfullyConvertedMovements = gameContext.PawnManager.FullMovementIntoEmptyMovement(player);
-
-                    if (!successfullyConvertedMovements)
-                    {
-                        return BadRequest(new { Error = "Unable to convert full movement into empty." });
-                    }
-
-                    return Ok(new { Message = "Converted full movement into empty movement successfully." });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                    return BadRequest(new { Error = "Unexpected error" });
-                }
-
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
             }
         }
+
+        [HttpGet("stopSwapping/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(SwapTokenMiniPhase))]
+        public ActionResult StopSwappingTokens(string id)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                gameContext.PawnManager.StopSwappingTokens();
+
+                return Ok(new { Message = "Stopped swapping tokens successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+        }
+
+        [HttpGet("goldIntoMovement/{id}")]
+        [Authorize]
+        [PhaseCheckFilter(typeof(BoardPhase))]
+        public ActionResult GoldIntoMovement(string id)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                var successfullyConvertedGoldIntoMovement = gameContext.PawnManager.GoldIntoMovement(player);
+
+                if (!successfullyConvertedGoldIntoMovement)
+                {
+                    return BadRequest(new { Error = "Unable to convert gold into movement." });
+                }
+
+                return Ok(new { Message = "Converted gold into movement successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
+
+        [HttpGet("convertMovement/{id}")]
+        [Authorize]
+        [PhaseCheckFilter(typeof(BoardPhase))]
+        public ActionResult convertMovement(string id)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                var successfullyConvertedMovements = gameContext.PawnManager.FullMovementIntoEmptyMovement(player);
+
+                if (!successfullyConvertedMovements)
+                {
+                    return BadRequest(new { Error = "Unable to convert full movement into empty." });
+                }
+
+                return Ok(new { Message = "Converted full movement into empty movement successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
     }
+}

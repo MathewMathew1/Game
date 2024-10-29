@@ -213,9 +213,10 @@ namespace BoardGameBackend.Models
                 var currentHeroCard = player.SetCurrentHeroCard(heroCard, leftSide, _gameContext, unusedHeroCard, replacedHero);
 
                 Reward? reward = null;
-                if (heroCard.EffectId != null)
+                var effectId = heroCard.EffectId;
+                if (effectId != null)
                 {
-                    var heroRewardClass = RewardFactory.GetRewardById(heroCard.EffectId.Value);
+                    var heroRewardClass = RewardFactory.GetRewardById(effectId.Value);
                     reward = heroRewardClass.OnReward();
                     _gameContext.RewardHandlerManager.HandleReward(player, reward);
                 }

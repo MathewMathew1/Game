@@ -24,7 +24,7 @@ namespace BoardGameBackend.Controllers
         [HttpPost("take/{id}")]
         [Authorize]
         [MiniPhaseCheckFilter(typeof(RoyalCardPickMiniPhase))]
-        public ActionResult EndTurn(string id, [FromBody] RoyalCardPickModel royalCardPickModel)
+        public ActionResult PickRoyalCard(string id, [FromBody] RoyalCardPickModel royalCardPickModel)
         {
             try
             {
@@ -38,6 +38,32 @@ namespace BoardGameBackend.Controllers
                 }
                 
                 return Ok(new { Message = "Royal card picked successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
+
+        [HttpPost("banish/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(BanishCarMiniPhase))]
+        public ActionResult BanishCard(string id, [FromBody] RoyalCardPickModel royalCardPickModel)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+           
+                var pickedCard = gameContext.RolayCardManager.BanishCard(player, royalCardPickModel.RoyalCardId);
+                if(pickedCard == null){
+                    return BadRequest(new { Error = "Unable to banish royal card." });
+                }
+                
+                return Ok(new { Message = "Royal card banished successfully." });
             }
             catch (Exception ex)
             {

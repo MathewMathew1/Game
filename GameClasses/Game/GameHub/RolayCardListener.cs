@@ -23,12 +23,23 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastRoyalCardPlayed(gameId, data);                     
             }, priority: 5);
 
+            gameContext.EventManager.Subscribe<BanishRoyalCardEventData>("BanishRoyalCardEvent", data =>
+            {             
+                BroadcastBanishRoyalCard(gameId, data);                    
+            }, priority: 5);
+
         }
 
         public void BroadcastRoyalCardPlayed(string gameId, RoyalCardPlayed teleportationData)
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RoyalCardPlayed", teleportationData);
+        }
+
+        public void BroadcastBanishRoyalCard(string gameId, BanishRoyalCardEventData teleportationData)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BanishRoyalCardEvent", teleportationData);
         }
 
 

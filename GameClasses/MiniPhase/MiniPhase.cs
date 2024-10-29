@@ -123,6 +123,50 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class BanishCarMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.BanishRoyalCard;
+
+        public BanishCarMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("BanishCarMiniPhaseStarted");
+            Console.WriteLine("BanishCarMiniPhase started.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("BanishCarMiniPhaseEnded");
+            Console.WriteLine("BanishCarMiniPhase ended.");
+        }
+    }
+
+    public class SwapTokenMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.SwapTokens;
+
+        public SwapTokenMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("SwapTokenMiniPhaseStarted");
+            Console.WriteLine("SwapTokenMiniPhase started.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("SwapTokenMiniPhaseEnded");
+            Console.WriteLine("SwapTokenMiniPhase ended.");
+        }
+    }
+
     public class BuffHeroMiniPhase : MiniPhase
     {
         public override MiniPhaseType Name => MiniPhaseType.BuffHeroPhase;

@@ -11,7 +11,7 @@ namespace BoardGameBackend.Models
         public List<Resource> Resources { get; set; }
         public List<HeroResource> HeroResources { get; set; }
         public List<AuraTypeWithLongevity> AurasTypes { get; set; }
-        public List<EndGameAuraType> EndGameAura { get; set; }
+        public List<EndGameAura> EndGameAura { get; set; }
         public List<EffectType> Effects { get; set; }
         public bool EmptyReward { get; set; } = false;
 
@@ -24,7 +24,7 @@ namespace BoardGameBackend.Models
             AurasTypes = new List<AuraTypeWithLongevity>();
             HeroResources = new List<HeroResource>();
             Effects = new List<EffectType>();
-            EndGameAura = new List<EndGameAuraType>();
+            EndGameAura = new List<EndGameAura>();
         }
     }
 
@@ -81,7 +81,7 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Gold, 7) },
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, Value1) },
             };
         }
     }
@@ -122,6 +122,72 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ONE_EMPTY_MOVEMENT, Permanent = false } }
+            };
+        }
+    }
+
+    public class AdjacentTileAuraReward : BaseReward
+    {
+        public AdjacentTileAuraReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.ADJACENT_TILE_REWARD, Permanent = false } }
+            };
+        }
+    }
+
+    public class EmptyMovementOnHeroWithSignetReward : BaseReward
+    {
+        public EmptyMovementOnHeroWithSignetReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_SIGNET, Permanent = true } }
+            };
+        }
+    }
+
+    public class EmptyMovementOnHeroWithMoraleReward : BaseReward
+    {
+        public EmptyMovementOnHeroWithMoraleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_MORALE, Permanent = true } }
+            };
+        }
+    }
+
+
+    public class EmptyMovementOnHeroWithNoEmptyMovementReward : BaseReward
+    {
+        public EmptyMovementOnHeroWithNoEmptyMovementReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_EMPTY_MOVEMENT, Permanent = true } }
+            };
+        }
+    }
+
+    public class GoldWhenCloseToCastleReward : BaseReward
+    {
+        public GoldWhenCloseToCastleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.GOLD_WHEN_CLOSE_TO_CASTLE, Permanent = true } }
             };
         }
     }
@@ -235,6 +301,59 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class SwapTokensReward : BaseReward
+    {
+        public SwapTokensReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.SWAP_TOKENS }
+            };
+        }
+    }
+
+    public class BanishRoyalCardReward : BaseReward
+    {
+        public BanishRoyalCardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.BANISH_ROYAL_CARD }
+            };
+        }
+    }
+
+
+    public class GoldForEachProphecy : BaseReward
+    {
+        public GoldForEachProphecy(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.  GOLD_FOR_PROPHECY }
+            };
+        }
+    }
+
+    public class GetThreeArtifactsReward : BaseReward
+    {
+        public GetThreeArtifactsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.GET_THREE_RANDOM_ARTIFACTS }
+            };
+        }
+    }
+
     public class RefreshMercenariesReward : BaseReward
     {
         public RefreshMercenariesReward(int value1, int value2) : base(value1, value2) { }
@@ -256,7 +375,20 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                EndGameAura = new List<EndGameAuraType>() { EndGameAuraType.CUMMULATIVE_POINTS }
+                EndGameAura = new List<EndGameAura>() { new EndGameAura { Aura = EndGameAuraType.CUMMULATIVE_POINTS, Value1 = Value1 } }
+            };
+        }
+    }
+
+    public class ThreePointsReward : BaseReward
+    {
+        public ThreePointsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                EndGameAura = new List<EndGameAura>() { new EndGameAura { Aura = EndGameAuraType.THREE_POINTS, Value1 = Value1 } }
             };
         }
     }
@@ -347,7 +479,20 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                EndGameAura = new List<EndGameAuraType>() { EndGameAuraType.SIGNETS_INTO_POINTS }
+                EndGameAura = new List<EndGameAura>() { new EndGameAura { Aura = EndGameAuraType.SIGNETS_INTO_POINTS, Value1 = Value1 } }
+            };
+        }
+    }
+
+    public class PointsPerMercenaryOfFactionReward : BaseReward
+    {
+        public PointsPerMercenaryOfFactionReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                EndGameAura = new List<EndGameAura>() { new EndGameAura { Aura = EndGameAuraType.POINTS_OF_MERCENARY_OF_FACTION, Value1 = Value1 } }
             };
         }
     }
@@ -901,6 +1046,21 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class GoldOnTeleportReward : BaseReward
+    {
+        public GoldOnTeleportReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILE_TELEPORT, Permanent = true }
+                }
+            };
+        }
+    }
+
 
 
     public class NoReward : BaseReward
@@ -1070,6 +1230,9 @@ namespace BoardGameBackend.Models
                     case 69:
                         _rewards.Add(rewardData.Id, new ArtifactWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
+                    case 70:
+                        _rewards.Add(rewardData.Id, new GoldWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
                     case 71:
                         _rewards.Add(rewardData.Id, new FullMoveWhenCloseToCastleReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
@@ -1078,6 +1241,9 @@ namespace BoardGameBackend.Models
                         break;
                     case 73:
                         _rewards.Add(rewardData.Id, new ReplaceNextHeroCardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 74:
+                        _rewards.Add(rewardData.Id, new SwapTokensReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 76:
                         _rewards.Add(rewardData.Id, new ChangeHeroSidesAfterPlayReward(rewardData.IntValue1, rewardData.IntValue2));
@@ -1141,6 +1307,45 @@ namespace BoardGameBackend.Models
                         break;
                     case 96:
                         _rewards.Add(rewardData.Id, new TeleportationRewardOneFreeNotPermanentMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 103:
+                        _rewards.Add(rewardData.Id, new PointsPerMercenaryOfFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 104:
+                        _rewards.Add(rewardData.Id, new PointsPerMercenaryOfFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 105:
+                        _rewards.Add(rewardData.Id, new PointsPerMercenaryOfFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 106:
+                        _rewards.Add(rewardData.Id, new PointsPerMercenaryOfFactionReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 107:
+                        _rewards.Add(rewardData.Id, new EmptyMovementOnHeroWithSignetReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 108:
+                        _rewards.Add(rewardData.Id, new EmptyMovementOnHeroWithMoraleReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 109:
+                        _rewards.Add(rewardData.Id, new EmptyMovementOnHeroWithNoEmptyMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 110:
+                        _rewards.Add(rewardData.Id, new GoldOnTeleportReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 111:
+                        _rewards.Add(rewardData.Id, new BanishRoyalCardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 112:
+                        _rewards.Add(rewardData.Id, new GoldForEachProphecy(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 113:
+                        _rewards.Add(rewardData.Id, new AdjacentTileAuraReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 114:
+                        _rewards.Add(rewardData.Id, new GetThreeArtifactsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 115:
+                        _rewards.Add(rewardData.Id, new ThreePointsReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
 
                 }

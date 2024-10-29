@@ -13,5 +13,7 @@ namespace BoardGameBackend.Models
         RoyalCardPickMiniPhase,
         ReplayArtifactMiniPhase,
         ReplaceHeroMiniPhase,
+        BanishRoyalCard,
+        SwapTokens
     }
 }

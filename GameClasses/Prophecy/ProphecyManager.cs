@@ -349,6 +349,89 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class ProphecyNinetySeven : BaseProphecyPoints
+    {
+        public ProphecyNinetySeven(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var moreOrEqualSiegeThanMagic = player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Siege) >= player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Army);
+            var moreOrEqualSiegeThanArmy = player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Siege) >= player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic);
+            if (moreOrEqualSiegeThanMagic && moreOrEqualSiegeThanArmy) return Value1;
+
+            return 0;
+        }
+    }
+
+    public class ProphecyNinetyEight : BaseProphecyPoints
+    {
+        public ProphecyNinetyEight(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var moreOrEqualArmyThanMagic = player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Army) >= player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic);
+            var moreOrEqualArmyThanSiege = player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Army) >= player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Siege);
+            if (moreOrEqualArmyThanMagic && moreOrEqualArmyThanSiege) return Value1;
+
+            return 0;
+        }
+    }
+
+    public class ProphecyNinetyNine : BaseProphecyPoints
+    {
+        public ProphecyNinetyNine(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var moreOrEqualMagicThanArmy = player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic) >= player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Army);
+            var moreOrEqualMagicThanSiege = player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic) >= player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Siege);
+            if (moreOrEqualMagicThanArmy && moreOrEqualMagicThanSiege) return Value1;
+
+            return 0;
+        }
+    }
+
+    public class ProphecyOneHundred : BaseProphecyPoints
+    {
+        public ProphecyOneHundred(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var amountOfRoyalCards = player.PlayerRolayCardManager.RolayCards.Count();
+            if (amountOfRoyalCards >= Value2) return Value1;
+
+            return 0;
+        }
+    }
+
+    public class ProphecyOneHundredOne : BaseProphecyPoints
+    {
+        public ProphecyOneHundredOne(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+            if (player.Morale >= Value2) return Value1;
+
+            return 0;
+        }
+    }
+
+    public class ProphecyOneHundredTwo : BaseProphecyPoints
+    {
+        public ProphecyOneHundredTwo(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+            if (player.ArtifactsPlayed.Count() >= Value2) return Value1;
+
+            return 0;
+        }
+    }
+
 
     public static class ProphecyRequirementStore
     {
@@ -430,6 +513,24 @@ namespace BoardGameBackend.Models
                         break;
                     case 39:
                         _requirements.Add(requirementData.Id, new ProphecyThirtyNine(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 97:
+                        _requirements.Add(requirementData.Id, new ProphecyNinetySeven(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 98:
+                        _requirements.Add(requirementData.Id, new ProphecyNinetyEight(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 99:
+                        _requirements.Add(requirementData.Id, new ProphecyNinetyNine(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 100:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundred(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 101:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredOne(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 102:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredTwo(requirementData.IntValue1, requirementData.IntValue2));
                         break;
                     default:
                         break;

@@ -2,10 +2,10 @@ namespace BoardGameBackend.Models
 {
     public class HeroCardPicked
     {
-        public HeroCard Card { get; set;}
-        public PlayerInGame Player { get; set;}
-        public CurrentHeroCard CurrentHeroCard { get; set;}
-        public Reward? Reward { get; set;}
+        public HeroCard Card { get; set; }
+        public PlayerInGame Player { get; set; }
+        public CurrentHeroCard CurrentHeroCard { get; set; }
+        public Reward? Reward { get; set; }
 
         public HeroCardPicked(HeroCard card, PlayerInGame player, CurrentHeroCard currentHeroCard, Reward? reward = null)
         {
@@ -40,7 +40,7 @@ namespace BoardGameBackend.Models
 
     public class MercenaryPicked
     {
-        public Reward? Reward {get; set;}
+        public Reward? Reward { get; set; }
         public required Mercenary Card { get; set; }
         public required PlayerInGame Player { get; set; }
         public required List<ResourceInfo> ResourcesSpend { get; set; }
@@ -85,6 +85,7 @@ namespace BoardGameBackend.Models
         public int MovementFullLeft { get; set; }
         public int MovementUnFullLeft { get; set; }
         public int TileId { get; set; }
+        public bool AdjacentMovement { get; set; }
     }
 
     public class MoveOnTileOnEvent
@@ -144,7 +145,7 @@ namespace BoardGameBackend.Models
         public bool? RerollMercenaryAction { get; set; }
         public bool? GetRandomArtifact { get; set; }
         public bool? GotArtifact { get; set; }
-        public TokenReward? TokenReward {get; set;}
+        public TokenReward? TokenReward { get; set; }
     }
 
     public class ArtifactPlayed
@@ -159,7 +160,7 @@ namespace BoardGameBackend.Models
     {
         public required Artifact Artifact { get; set; }
         public required PlayerInGame Player { get; set; }
-        public required Artifact ArtifactRerolled { get; set;}
+        public required Artifact ArtifactRerolled { get; set; }
     }
 
     public class ArtifactRerolledDataForOtherUsers
@@ -191,94 +192,130 @@ namespace BoardGameBackend.Models
         public int TileId { get; set; }
     }
 
-    public class EndOfGame{
-        public required Dictionary<Guid, ScorePointsTable> PlayerScores {get; set;}
-        public required Dictionary<Guid, TimeSpan> PlayerTimeSpan {get; set;}
-        public TimeSpan GameTimeSpan {get; set;}
+    public class EndOfGame
+    {
+        public required Dictionary<Guid, ScorePointsTable> PlayerScores { get; set; }
+        public required Dictionary<Guid, TimeSpan> PlayerTimeSpan { get; set; }
+        public TimeSpan GameTimeSpan { get; set; }
     }
 
-    public class NewTurnEventData{
+    public class NewTurnEventData
+    {
         public required PlayerInGame Player { get; set; }
         public required PlayerInGame TimeSpendByLastPlayer { get; set; }
     }
 
-    public class StartOfGame{
+    public class StartOfGame
+    {
         public required MercenaryData MercenaryData { get; set; }
-        public required List<PlayerViewModel> Players {get; set; }
-        public required string GameId {get; set;}
-        public required List<TokenTileInfo> TokenSetup {get; set;}
-        public required List<RolayCard> RolayCards {get; set;}
+        public required List<PlayerViewModel> Players { get; set; }
+        public required string GameId { get; set; }
+        public required List<TokenTileInfo> TokenSetup { get; set; }
+        public required List<RolayCard> RolayCards { get; set; }
     }
 
-    public class FulfillProphecy{
+    public class FulfillProphecy
+    {
         public required int MercenaryId { get; set; }
-        public required Guid PlayerId {get; set; }    
+        public required Guid PlayerId { get; set; }
     }
 
-    public class AddAura{
-        public AuraTypeWithLongevity Aura {get; set;}
-        public Guid PlayerId {get; set;}
+    public class AddAura
+    {
+        public AuraTypeWithLongevity Aura { get; set; }
+        public Guid PlayerId { get; set; }
     }
 
-    public class LockMercenaryData{
-        public required LockedByPlayerInfo LockMercenary {get; set;}
-        public required int MercenaryId {get; set;}
+    public class LockMercenaryData
+    {
+        public required LockedByPlayerInfo LockMercenary { get; set; }
+        public required int MercenaryId { get; set; }
     }
 
-    public class BuffHeroData{
-        public required Guid PlayerId {get; set;}
-        public required int HeroId {get; set;}
-        public required Dictionary<ResourceHeroType, int> HeroResourcesNew {get; set;}
+    public class BuffHeroData
+    {
+        public required Guid PlayerId { get; set; }
+        public required int HeroId { get; set; }
+        public required Dictionary<ResourceHeroType, int> HeroResourcesNew { get; set; }
     }
 
-    public class MiniPhaseDataWithDifferentPlayer{
-        public required Guid PlayerId {get; set;}
+    public class MiniPhaseDataWithDifferentPlayer
+    {
+        public required Guid PlayerId { get; set; }
     }
 
-    public class BlockedTileData{
-        public required Guid PlayerId {get; set;}
-        public required int TileId {get; set;}
-        public required TokenFromJson Token {get; set;}
+    public class BlockedTileData
+    {
+        public required Guid PlayerId { get; set; }
+        public required int TileId { get; set; }
+        public required TokenFromJson Token { get; set; }
     }
 
-    public class EndOfPlayerTurn{
-        public required PlayerInGame Player {get; set;}
+    public class EndOfPlayerTurn
+    {
+        public required PlayerInGame Player { get; set; }
     }
 
-    public class RoyalCardPlayed{
+    public class RoyalCardPlayed
+    {
         public required RolayCard RoyalCard { get; set; }
         public required Reward? Reward { get; set; }
-        public required Guid PlayerId {get; set;}
-        public required int AmountOfSignetsForNextRoyalCard {get; set;}
+        public required Guid PlayerId { get; set; }
+        public required int AmountOfSignetsForNextRoyalCard { get; set; }
     }
 
-    public class GoldIntoMovementEventData{
-        public required int MovementFullLeft {get; set;}
-        public required int GoldLeft {get; set;}
+    public class GoldIntoMovementEventData
+    {
+        public required int MovementFullLeft { get; set; }
+        public required int GoldLeft { get; set; }
+        public required Guid PlayerId { get; set; }
+    }
+
+    public class FullMovementIntoEmptyEventData
+    {
+        public required int MovementFullLeft { get; set; }
+        public required int MovementUnFullLeft { get; set; }
+        public required Guid PlayerId { get; set; }
+    }
+
+    public class ReplaceNextHeroEventData
+    {
+        public required HeroCard Hero { get; set; }
+        public required AuraTypeWithLongevity ReplacementHeroAura { get; set; }
+        public required Guid PlayerId { get; set; }
+    }
+
+    public class PreHeroCardPickedEventData
+    {
+        public required Guid PlayerId { get; set; }
+        public required HeroCard HeroCard { get; set; }
+        public required bool WasOnLeftSide { get; set; }
+        public ReplacedHero? ReplacedHero { get; set; }
+    }
+
+    public class EndOfTurnEventData
+    {
+        public required int TurnCount { get; set; }
+    }
+
+    public class ResourceReceivedEventData
+    {
+        public required List<Resource> Resources { get; set; }
+        public required string ResourceInfo { get; set; }
         public required Guid PlayerId {get; set;}
     }
 
-    public class FullMovementIntoEmptyEventData{
-        public required int MovementFullLeft {get; set;}
-        public required int MovementUnFullLeft {get; set;}
+    public class BanishRoyalCardEventData
+    {
+        public required RolayCard RoyalCard { get; set; }
         public required Guid PlayerId {get; set;}
     }
 
-    public class ReplaceNextHeroEventData{
-        public required HeroCard Hero {get; set;}
-        public required AuraTypeWithLongevity ReplacementHeroAura {get; set;}
+    public class SwapTokensDataEventData
+    {
+        public required int TileOneId { get; set; }
+        public required int TileTwoId { get; set; }
         public required Guid PlayerId {get; set;}
-    }
-
-    public class PreHeroCardPickedEventData{
-        public required Guid PlayerId {get; set;}
-        public required HeroCard HeroCard {get; set;}
-        public required bool WasOnLeftSide {get; set;}
-        public ReplacedHero? ReplacedHero {get; set;}
-    }
-
-    public class EndOfTurnEventData{
-        public required int TurnCount {get; set;}
     }
 
 }

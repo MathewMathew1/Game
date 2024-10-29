@@ -83,6 +83,17 @@ namespace BoardGameBackend.Managers
             {             
                 EndTurn();                     
             }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<BanishRoyalCardEventData>("BanishRoyalCardEvent", data =>
+            {             
+                EndTurn();                     
+            }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<SwapTokensDataEventData>("SwapTokensDataEvent", data =>
+            {             
+                EndTurn();                    
+            }, priority: 1);
+            
         }
 
         public abstract void EndTurn(); 

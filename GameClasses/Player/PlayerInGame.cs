@@ -13,7 +13,7 @@ namespace BoardGameBackend.Models
         public List<Artifact> Artifacts { get; set; } = new List<Artifact>();
         public List<Artifact> ArtifactsPlayed { get; set; } = new List<Artifact>();
         public List<AuraTypeWithLongevity> AurasTypes { get; set; } = new List<AuraTypeWithLongevity>();
-        public List<EndGameAuraType> EndGameAuras { get; set; } = new List<EndGameAuraType>();
+        public List<EndGameAura> EndGameAuras { get; set; } = new List<EndGameAura>();
         public PlayerHeroCardManager PlayerHeroCardManager = new PlayerHeroCardManager();
         public PlayerRolayCardManager PlayerRolayCardManager = new PlayerRolayCardManager();
         public ResourceHeroManager ResourceHeroManager { get; set; }
@@ -84,6 +84,18 @@ namespace BoardGameBackend.Models
                 {
                     addedEmptyMovements += 1;
                 }
+                else if (aura.Aura == AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_SIGNET && card.RoyalSignet > 0)
+                {
+                    addedEmptyMovements += 1;
+                }
+                else if (aura.Aura == AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_MORALE && card.Morale > 0)
+                {
+                    addedEmptyMovements += 1;
+                }
+                else if (aura.Aura == AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_EMPTY_MOVEMENT && card.MovementEmpty == 0)
+                {
+                    addedEmptyMovements += 1;
+                }
                 else if (aura.Aura == AurasType.ADD_ADDITIONAL_MOVEMENT_BASED_ON_FRACTION && card.Faction.Id == aura.Value1)
                 {
                     addedEmptyMovements += 1;
@@ -99,6 +111,17 @@ namespace BoardGameBackend.Models
                 else if (aura.Aura == AurasType.ARTIFACT_WHEN_CLOSE_TO_CASTLE && TileDistanceHelper.IsInRange(2, tile, card.Faction.Id) && noFractionMovement == false)
                 {
                     gameContext.ArtifactManager.AddArtifactsToPlayer(1, this);
+                }
+                else if (aura.Aura == AurasType.GOLD_WHEN_CLOSE_TO_CASTLE && TileDistanceHelper.IsInRange(3, tile, card.Faction.Id) && noFractionMovement == false)
+                {
+                    ResourceManager.AddResource(ResourceType.Gold, 1);
+
+                    ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData {
+                        Resources = new List<Resource> { new Resource(ResourceType.Gold, 1) },
+                        ResourceInfo = $"has received 1 gold for starting close to castle",
+                        PlayerId = Id,
+                    };
+                    gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
                 }
             }
 

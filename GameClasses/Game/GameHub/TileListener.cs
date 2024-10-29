@@ -54,6 +54,15 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastFullMovementIntoEmptyEvent(gameId, data);
             }, priority: 5);
 
+            gameContext.EventManager.Subscribe<ResourceReceivedEventData>("ResourceReceivedEvent", data =>
+            {            
+                BroadcastReceivedResourcesEvent(gameId, data);
+            }, priority: 5);
+
+            gameContext.EventManager.Subscribe<SwapTokensDataEventData>("SwapTokensDataEvent", data =>
+            {             
+                BroadcastSwapTokensEvent(gameId, data);                    
+            }, priority: 5);
 
         }
 
@@ -117,6 +126,18 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("FullMovementIntoEmptyEvent", data);
+        }
+
+        public void BroadcastReceivedResourcesEvent(string gameId, ResourceReceivedEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ResourceReceivedEvent", data);
+        }
+
+        public void BroadcastSwapTokensEvent(string gameId, SwapTokensDataEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SwapTokensDataEvent", data);
         }
 
       

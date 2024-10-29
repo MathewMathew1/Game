@@ -105,7 +105,27 @@ namespace BoardGameBackend.Managers.EventListeners
             {
                 BroadcastEndReplaceHeroMiniPhase(gameId);
             }, priority: 1);  
-            
+
+            gameContext.EventManager.Subscribe("BanishCarMiniPhaseStarted", () =>
+            {
+                BroadcastStartBanishRoyalCard(gameId);
+            }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("BanishCarMiniPhaseEnded", () =>
+            {
+                BroadcastEndBanishRoyalCard(gameId);
+            }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("SwapTokenMiniPhaseStarted", () =>
+            {
+                BroadcastStartSwapTokens(gameId);
+            }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("SwapTokenMiniPhaseEnded", () =>
+            {
+                BroadcastEndSwapTokens(gameId);
+            }, priority: 1); 
+
         }
 
         public void BroadcastTeleportationMiniPhaseStart(string gameId)
@@ -215,5 +235,31 @@ namespace BoardGameBackend.Managers.EventListeners
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplaceHeroMiniPhaseEnded");
         }
+
+        public void BroadcastEndBanishRoyalCard(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BanishCarMiniPhaseEnded");
+        }
+
+        public void BroadcastStartBanishRoyalCard(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BanishCarMiniPhaseStarted");
+        }
+
+        public void BroadcastEndSwapTokens(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SwapTokenMiniPhaseEnded");
+        }
+
+        public void BroadcastStartSwapTokens(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SwapTokenMiniPhaseStarted");
+        }
+
+
     }
 }
