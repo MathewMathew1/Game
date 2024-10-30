@@ -5,7 +5,7 @@ namespace BoardGameBackend.Managers
     public class EndGameEffectManager
     {
         private readonly Dictionary<EndGameAuraType, Action<EndGameAura, PlayerInGame, ScorePointsTable>> effectActions;
-        private readonly Dictionary<EndGameAuraType, Action<EndGameAura, PlayerInGame, int, ScorePointsTable>> summedEffectActions;
+        private readonly Dictionary<EndGameAuraType, Action<EndGameAuraType, PlayerInGame, int, ScorePointsTable>> summedEffectActions;
         public GameContext _gameContext { get; set; }
 
         public EndGameEffectManager(GameContext gameContext)
@@ -18,7 +18,7 @@ namespace BoardGameBackend.Managers
                 { EndGameAuraType.POINTS_OF_MERCENARY_OF_FACTION, PointsForMercenaryPerFaction }    
             };
 
-            summedEffectActions = new Dictionary<EndGameAuraType, Action<EndGameAura, PlayerInGame, int, ScorePointsTable>>
+            summedEffectActions = new Dictionary<EndGameAuraType, Action<EndGameAuraType, PlayerInGame, int, ScorePointsTable>>
             {
                 { EndGameAuraType.CUMMULATIVE_POINTS, CummulativePoints },
             };
@@ -29,24 +29,24 @@ namespace BoardGameBackend.Managers
             var points = 0;
 
             // Step 1: Count occurrences of each EndGameAuraType in the effects list
-            var effectCounts = effects.GroupBy(effect => effect)
-                                      .ToDictionary(group => group.Key, group => group.Count());
+            var effectGroups = effects.GroupBy(effect => effect.Aura)
+                              .ToDictionary(group => group.Key, group => group.ToList());
 
             // Step 2: Loop through each effect
-            foreach (var effectCount in effectCounts)
+            foreach (var effectCount in effectGroups)
             {
                 var effect = effectCount.Key;
-                var count = effectCount.Value;
+                var list = effectCount.Value;
 
-                if (effectActions.ContainsKey(effect.Aura))
+                if (effectActions.ContainsKey(effect))
                 {
-                    for(var i=0; i< count; i++){
-                      effectActions[effect.Aura](effect, player, scorePointsTable);
+                    for(var i=0; i< list.Count; i++){
+                      effectActions[effect](list[i], player, scorePointsTable);
                     }                
                 }
-                else if (summedEffectActions.ContainsKey(effect.Aura))
+                else if (summedEffectActions.ContainsKey(effect))
                 {
-                    summedEffectActions[effect.Aura](effect, player, count, scorePointsTable); 
+                    summedEffectActions[effect](effect, player, list.Count, scorePointsTable); 
                 }
 
             }
@@ -54,7 +54,7 @@ namespace BoardGameBackend.Managers
             return scorePointsTable;
         }
 
-        private void CummulativePoints(EndGameAura effect, PlayerInGame player, int amount , ScorePointsTable scorePointsTable)
+        private void CummulativePoints(EndGameAuraType effect, PlayerInGame player, int amount , ScorePointsTable scorePointsTable)
         {
             var points = new List<int> { 0, 1, 3, 7, 13, 21 };
 
