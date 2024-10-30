@@ -294,10 +294,10 @@ namespace BoardGameBackend.Managers
 
             var tile = _gameContext.GameTiles.GetTileById(tileId);
 
-            if (tile.Id == TileHelper.MagicTileId ||
+            if (tile.TileTypeId == TileHelper.MagicTileId ||
                 tile.Id == CurrentTile.Id ||
-                tile.Id == TileHelper.CastleTileId ||
-                tile.Id == TileHelper.StartTileId ||
+                tile.TileTypeId == TileHelper.CastleTileId ||
+                tile.TileTypeId == TileHelper.StartTileId ||
                 tile.Token != null)
             {
 
