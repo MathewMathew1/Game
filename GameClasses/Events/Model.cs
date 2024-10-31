@@ -318,4 +318,16 @@ namespace BoardGameBackend.Models
         public required Guid PlayerId {get; set;}
     }
 
+    public class ResourceSpendEventData{
+        public required int ResourceSpend {get; set;}
+        public required int ResourceLeft {get; set;}
+        public required ResourceType ResourceType {get; set;}
+        public required Guid PlayerId {get; set;}
+    }
+
+    public class RotateTileEventData{
+        public required int TileId {get; set;}
+        public required Guid PlayerId {get; set;}
+    }
+
 }

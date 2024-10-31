@@ -93,6 +93,11 @@ namespace BoardGameBackend.Managers
             {             
                 EndTurn();                    
             }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<RotateTileEventData>("RotateTileEvent", data =>
+            {             
+                EndTurn();                    
+            }, priority: 1);
             
         }
 

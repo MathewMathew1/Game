@@ -1,8 +1,11 @@
+using BoardGameBackend.Managers;
+
 namespace BoardGameBackend.Models
 {
     public class ResourceManager
     {
         private readonly Dictionary<ResourceType, int> _resources;
+        private readonly PlayerInGame _player;
         public int GoldIncome { get; set; } = 0;
         public List<ResourceType> allowedSubstituteResources = new List<ResourceType>
         {
@@ -12,8 +15,9 @@ namespace BoardGameBackend.Models
             ResourceType.Niter
         };
 
-        public ResourceManager()
+        public ResourceManager(PlayerInGame player)
         {
+            _player = player;
             _resources = new Dictionary<ResourceType, int>
             {
                 { ResourceType.Gold, 2 },
@@ -101,7 +105,7 @@ namespace BoardGameBackend.Models
             return bonus;
         }
 
-        public bool SubtractResource(ResourceType resourceType, int amount)
+        public bool SubtractResource(ResourceType resourceType, int amount, EventManager eventManager)
         {
             if (amount < 0)
                 throw new ArgumentException("Amount to subtract cannot be negative.");
@@ -110,6 +114,17 @@ namespace BoardGameBackend.Models
                 return false;
 
             _resources[resourceType] -= amount;
+            
+            var eventArgs = new ResourceSpendEventData
+            {
+                ResourceLeft = _resources[resourceType],
+                ResourceSpend = amount,
+                PlayerId = _player.Id,
+                ResourceType = resourceType
+            };
+
+            eventManager.Broadcast("ResourceSpendEvent", ref eventArgs);
+            
             return true;
         }
 
@@ -121,7 +136,7 @@ namespace BoardGameBackend.Models
             }
         }
 
-        public bool CheckForResourceAndRemoveThem(List<ResourceInfo> resources)
+        public bool CheckForResourceAndRemoveThem(List<ResourceInfo> resources, EventManager eventManager)
         {
             foreach (var resource in resources)
             {
@@ -135,13 +150,13 @@ namespace BoardGameBackend.Models
 
             foreach (var resource in resources)
             {
-                SubtractResource(resource.Name, resource.Amount);
+                SubtractResource(resource.Name, resource.Amount, eventManager);
             }
 
             return true;
         }
 
-        public bool CheckForResourceAndRemoveThemWithSubstitue(List<ResourceInfo> resources)
+        public bool CheckForResourceAndRemoveThemWithSubstitue(List<ResourceInfo> resources, EventManager eventManager)
         {
             List<ResourceType> resourcesWithAmountGreaterThanZero = _resources
             .Where(resource => allowedSubstituteResources.Contains(resource.Key) && resource.Value > 0)
@@ -176,12 +191,12 @@ namespace BoardGameBackend.Models
             {
                 if (allowedSubstituteResources.Contains(resource.Name))
                 {
-                    SubtractResource(resourcesWithAmountGreaterThanZero[0], resource.Amount);
+                    SubtractResource(resourcesWithAmountGreaterThanZero[0], resource.Amount, eventManager);
                     resourcesWithAmountGreaterThanZero.RemoveAt(0);
                 }
                 else
                 {
-                    SubtractResource(resource.Name, resource.Amount);
+                    SubtractResource(resource.Name, resource.Amount, eventManager);
                 }          
             };
             return true;

@@ -19,4 +19,9 @@ namespace BoardGameBackend.Models
         public required int TileIdOne { get; set; }  
         public required int TileIdTwo { get; set; } 
     }
+
+    public class RotatePawnData
+    {
+        public required int TileId { get; set; }  
+    }
 }

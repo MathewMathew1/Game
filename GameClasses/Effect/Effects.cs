@@ -19,7 +19,9 @@ namespace BoardGameBackend.Models
         GET_THREE_RANDOM_ARTIFACTS,
         GOLD_FOR_PROPHECY,
         BANISH_ROYAL_CARD,
-        SWAP_TOKENS
+        SWAP_TOKENS,
+        GOLD_FOR_BUILDINGS,
+        ROTATE_PAWN
     }
 
     public class GameEffect

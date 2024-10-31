@@ -137,6 +137,27 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
+        public bool RotatePawn(PlayerInGame player, int rotatedTileId){
+            var tile = _gameContext.GameTiles.GetTileById(rotatedTileId);
+
+            if(tile.RotateID != _currentTile.RotateID) return false;
+
+            if(tile.Id == _currentTile.Id) return false;
+
+            _currentTile = tile;
+
+            var eventArgs = new RotateTileEventData
+            {
+                TileId = tile.Id,
+                PlayerId = player.Id,
+            };
+
+            _gameContext.EventManager.Broadcast("RotateTileEvent", ref eventArgs);
+
+
+            return true;
+        }
+
         public bool GoldIntoMovement(PlayerInGame player)
         {
             var auraIndex = player.AurasTypes.FindIndex(a => a.Aura == AurasType.GOLD_FOR_MOVEMENT);
@@ -144,7 +165,7 @@ namespace BoardGameBackend.Managers
             if (auraIndex == -1) return false;
 
             List<ResourceInfo> resource = new List<ResourceInfo> { new ResourceInfo { Name = ResourceType.Gold, Amount = 2 } };
-            var canBuy = player.ResourceManager.CheckForResourceAndRemoveThem(resource);
+            var canBuy = player.ResourceManager.CheckForResourceAndRemoveThem(resource, _gameContext.EventManager);
 
             if (canBuy == false) return false;
 

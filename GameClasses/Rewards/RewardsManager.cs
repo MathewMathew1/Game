@@ -113,6 +113,20 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class GoldWhenNoGoldReward : BaseReward
+    {
+        public GoldWhenNoGoldReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> { },
+                AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.GOLD_WHEN_NO_GOLD, Permanent = true } }
+            };
+        }
+    }
+
     public class EmptyMovementRewardReward : BaseReward
     {
         public EmptyMovementRewardReward(int value1, int value2) : base(value1, value2) { }
@@ -297,6 +311,19 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 Effects = new List<EffectType>() { EffectType.RETURN_TO_CENTER }
+            };
+        }
+    }
+
+    public class RotatePawnReward : BaseReward
+    {
+        public RotatePawnReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.ROTATE_PAWN }
             };
         }
     }
@@ -598,6 +625,19 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 Effects = new List<EffectType>() { EffectType.REPLAY_ARTIFACT }
+            };
+        }
+    }
+
+    public class GetGoldForBuildingsReward : BaseReward
+    {
+        public GetGoldForBuildingsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.GOLD_FOR_BUILDINGS }
             };
         }
     }
@@ -911,6 +951,70 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class WoodAndNiterReward : BaseReward
+    {
+        public WoodAndNiterReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Wood, 1),
+                new Resource(ResourceType.Niter, 1)
+                }
+            };
+        }
+    }
+
+    public class IronAndWoodReward : BaseReward
+    {
+        public IronAndWoodReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Iron, 1),
+                new Resource(ResourceType.Wood, 1)
+                }
+            };
+        }
+    }
+
+    public class GemsAndIronReward : BaseReward
+    {
+        public GemsAndIronReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Gems, 1),
+                new Resource(ResourceType.Iron, 1)
+                }
+            };
+        }
+    }
+
+    public class NiterAndGemsReward : BaseReward
+    {
+        public NiterAndGemsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> {
+                new Resource(ResourceType.Niter, 1),
+                new Resource(ResourceType.Gems, 1)
+                }
+            };
+        }
+    }
+
     public class SignetsReward : BaseReward
     {
         public SignetsReward(int value1, int value2) : base(value1, value2) { }
@@ -1056,6 +1160,21 @@ namespace BoardGameBackend.Models
             {
                 AurasTypes = new List<AuraTypeWithLongevity>() {
                     new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILE_TELEPORT, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class EmptyMoveOnTpReward : BaseReward
+    {
+        public EmptyMoveOnTpReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVE_ON_TILES_WITH_TELEPORT, Permanent = true }
                 }
             };
         }
@@ -1346,6 +1465,30 @@ namespace BoardGameBackend.Models
                         break;
                     case 115:
                         _rewards.Add(rewardData.Id, new ThreePointsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 116:
+                        _rewards.Add(rewardData.Id, new GetGoldForBuildingsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 117:
+                        _rewards.Add(rewardData.Id, new WoodAndNiterReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 118:
+                        _rewards.Add(rewardData.Id, new IronAndWoodReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 119:
+                        _rewards.Add(rewardData.Id, new GemsAndIronReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 120:
+                        _rewards.Add(rewardData.Id, new NiterAndGemsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 121:
+                        _rewards.Add(rewardData.Id, new EmptyMoveOnTpReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                     case 122:
+                        _rewards.Add(rewardData.Id, new GoldWhenNoGoldReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 123:
+                        _rewards.Add(rewardData.Id, new RotatePawnReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
 
                 }

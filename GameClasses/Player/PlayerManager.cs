@@ -55,29 +55,55 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Subscribe("MoveOnTile", (MoveOnTile data) => CheckOnMovementEvents(data), priority: 1);
 
             _gameContext.EventManager.Subscribe<RoyalCardPlayed>("RolayCardPlayed", data =>
-            {             
-                CheckOnRoyalCardEvent(data);                     
+            {
+                CheckOnRoyalCardEvent(data);
             }, priority: 1);
 
             _gameContext.EventManager.Subscribe<MoraleAdded>("MoraleAdded", data =>
-            {             
-                UpdatePlayersBasedOnMorale(data.Player);        
+            {
+                UpdatePlayersBasedOnMorale(data.Player);
             }, priority: 1);
 
             _gameContext.EventManager.Subscribe<EndOfRoundData>("EndOfRound", (data) =>
-            {             
-                EndOfRound();        
+            {
+                EndOfRound();
             }, priority: 2);
 
             _gameContext.EventManager.Subscribe<PreHeroCardPickedEventData>("PreHeroCardPicked", data =>
-            {             
-                PreHeroCardPickedEventData(data);        
+            {
+                PreHeroCardPickedEventData(data);
             }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<ResourceSpendEventData>("ResourceSpendEvent", data =>
+           {
+               EventsOnResourceSpend(data);
+           }, priority: 1);
 
 
         }
 
-        public void PreHeroCardPickedEventData(PreHeroCardPickedEventData data){
+        public void EventsOnResourceSpend(ResourceSpendEventData data)
+        {
+            var player = GetPlayerById(data.PlayerId);
+            if (player == null) return;
+
+            var aura = player.AurasTypes.Find(a => a.Aura == AurasType.GOLD_WHEN_NO_GOLD);
+            if ( aura != null && data.ResourceLeft == 0 && data.ResourceType == ResourceType.Gold)
+            {
+                player.ResourceManager.AddResource(ResourceType.Gold, aura.Value1 ?? 1);
+
+                ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
+                {
+                    Resources = new List<Resource> { new Resource(ResourceType.Gold, 1) },
+                    ResourceInfo = $"has received {aura.Value1 ?? 1} gold for starting close to castle",
+                    PlayerId = player.Id,
+                };
+                _gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
+            }
+        }
+
+        public void PreHeroCardPickedEventData(PreHeroCardPickedEventData data)
+        {
             var player = GetPlayerById(data.PlayerId);
             if (player == null) return;
 
@@ -85,17 +111,18 @@ namespace BoardGameBackend.Managers
 
             if (aura == null || aura?.Value1 == null) return;
 
-            data.ReplacedHero = new ReplacedHero{HeroCard = data.HeroCard, WasOnLeftSide = data.WasOnLeftSide };
+            data.ReplacedHero = new ReplacedHero { HeroCard = data.HeroCard, WasOnLeftSide = data.WasOnLeftSide };
             var heroInfo = player.PlayerHeroCardManager.GetHeroCardById(aura.Value1.Value)!;
 
-            if(heroInfo == null) return;
+            if (heroInfo == null) return;
 
             player.PlayerHeroCardManager.RemoveHeroCardById(aura.Value1.Value);
             data.HeroCard = heroInfo.HeroCard;
             data.WasOnLeftSide = heroInfo.LeftSide;
         }
 
-        public void EndOfRound(){
+        public void EndOfRound()
+        {
             Players.ForEach(p => p.ResourceManager.EndOfRoundIncome());
         }
 
@@ -107,10 +134,11 @@ namespace BoardGameBackend.Managers
 
             var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.ARTIFACT_ON_ROYAL_CARD);
 
-            for(int i = 0; i<amountOfAuras; i++){
+            for (int i = 0; i < amountOfAuras; i++)
+            {
                 _gameContext.ArtifactManager.AddArtifactsToPlayer(1, player);
             }
-        
+
         }
 
         public void CheckForAurasOnMercenaryPicked(MercenaryPicked mercenaryPicked)
@@ -160,7 +188,7 @@ namespace BoardGameBackend.Managers
 
             if (player == null) return;
 
-           
+
             var condition = (data.TileReward.EmptyReward == false && data.TileReward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1) ||
                 (data.TileReward.TokenReward != null && data.TileReward.TokenReward.Reward.EmptyReward == false && data.TileReward.TokenReward.Reward.Resources.FindIndex(r => r.Type == ResourceType.Gold) == -1);
             ApplyAuraReward(player, data, AurasType.GOLD_ON_TILES_WITHOUT_GOLD, condition);
@@ -193,9 +221,21 @@ namespace BoardGameBackend.Managers
             ApplyAuraReward(player, data, AurasType.GOLD_ON_TILE_TELEPORT, condition);
 
             var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.EMPTY_MOVE_ON_TILES_WITH_SIGNET);
-            if(amountOfAuras > 0){
-                if(data.TileReward.TempSignet == true && player.PlayerHeroCardManager.CurrentHeroCard != null){
-                    player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1; 
+            if (amountOfAuras > 0)
+            {
+                if (data.TileReward.TempSignet == true && player.PlayerHeroCardManager.CurrentHeroCard != null)
+                {
+                    player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
+                    data.MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft;
+                }
+            }
+
+            amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.EMPTY_MOVE_ON_TILES_WITH_TELEPORT);
+            if (amountOfAuras > 0)
+            {
+                if (data.TileReward.TeleportedTileId != null && player.PlayerHeroCardManager.CurrentHeroCard != null)
+                {
+                    player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
                     data.MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft;
                 }
             }

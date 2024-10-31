@@ -181,6 +181,33 @@ namespace BoardGameBackend.Controllers
             }
         }
 
+        [HttpPost("rotate/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(RotatePawnMiniPhase))]
+        public ActionResult RotatePawn(string id, [FromBody] RotatePawnData data)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                var swappedTokens = gameContext.PawnManager.RotatePawn(player, data.TileId);
+
+                if (!swappedTokens)
+                {
+                    return BadRequest(new { Error = "Unable to rotate pawn." });
+                }
+
+                return Ok(new { Message = "Rotate pawn successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+        }
+
         [HttpGet("goldIntoMovement/{id}")]
         [Authorize]
         [PhaseCheckFilter(typeof(BoardPhase))]

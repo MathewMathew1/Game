@@ -126,7 +126,18 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastEndSwapTokens(gameId);
             }, priority: 1); 
 
+            gameContext.EventManager.Subscribe("RotatePawnMiniPhaseStarted", () =>
+            {
+                BroadcastStartRotatePawn(gameId);
+            }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("RotatePawnMiniPhaseEnded", () =>
+            {
+                BroadcastEndRotatePawn(gameId);
+            }, priority: 1); 
+
         }
+
 
         public void BroadcastTeleportationMiniPhaseStart(string gameId)
         {
@@ -258,6 +269,18 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SwapTokenMiniPhaseStarted");
+        }
+
+        public void BroadcastEndRotatePawn(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotatePawnMiniPhaseEnded");
+        }
+
+        public void BroadcastStartRotatePawn(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotatePawnMiniPhaseStarted");
         }
 
 

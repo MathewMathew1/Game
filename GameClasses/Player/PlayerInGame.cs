@@ -25,7 +25,7 @@ namespace BoardGameBackend.Models
         {
             Id = player.Id;
             Name = player.Name;
-            ResourceManager = new ResourceManager();
+            ResourceManager = new ResourceManager(this);
             ResourceHeroManager = new ResourceHeroManager();
         }
 

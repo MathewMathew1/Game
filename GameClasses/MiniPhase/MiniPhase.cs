@@ -289,6 +289,28 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class RotatePawnMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.RotatePawnMiniPhase;
+
+        public RotatePawnMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("RotatePawnMiniPhaseStarted");
+            Console.WriteLine("RotatePawnMiniPhaseStarted.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("RotatePawnMiniPhaseEnded");
+            Console.WriteLine("RotatePawnMiniPhaseEnded.");
+        }
+    }
+
     public class RerollMercenaryMiniPhaseStarted
     {
         public required Player CurrentPlayer { get; set; }

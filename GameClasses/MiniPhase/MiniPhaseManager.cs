@@ -117,6 +117,11 @@ namespace BoardGameBackend.Managers
             {             
                 EndCurrentMiniPhase();                    
             }, priority: 2);
+
+            gameContext.EventManager.Subscribe<RotateTileEventData>("RotateTileEvent", data =>
+            {             
+                EndCurrentMiniPhase();                    
+            }, priority: 2);
        
         }
 
@@ -191,6 +196,14 @@ namespace BoardGameBackend.Managers
         public void StarRerollMercenaryMiniPhase()
         {
             var miniPhaseClass = new RerollMercenaryMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StarRotatePawnMiniPhase()
+        {
+            if(_gameContext.PawnManager._currentTile.RotateID == 14) return;
+
+            var miniPhaseClass = new RotatePawnMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
         }
 

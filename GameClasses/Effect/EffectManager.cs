@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Managers
@@ -34,9 +35,11 @@ namespace BoardGameBackend.Managers
                 {EffectType.REPLAY_ARTIFACT, ReplayArtifact},
                 {EffectType.REPLACE_HERO, ReplaceNextHero},
                 {EffectType.GET_THREE_RANDOM_ARTIFACTS, AddThreeRandomArtifact},
-                {EffectType.GOLD_FOR_PROPHECY, AddThreeRandomArtifact},
+                {EffectType.GOLD_FOR_PROPHECY, GoldForEachProphecy},
+                {EffectType.GOLD_FOR_BUILDINGS, GoldForEachBuilding},
                 {EffectType.BANISH_ROYAL_CARD, BanishRoyalCardHero},
                 {EffectType.SWAP_TOKENS, SwapTokens},
+                {EffectType.ROTATE_PAWN, RotatePawnMiniPhase},
             };
         }
 
@@ -117,6 +120,11 @@ namespace BoardGameBackend.Managers
             _gameContext.MiniPhaseManager.StartSwapTokensMiniPhase();
         }
 
+        private void RotatePawnMiniPhase(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StarRotatePawnMiniPhase();
+        }
+
         private void BanishRoyalCardHero(EffectType effect, PlayerInGame player)
         {
             _gameContext.MiniPhaseManager.StarBanishRoyalCardMiniPhase();
@@ -129,7 +137,22 @@ namespace BoardGameBackend.Managers
 
         private void GoldForEachProphecy(EffectType effect, PlayerInGame player)
         {
-            var amountOfProphecy = player.PlayerMercenaryManager.Mercenaries.Count(m => m.TypeCard == 3);
+            var amountOfProphecy = player.PlayerMercenaryManager.Mercenaries.Count(m => m.TypeCard == MercenaryHelper.ProphecyCardType);
+
+            player.ResourceManager.AddResource(ResourceType.Gold, amountOfProphecy);
+
+            ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
+            {
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, 1) },
+                ResourceInfo = $"has received {amountOfProphecy} gold for starting close to castle",
+                PlayerId = player.Id,
+            };
+            _gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
+        }
+
+        private void GoldForEachBuilding(EffectType effect, PlayerInGame player)
+        {
+            var amountOfProphecy = player.PlayerMercenaryManager.Mercenaries.Count(m => m.TypeCard == MercenaryHelper.BuildingCardType);
 
             player.ResourceManager.AddResource(ResourceType.Gold, amountOfProphecy);
 

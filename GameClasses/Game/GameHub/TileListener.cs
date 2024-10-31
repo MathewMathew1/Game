@@ -64,6 +64,12 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastSwapTokensEvent(gameId, data);                    
             }, priority: 5);
 
+            gameContext.EventManager.Subscribe<RotateTileEventData>("RotateTileEvent", data =>
+            {             
+                BroadcastRotatePawnEvent(gameId, data);                    
+            }, priority: 5);
+
+            
         }
 
         public void BroadcastMoveToTile(MoveOnTile moveOnTile, string gameId)
@@ -138,6 +144,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SwapTokensDataEvent", data);
+        }
+
+        public void BroadcastRotatePawnEvent(string gameId, RotateTileEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotateTileDataEvent", data);
         }
 
       

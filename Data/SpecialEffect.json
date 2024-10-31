@@ -112,4 +112,12 @@
 {"Id" : 112, "Type" : "GOLD_PER_PROPHECY", "TextDescription" : "+1 moneta za każdą posiadaną przepowiednię.", "Req" : -1, "EffectType" : 1, "IntValue1" : 1, "IntValue2" : -1},
 {"Id" : 113, "Type" : "ADJACENT_REWARD_TAKE_NO_POSITION_CHANGE", "TextDescription" : "Można pobierać nagrodę z pola bez poruszania tam pionu konfliktu (obowiązują standardowe zasady ruchu, pole jest oznaczone jako odwiedzone).", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 114, "Type" : "TOKEN_THREE_ARTIFACTS", "TextDescription" : "Dobierz 3 artefakty.", "Req" : -1, "EffectType" : 1, "IntValue1" : 3, "IntValue2" : -1},
-{"Id" : 115, "Type" : "TOKEN_THREE_POINTS", "TextDescription" : "+3 punkty.", "Req" : -1, "EffectType" : 3, "IntValue1" : 3, "IntValue2" : -1}]
+{"Id" : 115, "Type" : "TOKEN_THREE_POINTS", "TextDescription" : "+3 punkty.", "Req" : -1, "EffectType" : 3, "IntValue1" : 3, "IntValue2" : -1},
+{"Id" : 116, "Type" : "GOLD_PER_BUILDING", "TextDescription" : "+1 moneta za każdy posiadany budynek.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 117, "Type" : "RESOURCE_WOOD_AND_NITER", "TextDescription" : "Drewno i Saletra są dostępne w tej turze.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 118, "Type" : "RESOURCE_IRON_AND_WOOD", "TextDescription" : "Żelazo i Drewno są dostępne w tej turze.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 119, "Type" : "RESOURCE_GEMS_AND_IRON", "TextDescription" : "Klejnoty i Żelazo są dostępne w tej turze.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 120, "Type" : "RESOURCE_NITER_AND_GEMS", "TextDescription" : "Saletra i Klejnoty są dostępne w tej turze.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 121, "Type" : "TILE_PORTAL_EMPTY_MOVE", "TextDescription" : "+1 pusty ruch kiedy pobierasz nagrodę z wskazanego pola (portal).", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 122, "Type" : "NO_GOLD_THEN_ONE_GOLD", "TextDescription" : "+1 Moneta za każdym razem kiedy posiadasz 0 monet.", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 123, "Type" : "ROTATE_PAWN_90_180_270", "TextDescription" : "Zmień pozycję pionu konfliktu o 90, 180 bądź 270 stopni względem środka.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1}]

@@ -10,6 +10,7 @@ namespace BoardGameBackend.Models
     {
         public int OffsetX { get; set; }
         public int OffsetY { get; set; }
+        public int RotateID {get; set;}
         public int Id { get; set; }
         public int TileTypeId { get; set; }
         public TokenFromJson? Token { get; set; }

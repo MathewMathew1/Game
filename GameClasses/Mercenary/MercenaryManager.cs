@@ -91,11 +91,11 @@ namespace BoardGameBackend.Managers
 
             if (player.AurasTypes.FindIndex(aura => aura.Aura == AurasType.BUY_CARDS_BY_ANY_RESOURCE) == -1)
             {
-                canBuyMercenary = player.ResourceManager.CheckForResourceAndRemoveThem(ResourcesToSpend);
+                canBuyMercenary = player.ResourceManager.CheckForResourceAndRemoveThem(ResourcesToSpend, _gameContext.EventManager);
             }
             else
             {
-                canBuyMercenary = player.ResourceManager.CheckForResourceAndRemoveThemWithSubstitue(ResourcesToSpend);
+                canBuyMercenary = player.ResourceManager.CheckForResourceAndRemoveThemWithSubstitue(ResourcesToSpend, _gameContext.EventManager);
             }
 
 
