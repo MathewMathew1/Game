@@ -156,6 +156,44 @@ namespace BoardGameBackend.Hubs
             await Clients.Group(lobbyId).SendAsync("PlayerJoined", new { player });
         }
 
+        public async Task Reconnect(string lobbyId)
+        {
+            var userIdClaim = Context.User?.FindFirst("id");
+            var user = await _userService.GetUserById(Guid.Parse(userIdClaim!.Value));
+            var player = _mapper.Map<PlayerInLobby>(user);
+
+            if (Lobbies.TryGetValue(lobbyId, out var lobbyInfo))
+            {
+                if (lobbyInfo.Players.Contains(player.Id))
+                {
+                    player.IsConnected = true;
+                    ConnectionMappings[Context.ConnectionId] = player;
+
+                    await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
+
+                    var lobby = LobbyManager.GetLobbyById(lobbyId);
+                    if (lobby?.Lobby.GameId != null)
+                    {
+                        var gameData = GameManager.GetGameData(lobby.Lobby.GameId, player.Id);
+                        await Clients.Caller.SendAsync("PlayerRejoinedData", gameData);
+                    }
+
+                    await Clients.Group(lobbyId).SendAsync("PlayerReconnected", player);
+                }
+                else
+                {
+                    lobbyInfo.Players.Add(player.Id);
+                    ConnectionMappings[Context.ConnectionId] = player;
+                    await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
+                    await Clients.Group(lobbyId).SendAsync("PlayerJoined", new { player });
+                }
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("ReconnectFailed", "Lobby not found or no longer exists.");
+            }
+        }
+
         private string? GetLobbyIdForPlayer(Guid playerId)
         {
             foreach (var kvp in Lobbies)
