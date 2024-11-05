@@ -18,6 +18,7 @@ namespace BoardGameBackend.Models
         public PlayerRolayCardManager PlayerRolayCardManager = new PlayerRolayCardManager();
         public ResourceHeroManager ResourceHeroManager { get; set; }
         public List<TokenFromJson> Tokens { get; set; } = new List<TokenFromJson>();
+        public Dictionary<string, bool> BoolAdditionalStorage = new Dictionary<string, bool>();
         public int Points { get; set; } = 0;
         public bool AlreadyPlayedCurrentPhase = false;
 
@@ -221,6 +222,8 @@ namespace BoardGameBackend.Models
             var tempSignets = AurasTypes.Count(aura => aura.Aura == AurasType.TEMPORARY_SIGNET);
             ResourceHeroManager.SubtractResource(ResourceHeroType.Signet, tempSignets);
             AurasTypes = AurasTypes.FindAll(aura => aura.Permanent == true);
+
+            BoolAdditionalStorage.Clear();
         }
 
         public void PlayedArtifact(int artifactId)

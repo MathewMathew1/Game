@@ -37,7 +37,7 @@ namespace BoardGameBackend.Managers
             BoardManager = new BoardManager(this);
             GameTiles = new GameTiles(this);
             PawnManager = new PawnManager(GameTiles.GetTileById(27), this);
-            MercenaryManager = new MercenaryManager(this, startGameModel.RemovePropheciesAtLastRound);
+            MercenaryManager = new MercenaryManager(this, startGameModel.RemovePropheciesAtLastRound, startGameModel.SameAmountOfMercenariesEachRound);
             MiniPhaseManager = new MiniPhaseManager(this);
             ArtifactManager = new ArtifactManager(this);
             EffectManager = new EffectManager(this);

@@ -230,7 +230,8 @@ namespace BoardGameBackend.Managers
                     MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft,
                     TileReward = tileReward,
                     Player = player,
-                    TileId = tile.Id
+                    TileId = tile.Id,
+                    Tile = tile
                 };
 
                 player.PlayerHeroCardManager.CurrentHeroCard.VisitedPlaces.Add(tile.Id);
@@ -292,7 +293,8 @@ namespace BoardGameBackend.Managers
                 TileReward = tileReward,
                 Player = player,
                 TileId = tile.Id,
-                AdjacentMovement = AdjacentMovement
+                AdjacentMovement = AdjacentMovement,
+                Tile = tile
             };
             player.PlayerHeroCardManager.CurrentHeroCard.VisitedPlaces.Add(tile.Id);
 

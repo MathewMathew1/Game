@@ -120,4 +120,7 @@
 {"Id" : 120, "Type" : "RESOURCE_NITER_AND_GEMS", "TextDescription" : "Saletra i Klejnoty są dostępne w tej turze.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 121, "Type" : "TILE_PORTAL_EMPTY_MOVE", "TextDescription" : "+1 pusty ruch kiedy pobierasz nagrodę z wskazanego pola (portal).", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 122, "Type" : "NO_GOLD_THEN_ONE_GOLD", "TextDescription" : "+1 Moneta za każdym razem kiedy posiadasz 0 monet.", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
-{"Id" : 123, "Type" : "ROTATE_PAWN_90_180_270", "TextDescription" : "Zmień pozycję pionu konfliktu o 90, 180 bądź 270 stopni względem środka.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1}]
+{"Id" : 123, "Type" : "ROTATE_PAWN_90_180_270", "TextDescription" : "Zmień pozycję pionu konfliktu o 90, 180 bądź 270 stopni względem środka.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 124, "Type" : "ARTIFACT_REROLL_DO_NOT_END_PHASE", "TextDescription" : "Po wymianie artefaktu podczas fazy artefaktów gracz może nadal zagrać dowolny artefakt albo spasować.", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 125, "Type" : "ONE_FULL_AND_ONE_EMPTY_MOVE", "TextDescription" : "+1 pełny ruch i +1 pusty ruch.", "Req" : 6, "EffectType" : 1, "IntValue1" : 1, "IntValue2" : 1},
+{"Id" : 126, "Type" : "TILE_CASTLE_EMPTY_MOVE", "TextDescription" : "+1 pusty ruch kiedy pobierasz nagrodę z wskazanego pola (zamek: monety i żeton).", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1}]

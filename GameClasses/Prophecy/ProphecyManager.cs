@@ -364,9 +364,9 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class ProphecyNinetyEight : BaseProphecyPoints
+    public class ProphecyNinetyNine : BaseProphecyPoints
     {
-        public ProphecyNinetyEight(int value1, int value2) : base(value1, value2) { }
+        public ProphecyNinetyNine(int value1, int value2) : base(value1, value2) { }
 
         protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
         {
@@ -379,9 +379,9 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class ProphecyNinetyNine : BaseProphecyPoints
+    public class ProphecyNinetyEight : BaseProphecyPoints
     {
-        public ProphecyNinetyNine(int value1, int value2) : base(value1, value2) { }
+        public ProphecyNinetyEight(int value1, int value2) : base(value1, value2) { }
 
         protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
         {

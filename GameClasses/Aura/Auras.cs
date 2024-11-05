@@ -40,7 +40,9 @@ namespace BoardGameBackend.Models
         EMPTY_MOVEMENT_WHEN_HERO_HAS_EMPTY_MOVEMENT,
         ADJACENT_TILE_REWARD,
         EMPTY_MOVE_ON_TILES_WITH_TELEPORT,
-        GOLD_WHEN_NO_GOLD
+        GOLD_WHEN_NO_GOLD,
+        EMPTY_MOVE_ON_TILE_WITH_CASTLE,
+        EXTRA_ARTIFACT_REROLL
     }
 
     public enum EndGameAuraType

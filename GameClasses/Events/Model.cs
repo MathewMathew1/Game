@@ -85,6 +85,7 @@ namespace BoardGameBackend.Models
         public int MovementFullLeft { get; set; }
         public int MovementUnFullLeft { get; set; }
         public int TileId { get; set; }
+        public required Tile Tile { get; set; }
         public bool AdjacentMovement { get; set; }
     }
 

@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Managers
@@ -29,7 +30,14 @@ namespace BoardGameBackend.Managers
             {
                 EndTurn();
             }, priority: 0);
-            _gameContext.EventManager.Subscribe("ArtifactRerolled", (ArtifactRerolledData data) => EndTurn(), priority: 0);
+            _gameContext.EventManager.Subscribe("ArtifactRerolled", (ArtifactRerolledData data) => {
+                var player = data.Player;
+                if(player.AurasTypes.Any(a => a.Aura == AurasType.EXTRA_ARTIFACT_REROLL) && !player.BoolAdditionalStorage.ContainsKey(BoolHelper.EXTRA_REROLL_PLAYED)){
+                    player.BoolAdditionalStorage.Add(BoolHelper.EXTRA_REROLL_PLAYED, true);
+                }else{
+                    EndTurn();
+                }       
+            }, priority: 0);
             _gameContext.EventManager.Subscribe("ArtifactPlayed", (ArtifactPlayed data) => EndTurn(), priority: 0);
             _gameContext.EventManager.Subscribe<MercenaryRerolled>("MercenaryRerolled", rerollMercenaryData =>
             {

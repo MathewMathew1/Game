@@ -98,7 +98,8 @@ namespace BoardGameBackend.Managers
                     Artifacts = p.ArtifactPlayerData(),
                     Morale = p.Morale,
                     GoldIncome = p.ResourceManager.GoldIncome,
-                    AlreadyPlayedTurn = p.AlreadyPlayedCurrentPhase
+                    AlreadyPlayedTurn = p.AlreadyPlayedCurrentPhase,
+                    BoolStorage = p.BoolAdditionalStorage.Keys.ToList(),
                 };
 
                 playersData.Add(playerData);

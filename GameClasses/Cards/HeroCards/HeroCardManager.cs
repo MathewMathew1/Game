@@ -217,8 +217,12 @@ namespace BoardGameBackend.Models
                 if (effectId != null)
                 {
                     var heroRewardClass = RewardFactory.GetRewardById(effectId.Value);
-                    reward = heroRewardClass.OnReward();
-                    _gameContext.RewardHandlerManager.HandleReward(player, reward);
+                    if(heroRewardClass != null){
+                        reward = heroRewardClass.OnReward();
+                        _gameContext.RewardHandlerManager.HandleReward(player, reward);
+                    }else{
+                        Console.WriteLine("ERROR LACKING REWARD");
+                    }            
                 }
 
                 var eventArgs = new HeroCardPicked(heroCard, player, currentHeroCard, reward);

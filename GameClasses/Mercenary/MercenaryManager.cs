@@ -13,9 +13,14 @@ namespace BoardGameBackend.Managers
         private int _nextInGameIndex = 1;
         private GameContext _gameContext;
         private bool _removePropheciesAtLastRound = false;
+        private bool _sameAmountOfMercenariesEachRound = false;
 
-        public MercenaryManager(GameContext gameContext, bool removePropheciesAtLastRound)
+        public MercenaryManager(GameContext gameContext, bool removePropheciesAtLastRound, bool sameAmountOfMercenariesEachRound)
         {
+            _sameAmountOfMercenariesEachRound = sameAmountOfMercenariesEachRound;
+            if(_sameAmountOfMercenariesEachRound){
+                BuyableMercenariesCount = 5;
+            }
             _removePropheciesAtLastRound = removePropheciesAtLastRound;
             _gameContext = gameContext;
             _mercenaries = new List<Mercenary>();
@@ -165,7 +170,11 @@ namespace BoardGameBackend.Managers
         public void EndOfRound()
         {
             if (_removePropheciesAtLastRound && _gameContext.TurnManager.CurrentRound == 5) RemoveProphecyMercenaries();
-            BuyableMercenariesCount += 1;
+
+            if(!_sameAmountOfMercenariesEachRound){
+                BuyableMercenariesCount += 1;
+            }
+            
             var mercenariesToRemove = new List<Mercenary>();
 
             BuyableMercenaries.ForEach(mercenary =>

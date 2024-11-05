@@ -113,6 +113,22 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class EmptyAndFullMovementReward : BaseReward
+    {
+        public EmptyAndFullMovementReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() { 
+                    new AuraTypeWithLongevity { Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = false },
+                    new AuraTypeWithLongevity { Aura = AurasType.ONE_EMPTY_MOVEMENT, Permanent = false }
+                }
+            };
+        }
+    }
+
     public class GoldWhenNoGoldReward : BaseReward
     {
         public GoldWhenNoGoldReward(int value1, int value2) : base(value1, value2) { }
@@ -1180,6 +1196,35 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class EmptyMoveOnCastleReward : BaseReward
+    {
+        public EmptyMoveOnCastleReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVE_ON_TILE_WITH_CASTLE, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class ExtraArtifactRerollReward : BaseReward
+    {
+        public ExtraArtifactRerollReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EXTRA_ARTIFACT_REROLL, Permanent = true }
+                }
+            };
+        }
+    }
 
 
     public class NoReward : BaseReward
@@ -1487,9 +1532,20 @@ namespace BoardGameBackend.Models
                      case 122:
                         _rewards.Add(rewardData.Id, new GoldWhenNoGoldReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
+                    case 124:
+                        _rewards.Add(rewardData.Id, new ExtraArtifactRerollReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;                        
+                    case 125:
+                        _rewards.Add(rewardData.Id, new EmptyAndFullMovementReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 126:
+                        _rewards.Add(rewardData.Id, new EmptyMoveOnCastleReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
                     case 123:
                         _rewards.Add(rewardData.Id, new RotatePawnReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
+                    
+                        
 
                 }
             }

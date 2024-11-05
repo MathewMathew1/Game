@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Managers
@@ -234,6 +235,17 @@ namespace BoardGameBackend.Managers
             if (amountOfAuras > 0)
             {
                 if (data.TileReward.TeleportedTileId != null && player.PlayerHeroCardManager.CurrentHeroCard != null)
+                {
+                    player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
+                    data.MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft;
+                }
+            }
+
+            amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.EMPTY_MOVE_ON_TILE_WITH_CASTLE);
+            if (amountOfAuras > 0)
+            {
+                if (data.Tile.TileTypeId == TileHelper.CastleTileId && player.PlayerHeroCardManager.CurrentHeroCard != null 
+                && (data.TileReward.EmptyReward == false || data.TileReward.TokenReward != null))
                 {
                     player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
                     data.MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft;

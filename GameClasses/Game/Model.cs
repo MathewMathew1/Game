@@ -30,5 +30,6 @@ namespace BoardGameBackend.Models
         public required int Morale {get; set;}
         public required int GoldIncome {get; set;}
         public required bool AlreadyPlayedTurn {get; set;}
+        public required List<string> BoolStorage {get; set;}
     }
 }

@@ -6,6 +6,7 @@ namespace BoardGameBackend.Models
         public bool LessCards {get; set;} = false;
         public bool MoreHeroCards {get; set;} = false;
         public bool RemovePropheciesAtLastRound {get; set;} = false;
+        public bool SameAmountOfMercenariesEachRound {get; set;} = false;
     }
 
     public enum TurnTypes{

@@ -99,6 +99,8 @@ namespace BoardGameBackend.Managers
 
             if (artifact == null) return false;
 
+            if(player.BoolAdditionalStorage.ContainsKey(BoolHelper.EXTRA_REROLL_PLAYED)) return false;
+
             var artifactRerolled = GetArtifactFromTop();
 
             player.RerollArtifact(artifactId, artifactRerolled);
