@@ -242,7 +242,7 @@ namespace BoardGameBackend.Managers
         {
             TossedAwayMercenaries.AddRange(BuyableMercenaries);
 
-            BuyableMercenaries.Clear();
+            BuyableMercenaries = BuyableMercenaries.FindAll(m => m.LockedByPlayerInfo != null);
 
             for (int i = 0; i < BuyableMercenariesCount; i++)
             {
