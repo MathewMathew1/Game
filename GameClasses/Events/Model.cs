@@ -85,7 +85,7 @@ namespace BoardGameBackend.Models
         public int MovementFullLeft { get; set; }
         public int MovementUnFullLeft { get; set; }
         public int TileId { get; set; }
-        public required Tile Tile { get; set; }
+        public required TileWithType Tile { get; set; }
         public bool AdjacentMovement { get; set; }
     }
 
@@ -94,6 +94,10 @@ namespace BoardGameBackend.Models
         public required AurasType? AuraUsed { get; set; }
         public required PlayerInGame Player { get; set; }
         public int TileId { get; set; }
+    }
+
+    public class NewTokensSetupEventData{
+        public required List<TokenTileInfo> NewTokens {get; set;}
     }
 
     public class MoveOnTileForOtherUsers

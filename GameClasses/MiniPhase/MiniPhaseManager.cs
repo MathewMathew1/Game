@@ -226,7 +226,7 @@ namespace BoardGameBackend.Managers
         public void StartSwapTokensMiniPhase()
         {
             var tokenInfo = _gameContext.GameTiles.GetTokenInfo();
-            var tokensAmount = tokenInfo.Count(token => token.Token.Dummy == false);
+            var tokensAmount = tokenInfo.Count(token => token.Token.InStartingPool == true);
 
             if(tokensAmount < 2){
                 return;

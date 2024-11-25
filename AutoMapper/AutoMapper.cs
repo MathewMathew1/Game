@@ -36,7 +36,7 @@ namespace BoardGameBackend.Mappers
             // Define the mapping configuration
             var config = new MapperConfiguration(cfg =>
             {
-
+                cfg.ConstructServicesUsing(type => new TileTypeResolver(TileTypes.Tiles));
                 cfg.AddProfile<GameMappingProfile>();
             });
 
@@ -51,6 +51,7 @@ namespace BoardGameBackend.Mappers
     {
         public GameMappingProfile()
         {
+            
              CreateMap<MoveOnTile, MoveOnTileForOtherUsers>()
             .ForMember(dest => dest.TileReward, opt => opt.MapFrom(src => src.TileReward));
 
@@ -62,6 +63,9 @@ namespace BoardGameBackend.Mappers
             CreateMap<MercenaryFromJson, Mercenary>()
             .ForMember(dest => dest.ResourcesNeeded, opt => opt.MapFrom(src => MapResourcesNeeded(src.ResourcesNeeded)))
             .ForMember(dest => dest.Faction, opt => opt.MapFrom(src => Fractions.GetFractionById(src.Faction)));
+
+            CreateMap<Tile, TileWithType>()
+            .ForMember(dest => dest.TileType, opt => opt.MapFrom<TileTypeResolver>());
 
             CreateMap<ArtifactFromJson, Artifact>();
             CreateMap<RolayCardFromJson, RolayCard>().

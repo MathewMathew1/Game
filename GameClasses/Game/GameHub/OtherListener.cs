@@ -33,6 +33,13 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastAddAura(gameId, data);                     
             }, priority: 1);
 
+            gameContext.EventManager.Subscribe<NewTokensSetupEventData>("NewTokensSetup", data =>
+            {             
+                BroadcastNewTokens(gameId, data);                     
+            }, priority: 1);
+
+        
+
         }
 
         public void BroadcastTeleportation(string gameId, TeleportationData teleportationData)
@@ -43,16 +50,21 @@ namespace BoardGameBackend.Managers.EventListeners
 
         public void BroadcastEndOfGame(string gameId, EndOfGame endOfGame)
         {
-            Console.WriteLine("Halo");
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("EndOfGame", endOfGame);
         }
 
         public void BroadcastAddAura(string gameId, AddAura data)
         {
-            Console.WriteLine("Halo");
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("AddAura", data);
+        }
+
+        
+        public void BroadcastNewTokens(string gameId, NewTokensSetupEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("NewTokensSetup", data);
         }
 
 

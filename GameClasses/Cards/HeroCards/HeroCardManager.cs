@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Managers;
 using BoardGameBackend.Mappers;
 
@@ -33,7 +34,7 @@ namespace BoardGameBackend.Models
 
             _gameContext.EventManager.Subscribe("StartTurn", () =>
             {
-                SetUpNewCards();
+                StartOfRoundSetup();
             }, priority: 5);
         }
 
@@ -174,10 +175,10 @@ namespace BoardGameBackend.Models
 
                     heroCard = leftCard;
                     unusedHeroCard = _heroCardCombinedList[i].RightSide;
-                    
+
                     var playerViewModel = GameMapper.Instance.Map<PlayerViewModel>(player);
                     _heroCardCombinedList[i].PlayerWhoPickedCard = playerViewModel;
-                    
+
                     leftSide = true;
                     _takenCards[id] = player;
                     break;
@@ -193,10 +194,10 @@ namespace BoardGameBackend.Models
 
                     unusedHeroCard = _heroCardCombinedList[i].LeftSide;
                     heroCard = rightCard;
-                    
+
                     var playerViewModel = GameMapper.Instance.Map<PlayerViewModel>(player);
                     _heroCardCombinedList[i].PlayerWhoPickedCard = playerViewModel;
-                    
+
                     _takenCards[id] = player;
                     break;
                 }
@@ -217,12 +218,15 @@ namespace BoardGameBackend.Models
                 if (effectId != null)
                 {
                     var heroRewardClass = RewardFactory.GetRewardById(effectId.Value);
-                    if(heroRewardClass != null){
+                    if (heroRewardClass != null)
+                    {
                         reward = heroRewardClass.OnReward();
                         _gameContext.RewardHandlerManager.HandleReward(player, reward);
-                    }else{
+                    }
+                    else
+                    {
                         Console.WriteLine("ERROR LACKING REWARD");
-                    }            
+                    }
                 }
 
                 var eventArgs = new HeroCardPicked(heroCard, player, currentHeroCard, reward);
@@ -233,29 +237,56 @@ namespace BoardGameBackend.Models
 
         }
 
+        public void StartOfRoundSetup(){
+            if (_gameContext.TurnManager.CurrentTurn % 2 == 0) return;
+
+            SetUpNewCards();
+            SetupTokens();
+        }
+
         public void SetUpNewCards()
         {
             List<HeroCardCombined>? newCards;
-            if (_gameContext.TurnManager.CurrentTurn % 2 != 0)
+            
+
+            var amount = _gameContext.PlayerManager.Players.Count * 2;
+            if (_moreCardsPerRound == true)
             {
-                var amount = _gameContext.PlayerManager.Players.Count * 2;
-                if (_moreCardsPerRound == true)
-                {
-                    amount = amount + 1;
-                }
-                newCards = _gameContext.HeroCardManager.TakeTopNHeroCards(amount);
-
-                var eventArgs = new NewCardsSetupData
-                {
-                    Player = _gameContext.TurnManager.CurrentPlayer!,
-                    TurnCount = _gameContext.TurnManager.CurrentTurn,
-                    NewCards = newCards,
-                    RoundCount = _gameContext.TurnManager.CurrentRound
-                };
-
-                _gameContext.EventManager.Broadcast("NewCardsSetup", ref eventArgs);
+                amount = amount + 1;
             }
+            newCards = _gameContext.HeroCardManager.TakeTopNHeroCards(amount);
 
+            var eventArgs = new NewCardsSetupData
+            {
+                Player = _gameContext.TurnManager.CurrentPlayer!,
+                TurnCount = _gameContext.TurnManager.CurrentTurn,
+                NewCards = newCards,
+                RoundCount = _gameContext.TurnManager.CurrentRound
+            };
+            
+            _gameContext.EventManager.Broadcast("NewCardsSetup", ref eventArgs);
+
+        }
+
+        public void SetupTokens(){
+            List<TokenTileInfo> newTokens = new List<TokenTileInfo> {};
+
+            var token = _gameContext.TokenManager.GetTokenById(TileHelper.MarketTokenId);
+
+            if(token == null) return;
+
+            _gameContext.GameTiles.Tiles.ForEach(tile => {
+                if(tile.TileTypeId == TileHelper.MarketTileId && tile.Token == null){
+                    tile.Token = token;
+                    newTokens.Add(new TokenTileInfo { TileId = tile.Id, Token = token});
+                }
+            });
+
+            NewTokensSetupEventData eventArgs = new NewTokensSetupEventData {
+                NewTokens = newTokens,
+            };
+
+            _gameContext.EventManager.Broadcast("NewTokensSetup", ref eventArgs);
         }
     }
 }

@@ -60,6 +60,19 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class MarketGold : BaseReward
+    {
+        public MarketGold(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, Value1) },
+            };
+        }
+    }
+
     public class FiveGold : BaseReward
     {
         public FiveGold(int value1, int value2) : base(value1, value2) { }
@@ -121,7 +134,7 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                AurasTypes = new List<AuraTypeWithLongevity>() { 
+                AurasTypes = new List<AuraTypeWithLongevity>() {
                     new AuraTypeWithLongevity { Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = false },
                     new AuraTypeWithLongevity { Aura = AurasType.ONE_EMPTY_MOVEMENT, Permanent = false }
                 }
@@ -379,7 +392,7 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                Effects = new List<EffectType>() { EffectType.  GOLD_FOR_PROPHECY }
+                Effects = new List<EffectType>() { EffectType.GOLD_FOR_PROPHECY }
             };
         }
     }
@@ -654,6 +667,45 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 Effects = new List<EffectType>() { EffectType.GOLD_FOR_BUILDINGS }
+            };
+        }
+    }
+
+    public class DuelMagicReward : BaseReward
+    {
+        public DuelMagicReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.DUEL_MAGIC }
+            };
+        }
+    }
+
+    public class DuelSiegeReward : BaseReward
+    {
+        public DuelSiegeReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.DUEL_SIEGE }
+            };
+        }
+    }
+
+    public class DuelArmyReward : BaseReward
+    {
+        public DuelArmyReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.DUEL_ARMY }
             };
         }
     }
@@ -1226,6 +1278,36 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class InstantWinDuelReward : BaseReward
+    {
+        public InstantWinDuelReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.INSTANT_WIN_DUEL, Permanent = false }
+                }
+            };
+        }
+    }
+
+    public class GoldOnDuelTilesReward : BaseReward
+    {
+        public GoldOnDuelTilesReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILE_DUEL, Permanent = true }
+                }
+            };
+        }
+    }
+
 
     public class NoReward : BaseReward
     {
@@ -1529,12 +1611,12 @@ namespace BoardGameBackend.Models
                     case 121:
                         _rewards.Add(rewardData.Id, new EmptyMoveOnTpReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
-                     case 122:
+                    case 122:
                         _rewards.Add(rewardData.Id, new GoldWhenNoGoldReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 124:
                         _rewards.Add(rewardData.Id, new ExtraArtifactRerollReward(rewardData.IntValue1, rewardData.IntValue2));
-                        break;                        
+                        break;
                     case 125:
                         _rewards.Add(rewardData.Id, new EmptyAndFullMovementReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
@@ -1544,8 +1626,30 @@ namespace BoardGameBackend.Models
                     case 123:
                         _rewards.Add(rewardData.Id, new RotatePawnReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
-                    
-                        
+                    case 134:
+                        _rewards.Add(rewardData.Id, new MarketGold(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 127:
+                        _rewards.Add(rewardData.Id, new  GoldOnDuelTilesReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 128:
+                        _rewards.Add(rewardData.Id, new InstantWinDuelReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 129:
+                        _rewards.Add(rewardData.Id, new DuelMagicReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 130:
+                        _rewards.Add(rewardData.Id, new DuelSiegeReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 131:
+                        _rewards.Add(rewardData.Id, new DuelArmyReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                       
+                    case 132:
+                        _rewards.Add(rewardData.Id, new InstantWinDuelReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+
+
 
                 }
             }

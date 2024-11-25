@@ -123,4 +123,12 @@
 {"Id" : 123, "Type" : "ROTATE_PAWN_90_180_270", "TextDescription" : "Zmień pozycję pionu konfliktu o 90, 180 bądź 270 stopni względem środka.", "Req" : 6, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 124, "Type" : "ARTIFACT_REROLL_DO_NOT_END_PHASE", "TextDescription" : "Po wymianie artefaktu podczas fazy artefaktów gracz może nadal zagrać dowolny artefakt albo spasować.", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 125, "Type" : "ONE_FULL_AND_ONE_EMPTY_MOVE", "TextDescription" : "+1 pełny ruch i +1 pusty ruch.", "Req" : 6, "EffectType" : 1, "IntValue1" : 1, "IntValue2" : 1},
-{"Id" : 126, "Type" : "TILE_CASTLE_EMPTY_MOVE", "TextDescription" : "+1 pusty ruch kiedy pobierasz nagrodę z wskazanego pola (zamek: monety i żeton).", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1}]
+{"Id" : 126, "Type" : "TILE_CASTLE_EMPTY_MOVE", "TextDescription" : "+1 pusty ruch kiedy pobierasz nagrodę z wskazanego pola (zamek: monety i żeton).", "Req" : -1, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 127, "Type" : "TILE_BATTLE_GRANTS_GOLD", "TextDescription" : "+1 moneta kiedy pobierasz nagrodę z wskazanego pola (potyczki).", "Req" : -1, "EffectType" : 2, "IntValue1" : 1, "IntValue2" : -1},
+{"Id" : 128, "Type" : "ALL_BATTLES_INSTANT_WIN", "TextDescription" : "W tej turze wygrywasz wszystkie potyczki.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 129, "Type" : "TRIGGER_BATTLE_MAGIC", "TextDescription" : "Otrzymujesz nagrody z potyczki (magia).", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 130, "Type" : "TRIGGER_BATTLE_SIEGE", "TextDescription" : "Otrzymujesz nagrody z potyczki (oblężenie).", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 131, "Type" : "TRIGGER_BATTLE_ARMY", "TextDescription" : "Otrzymujesz nagrody z potyczki (armia).", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 132, "Type" : "HERO_ALL_BATTLES_INSTANT_WIN", "TextDescription" : "W tej turze wygrywasz wszystkie potyczki.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 133, "Type" : "HERO_REROLL", "TextDescription" : "Odrzuć wybraną kartę bohatera z dostępnej puli i odkryj nową.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 134, "Type" : "TARGOWISKO_3_MONETY", "TextDescription" : "+3 monety.", "Req" : -1, "EffectType" : 1, "IntValue1" : 3, "IntValue2" : -1}]

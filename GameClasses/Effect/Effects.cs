@@ -21,7 +21,10 @@ namespace BoardGameBackend.Models
         BANISH_ROYAL_CARD,
         SWAP_TOKENS,
         GOLD_FOR_BUILDINGS,
-        ROTATE_PAWN
+        ROTATE_PAWN,
+        DUEL_MAGIC,
+        DUEL_SIEGE,
+        DUEL_ARMY,
     }
 
     public class GameEffect

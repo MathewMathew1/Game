@@ -14,10 +14,12 @@ namespace BoardGameBackend.Managers
     {
         private readonly Dictionary<EffectType, Action<EffectType, PlayerInGame>> effectActions;
         public GameContext _gameContext { get; set; }
+        private DuelManager _duelManager { get; set; }
 
         public EffectManager(GameContext gameContext)
         {
             _gameContext = gameContext;
+            _duelManager = new DuelManager(gameContext);
             effectActions = new Dictionary<EffectType, Action<EffectType, PlayerInGame>>
             {
                 { EffectType.RETURN_TO_CENTER, RunReturnToCenter },
@@ -40,6 +42,9 @@ namespace BoardGameBackend.Managers
                 {EffectType.BANISH_ROYAL_CARD, BanishRoyalCardHero},
                 {EffectType.SWAP_TOKENS, SwapTokens},
                 {EffectType.ROTATE_PAWN, RotatePawnMiniPhase},
+                {EffectType.DUEL_ARMY, DuelArmy},
+                {EffectType.DUEL_SIEGE, DuelSiege},
+                 {EffectType.DUEL_MAGIC, DuelMagic},
             };
         }
 
@@ -61,6 +66,55 @@ namespace BoardGameBackend.Managers
         private void RunReturnToCenter(EffectType effect, PlayerInGame player)
         {
             _gameContext.PawnManager.MoveToCenter(player);
+        }
+
+        private void DuelMagic(EffectType effect, PlayerInGame player)
+        {
+            var reward = _duelManager.ArtifactDuel(player, ResourceHeroType.Magic);
+
+            ApplyRewardFromDuel(reward, player);
+        }
+
+        private void DuelArmy(EffectType effect, PlayerInGame player)
+        {
+            var reward = _duelManager.ArtifactDuel(player, ResourceHeroType.Army);
+
+            ApplyRewardFromDuel(reward, player);
+        }
+
+        private void DuelSiege(EffectType effect, PlayerInGame player)
+        {
+            var reward = _duelManager.ArtifactDuel(player, ResourceHeroType.Siege);
+
+            ApplyRewardFromDuel(reward, player);
+        }
+
+        private void ApplyRewardFromDuel(PlayerReward? playerReward, PlayerInGame player)
+        {
+            if (playerReward == null) return;
+
+            if (playerReward.Artifact)
+            {
+                _gameContext.ArtifactManager.AddArtifactsToPlayer(1, player);
+            }
+
+            if (playerReward.Gold > 0)
+            {
+                player.ResourceManager.AddResource(ResourceType.Gold, playerReward.Gold);
+
+                ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
+                {
+                    Resources = new List<Resource> { new Resource(ResourceType.Gold, playerReward.Gold) },
+                    ResourceInfo = $"has received {playerReward.Gold} gold for duel",
+                    PlayerId = player.Id,
+                };
+                _gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
+            }
+
+            if (playerReward.Reroll)
+            {
+                _gameContext.MiniPhaseManager.StarRerollMercenaryMiniPhase();
+            }
         }
 
         private void RefreshMercenaries(EffectType effect, PlayerInGame player)
@@ -158,7 +212,7 @@ namespace BoardGameBackend.Managers
 
             ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Gold, 1) },
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, amountOfProphecy) },
                 ResourceInfo = $"has received {amountOfProphecy} gold for starting close to castle",
                 PlayerId = player.Id,
             };

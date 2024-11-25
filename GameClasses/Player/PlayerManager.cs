@@ -221,6 +221,9 @@ namespace BoardGameBackend.Managers
             condition = data.TileReward.TeleportedTileId != null;
             ApplyAuraReward(player, data, AurasType.GOLD_ON_TILE_TELEPORT, condition);
 
+            condition = TileHelper.DuelTilesId.Contains(data.Tile.TileTypeId);
+            ApplyAuraReward(player, data, AurasType.GOLD_ON_TILE_DUEL, condition);
+
             var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.EMPTY_MOVE_ON_TILES_WITH_SIGNET);
             if (amountOfAuras > 0)
             {

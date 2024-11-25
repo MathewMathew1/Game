@@ -9,6 +9,8 @@ using BoardGameBackend.Managers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AutoMapper;
+using BoardGameBackend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +23,9 @@ IConfiguration config = configB.Build();
 
 var mongoDbSettings = config.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>()!;
 
-builder.Services.AddSingleton<IMongoClient>(ServiceProvider => {
-    return  new MongoClient(mongoDbSettings.ConnectionStringSetup);
+builder.Services.AddSingleton<IMongoClient>(ServiceProvider =>
+{
+    return new MongoClient(mongoDbSettings.ConnectionStringSetup);
 });
 
 // Add services to the container.
@@ -42,6 +45,9 @@ builder.Services.AddSignalR(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddSingleton<IAuthService, MongoAuthService>();
 builder.Services.AddSingleton<IHubContextProvider, HubContextProvider>();
@@ -67,11 +73,11 @@ builder.Services.AddAuthentication(options =>
             OnMessageReceived = context =>
             {
                 var accessToken = context.Request.Query["access_token"];
-              
+
                 var path = context.HttpContext.Request.Path;
                 if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/lobbyhub"))
                 {
-                    
+
                     context.Token = accessToken;
                 }
 

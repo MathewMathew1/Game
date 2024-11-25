@@ -5,28 +5,31 @@ namespace BoardGameBackend.Managers
 {
     public class PawnManager
     {
-        public Tile _currentTile { get; set; }
+        public TileWithType _currentTile { get; set; }
         private GameContext _gameContext;
+        private DuelManager _duelManager;
 
-
-        public PawnManager(Tile tile, GameContext gameContext)
+        public PawnManager(TileWithType tile, GameContext gameContext)
         {
             _currentTile = tile;
             _gameContext = gameContext;
+            _duelManager = new DuelManager(gameContext);
         }
 
-        public void StopSwappingTokens(){
+        public void StopSwappingTokens()
+        {
             _gameContext.MiniPhaseManager.EndCurrentMiniPhase();
             _gameContext.TurnManager.EndTurn();
         }
 
-        public bool SwapTokens(int tileIdOne, int tileIdTwo, PlayerInGame player){
+        public bool SwapTokens(int tileIdOne, int tileIdTwo, PlayerInGame player)
+        {
             var tile = _gameContext.GameTiles.GetTileById(tileIdOne);
             var tileTwo = _gameContext.GameTiles.GetTileById(tileIdTwo);
 
-            if(tile == null || tileTwo == null) return false;
+            if (tile == null || tileTwo == null) return false;
 
-            if(tile.Token == null || tile.Token.Dummy == true || tileTwo.Token == null || tileTwo.Token.Dummy == true) return false;
+            if (tile.Token == null || tile.TileTypeId == TileHelper.CastleTileId || tileTwo.Token == null || tileTwo.TileTypeId == TileHelper.CastleTileId) return false;
 
             (tile.Token, tileTwo.Token) = (tileTwo.Token, tile.Token);
 
@@ -59,6 +62,10 @@ namespace BoardGameBackend.Managers
             {
                 tileAction = TileActionFactory.GetTileAction(tile.TileTypeId);
                 tileReward = tileAction.OnEnterReward();
+                if (tileReward.Duel != null)
+                {
+                    _duelManager.Duel(player, tileReward.Duel.DuelHeroStat, tileReward);
+                }
             }
 
             var eventArgs = new GetCurrentTileReward
@@ -75,6 +82,7 @@ namespace BoardGameBackend.Managers
             PossiblyAddTemporarySignet(tileReward.TempSignet, player);
 
             player.ResourceManager.AddResources(tileReward.Resources);
+
 
             if (_currentTile.TileTypeId == TileHelper.MagicTileId && player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic) >= TileHelper.MinimumMagic)
             {
@@ -137,12 +145,13 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
-        public bool RotatePawn(PlayerInGame player, int rotatedTileId){
+        public bool RotatePawn(PlayerInGame player, int rotatedTileId)
+        {
             var tile = _gameContext.GameTiles.GetTileById(rotatedTileId);
 
-            if(tile.RotateID != _currentTile.RotateID) return false;
+            if (tile.RotateID != _currentTile.RotateID) return false;
 
-            if(tile.Id == _currentTile.Id) return false;
+            if (tile.Id == _currentTile.Id) return false;
 
             _currentTile = tile;
 
@@ -187,11 +196,11 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
-        public bool SetCurrentTile(Tile tile, PlayerInGame player, bool FullMovement, bool AdjacentMovement, int? TeleportationTileId)
+        public bool SetCurrentTile(TileWithType tile, PlayerInGame player, bool FullMovement, bool AdjacentMovement, int? TeleportationTileId)
         {
             if (!CanMoveToTile(tile, player)) return false;
 
-            if(AdjacentMovement && !player.AurasTypes.Any(aura => aura.Aura == AurasType.ADJACENT_TILE_REWARD)) return false;
+            if (AdjacentMovement && !player.AurasTypes.Any(aura => aura.Aura == AurasType.ADJACENT_TILE_REWARD)) return false;
 
 
             var fullBoot = player.PlayerHeroCardManager.CurrentHeroCard?.MovementFullLeft > 0 || false;
@@ -208,10 +217,25 @@ namespace BoardGameBackend.Managers
 
             if (tile.TileTypeId == TileHelper.MagicTileId && FullMovement)
             {
-                if (player.ResourceHeroManager.GetResourceHeroAmount(ResourceHeroType.Magic) < TileHelper.MinimumMagic)
+
+                if (tile.TileType.Req != null)
                 {
-                    return false;
+                    var req = RequirementMovementStore.GetRequirementById(tile.TileType.Req.Value);
+
+                    var fulfillReq = false;
+                    if (req == null)
+                    {
+                        fulfillReq = false;
+                    }
+                    else
+                    {
+                        fulfillReq = req.CheckRequirements(player);
+                    }
+
+                    if (fulfillReq == false) return false;
+
                 }
+
 
                 var teleportedTile = _gameContext.GameTiles.GetTileById(TeleportationTileId!.Value);
                 if (teleportedTile.IsInRangeOfCastle(player.PlayerHeroCardManager.CurrentHeroCard!.HeroCard.Faction, 3))
@@ -261,6 +285,10 @@ namespace BoardGameBackend.Managers
                 {
                     ITileAction tileAction = TileActionFactory.GetTileAction(tile.TileTypeId);
                     tileReward = tileAction.OnEnterReward();
+                    if (tileReward.Duel != null)
+                    {
+                        _duelManager.Duel(player, tileReward.Duel.DuelHeroStat, tileReward);
+                    }
                     if (tileReward.EmptyMovement)
                     {
                         player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
@@ -282,10 +310,11 @@ namespace BoardGameBackend.Managers
 
             tileReward.Resources = player.ResourceManager.AddResources(tileReward.Resources);
 
-            if(!AdjacentMovement){
+            if (!AdjacentMovement)
+            {
                 _currentTile = tile;
             }
-            
+
             var eventArgs = new MoveOnTile
             {
                 MovementFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft,
@@ -303,11 +332,12 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
-        public void PossiblyAddTemporarySignet(bool addSignet, PlayerInGame player){
+        public void PossiblyAddTemporarySignet(bool addSignet, PlayerInGame player)
+        {
             if (!addSignet) return;
 
             player.ResourceHeroManager.AddResource(ResourceHeroType.Signet, 1);
-            player.AurasTypes.Add(new AuraTypeWithLongevity{Permanent = false, Aura = AurasType.TEMPORARY_SIGNET});
+            player.AurasTypes.Add(new AuraTypeWithLongevity { Permanent = false, Aura = AurasType.TEMPORARY_SIGNET });
         }
 
         public bool SetBlockTile(int tileId, PlayerInGame player)
@@ -350,19 +380,19 @@ namespace BoardGameBackend.Managers
             return true;
         }
 
-        private void GetRewardFromToken(Tile tile, TileReward tileReward, PlayerInGame player)
+        private void GetRewardFromToken(TileWithType tile, TileReward tileReward, PlayerInGame player)
         {
             tileReward.TokenReward = new TokenReward { Reward = RewardFactory.GetRewardById(tile.Token.EffectID).OnReward() };
             _gameContext.RewardHandlerManager.HandleReward(player, tileReward.TokenReward.Reward);
 
-            if (tile.Token.Dummy != true)
+            if (tile.Token.Collectable == true)
             {
                 player.Tokens.Add(tile.Token);
                 tile.Token = null;
             }
         }
 
-        private bool CanMoveToTile(Tile tile, PlayerInGame player)
+        private bool CanMoveToTile(TileWithType tile, PlayerInGame player)
         {
             if (player.PlayerHeroCardManager.CurrentHeroCard == null) return false;
 

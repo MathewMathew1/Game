@@ -1,12 +1,13 @@
 using Newtonsoft.Json;
 using BoardGameBackend.Models;
 using BoardGameBackend.Helpers;
+using BoardGameBackend.Mappers;
 
 namespace BoardGameBackend.Managers
 {
     public class GameTiles
     {
-        public List<Tile> Tiles { get; set; } = new List<Tile>();
+        public List<TileWithType> Tiles { get; set; } = new List<TileWithType>();
         public GameContext _gameContext;
         
         public GameTiles(GameContext gameContext)
@@ -15,11 +16,11 @@ namespace BoardGameBackend.Managers
             Tiles = LoadTileMapFromFile("Data/TilesData.json");   
         }
 
-        public Tile GetTileById(int id){
+        public TileWithType GetTileById(int id){
             return Tiles.FirstOrDefault(tile => tile.Id == id)!;
         }
 
-        public List<Tile> LoadTileMapFromFile(string filePath)
+        public List<TileWithType> LoadTileMapFromFile(string filePath)
         {
             string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath);
 
@@ -30,8 +31,9 @@ namespace BoardGameBackend.Managers
 
             var jsonData = File.ReadAllText(fullPath);
             var tileList = JsonConvert.DeserializeObject<List<Tile>>(jsonData);
+            var tilesWithTypeList = tileList!.Select(data => GameMapper.Instance.Map<TileWithType>(data)).ToList();
 
-            return tileList;
+            return tilesWithTypeList;
         }
 
         public List<TokenTileInfo> SetupTokens(){

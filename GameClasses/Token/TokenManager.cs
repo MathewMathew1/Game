@@ -9,7 +9,7 @@ namespace BoardGameBackend.Models
         {
 
             AllTokens = new List<TokenFromJson>(TokensFactory.TokensFromJsonList);
-            _tokens = AllTokens.FindAll((token)=> token.Dummy == false);
+            _tokens = AllTokens.FindAll((token)=> token.InStartingPool == true);
             ShuffleTokens();
         }
 

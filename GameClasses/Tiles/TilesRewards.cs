@@ -14,6 +14,10 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class Duel {
+        public ResourceHeroType DuelHeroStat {get; set;}
+    }
+
     public class TileReward
     {
         public List<Resource> Resources { get; set; }
@@ -22,6 +26,7 @@ namespace BoardGameBackend.Models
         public int? ExperiencePoints { get; set; }
         public bool? RerollMercenaryAction {get; set;}
         public bool? GetRandomArtifact  { get; set; }
+        public Duel? Duel {get; set;}
         public Artifact? Artifact { get; set; }
         public bool EmptyReward { get; set; } = false;
         public bool EmptyMovement { get; set; } = false;
@@ -205,6 +210,39 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class DuelMagicTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward 
+            {
+                 Duel = new Duel {DuelHeroStat = ResourceHeroType.Magic}
+            };
+        }
+    }
+
+    public class DuelSiegeTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward 
+            {
+                 Duel = new Duel {DuelHeroStat = ResourceHeroType.Siege}
+            };
+        }
+    }
+
+    public class DuelArmyTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward 
+            {
+                 Duel = new Duel {DuelHeroStat = ResourceHeroType.Army}
+            };
+        }
+    }
+
     public class DefaultTileAction : ITileAction
     {
         public TileReward OnEnterReward()
@@ -236,6 +274,11 @@ namespace BoardGameBackend.Models
                 13 => new CastleTileAction(),
                 14 => new SignetTileAction(),
                 15 => new EmptyMovementTileAction(),
+                17 => new DuelMagicTileAction(),
+                18 => new DuelSiegeTileAction(),
+
+                19 => new DuelArmyTileAction(),
+                20 => new MoneySmallerTileAction(),
                 _ => new DefaultTileAction() // Default if no specific ID is matched
             };
         }

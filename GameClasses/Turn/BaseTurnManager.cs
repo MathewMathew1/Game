@@ -39,13 +39,7 @@ namespace BoardGameBackend.Managers
                 }       
             }, priority: 0);
             _gameContext.EventManager.Subscribe("ArtifactPlayed", (ArtifactPlayed data) => EndTurn(), priority: 0);
-            _gameContext.EventManager.Subscribe<MercenaryRerolled>("MercenaryRerolled", rerollMercenaryData =>
-            {
-                if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))
-                {
-                    EndTurn();
-                }
-            }, priority: 5);
+     
             _gameContext.EventManager.Subscribe<TeleportationData>("TeleportationEvent", rerollMercenaryData =>
             {
                 if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(ArtifactPhase))

@@ -9,7 +9,8 @@ namespace BoardGameBackend.Models
         public required int EffectType { get; set; }
         public required int EffectID { get; set; }
         public required string ToolTipText {get; set;}
-        public required bool Dummy {get; set;}
+        public required bool Collectable {get; set;}
+        public required bool InStartingPool {get; set;}
     }
 
     public class TokenTileInfo

@@ -24,7 +24,7 @@ namespace BoardGameBackend.Managers
             }
 
 
-            if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(BoardPhase) && _currentPlayer != null)
+            if (_gameContext.PhaseManager.CurrentPhase.GetType() == typeof(BoardPhase) && _currentPlayer != null && _currentPlayer.PlayerHeroCardManager.CurrentHeroCard != null)
             {
                 _currentPlayer.PlayerHeroCardManager.CurrentHeroCard!.VisitedPlaces.Add(_gameContext.PawnManager._currentTile.Id);
             }
