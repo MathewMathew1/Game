@@ -63,6 +63,7 @@ namespace BoardGameBackend.Managers
                 default:
                     rewardsBasedOnPlace.Add(new PlayerReward { Gold = 2, Artifact = false, Reroll = true }); // 2nd place
                     rewardsBasedOnPlace.Add(new PlayerReward { Gold = 1, Artifact = false, Reroll = false }); // 3rd place
+                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
                     break;
             }
         }

@@ -136,6 +136,16 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastEndRotatePawn(gameId);
             }, priority: 1); 
 
+            gameContext.EventManager.Subscribe("ReplaceHeroToBuyMiniPhaseStarted", () =>
+            {
+                BroadcastEndRotatePawn(gameId);
+            }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("ReplaceHeroToBuyMiniPhaseEnded", () =>
+            {
+                BroadcastEndRotatePawn(gameId);
+            }, priority: 1); 
+
         }
 
 
@@ -282,6 +292,20 @@ namespace BoardGameBackend.Managers.EventListeners
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotatePawnMiniPhaseStarted");
         }
+
+        public void BroadcastReplaceHeroToBuy(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplaceHeroToBuyMiniPhaseStarted");
+        }
+
+
+        public void BroadcastReplaceHeroToBuyEnded(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("ReplaceHeroToBuyMiniPhaseEnded");
+        }
+
 
 
     }

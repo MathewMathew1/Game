@@ -267,6 +267,29 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class ReplaceHeroMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.ReplaceHeroToBuyMiniPhase;
+
+        public ReplaceHeroMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("ReplaceHeroToBuyMiniPhaseStarted");
+            Console.WriteLine("ReplaceHeroToBuyMiniPhase started.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("ReplaceHeroToBuyMiniPhaseEnded");
+            Console.WriteLine("ReplaceHeroToBuyMiniPhaseEnded.");
+        }
+    }
+
+
     public class ReplaceNextHeroMiniPhase : MiniPhase
     {
         public override MiniPhaseType Name => MiniPhaseType.ReplaceHeroMiniPhase;
