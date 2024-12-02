@@ -51,6 +51,11 @@ namespace BoardGameBackend.Models
     public class MercenaryRerolled
     {
         public required Mercenary Card { get; set; }
+        public required MercenariesLeftData MercenariesLeftData { get; set; }
+    }
+
+    public class PreMercenaryRerolled
+    {
         public required Mercenary? MercenaryReplacement { get; set; }
         public required MercenariesLeftData MercenariesLeftData { get; set; }
     }

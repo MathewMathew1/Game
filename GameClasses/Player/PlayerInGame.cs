@@ -89,6 +89,10 @@ namespace BoardGameBackend.Models
                 {
                     addedEmptyMovements += 1;
                 }
+                else if (aura.Aura == AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_POINT && card.ScorePoints > 0)
+                {
+                    addedEmptyMovements += 1;
+                }
                 else if (aura.Aura == AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_MORALE && card.Morale > 0)
                 {
                     addedEmptyMovements += 1;

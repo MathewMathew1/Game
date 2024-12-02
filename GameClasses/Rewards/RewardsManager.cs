@@ -1308,6 +1308,23 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class EmptyMovementWhenHeroHasPoint : BaseReward
+    {
+        public EmptyMovementWhenHeroHasPoint(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVEMENT_WHEN_HERO_HAS_POINT, Permanent = true }
+                }
+            };
+        }
+    }
+
+    
+
 
     public class NoReward : BaseReward
     {
@@ -1648,8 +1665,11 @@ namespace BoardGameBackend.Models
                     case 132:
                         _rewards.Add(rewardData.Id, new InstantWinDuelReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
+                    case 135:
+                        _rewards.Add(rewardData.Id, new EmptyMovementWhenHeroHasPoint(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
 
-
+                    
 
                 }
             }

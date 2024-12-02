@@ -52,7 +52,7 @@
 {"Id" : 52, "Type" : "RESOURCE_GEMS", "TextDescription" : "Klejnoty są dostępne w tej turze.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 53, "Type" : "RESOURCE_NITER", "TextDescription" : "Saletra jest dostępna w tej turze.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 54, "Type" : "RESOURCE_MYSTIC_FOG", "TextDescription" : "Mistyczna mgła jest dostępna w tej turze.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
-{"Id" : 55, "Type" : "MERCENARY_REROLL", "TextDescription" : "Odrzuca wybraną kartę na stos odrzuconych (nowa karta zostaje wyłożona z talii).", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
+{"Id" : 55, "Type" : "MERCENARY_REROLL", "TextDescription" : "Wyłóż nową kartę specjalną do dostępnej puli, następnie odłóż jedną na stos kart odrzuconych.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 56, "Type" : "ONE_ARTIFACT", "TextDescription" : "Dobierz artefakt.", "Req" : -1, "EffectType" : 1, "IntValue1" : 1, "IntValue2" : -1},
 {"Id" : 57, "Type" : "TWO_ARTIFACTS_DISCARD_ONE", "TextDescription" : "Dobierz 2 artefakty, odłóż jeden z nich na stos odrzuconych.", "Req" : -1, "EffectType" : 1, "IntValue1" : 2, "IntValue2" : 1},
 {"Id" : 58, "Type" : "HERO_START_TILE_REWARD", "TextDescription" : "Pobierz bonus z pola, z którego zaczynasz ruch.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
@@ -131,4 +131,5 @@
 {"Id" : 131, "Type" : "TRIGGER_BATTLE_ARMY", "TextDescription" : "Otrzymujesz nagrody z potyczki (armia).", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 132, "Type" : "HERO_ALL_BATTLES_INSTANT_WIN", "TextDescription" : "W tej turze wygrywasz wszystkie potyczki.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
 {"Id" : 133, "Type" : "HERO_REROLL", "TextDescription" : "Odrzuć wybraną kartę bohatera z dostępnej puli i odkryj nową.", "Req" : -1, "EffectType" : 1, "IntValue1" : -1, "IntValue2" : -1},
-{"Id" : 134, "Type" : "TARGOWISKO_3_MONETY", "TextDescription" : "+3 monety.", "Req" : -1, "EffectType" : 1, "IntValue1" : 3, "IntValue2" : -1}]
+{"Id" : 134, "Type" : "TARGOWISKO_3_MONETY", "TextDescription" : "+3 monety.", "Req" : -1, "EffectType" : 1, "IntValue1" : 3, "IntValue2" : -1},
+{"Id" : 135, "Type" : "MOVING_HERO_POINT_FREE_EMPTY_MOVE", "TextDescription" : "+1 pusty ruch jeżeli bohater, który wykonuje ruch posiada punkty zwycięstwa.", "Req" : 6, "EffectType" : 2, "IntValue1" : -1, "IntValue2" : -1}]

@@ -56,7 +56,7 @@ namespace BoardGameBackend.Managers
 
         private void CummulativePoints(EndGameAuraType effect, PlayerInGame player, int amount , ScorePointsTable scorePointsTable)
         {
-            var points = new List<int> { 0, 1, 3, 7, 13, 21 };
+            var points = new List<int> { 0, 1, 3, 6, 10, 15 };
 
             var maxAmount = Math.Min(points.Count, amount);
             scorePointsTable.ArtefactPoints += points[maxAmount];

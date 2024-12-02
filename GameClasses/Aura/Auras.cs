@@ -44,7 +44,8 @@ namespace BoardGameBackend.Models
         EMPTY_MOVE_ON_TILE_WITH_CASTLE,
         EXTRA_ARTIFACT_REROLL,
         INSTANT_WIN_DUEL,
-        GOLD_ON_TILE_DUEL
+        GOLD_ON_TILE_DUEL,
+        EMPTY_MOVEMENT_WHEN_HERO_HAS_POINT
     }
 
     public enum EndGameAuraType

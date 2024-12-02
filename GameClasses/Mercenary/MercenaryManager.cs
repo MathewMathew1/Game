@@ -58,6 +58,12 @@ namespace BoardGameBackend.Managers
 
             }, priority: 5);
 
+            gameContext.EventManager.Subscribe("RerollMercenaryMiniPhaseStarted", () =>
+            {
+                AddRerolledMercenary();
+            }, priority: 0);
+
+
         }
 
         private void ShuffleMercenaries()
@@ -210,6 +216,19 @@ namespace BoardGameBackend.Managers
             _mercenaries = _mercenaries.Where(m => m.TypeCard != 3).ToList();
         }
 
+        public void AddRerolledMercenary(){
+            Mercenary? newMercenary = AddNewMercenary();
+
+            var eventArgs = new PreMercenaryRerolled
+            {
+                MercenaryReplacement = newMercenary,
+                MercenariesLeftData = new MercenariesLeftData { MercenariesAmount = _mercenaries.Count, TossedMercenariesAmount = TossedAwayMercenaries.Count }
+            };
+
+            _gameContext.EventManager.Broadcast("PreMercenaryRerolled", ref eventArgs);
+
+        }
+
         public bool RerollMercenary(int mercenaryInGameIndex, PlayerInGame player)
         {
             var boughtMercenaryIndex = BuyableMercenaries.FindIndex(mercenary => mercenary.InGameIndex == mercenaryInGameIndex);
@@ -225,12 +244,9 @@ namespace BoardGameBackend.Managers
             TossedAwayMercenaries.Add(replacedMercenary);
             BuyableMercenaries.RemoveAt(boughtMercenaryIndex);
 
-            Mercenary? newMercenary = AddNewMercenary();
-
             var eventArgs = new MercenaryRerolled
             {
                 Card = replacedMercenary,
-                MercenaryReplacement = newMercenary,
                 MercenariesLeftData = new MercenariesLeftData { MercenariesAmount = _mercenaries.Count, TossedMercenariesAmount = TossedAwayMercenaries.Count }
             };
             _gameContext.EventManager.Broadcast("MercenaryRerolled", ref eventArgs);

@@ -14,19 +14,23 @@ namespace BoardGameBackend.Models
         }
     }
 
-    public class Duel {
-        public ResourceHeroType DuelHeroStat {get; set;}
+    public class Duel
+    {
+        public ResourceHeroType DuelHeroStat { get; set; }
     }
+
+
 
     public class TileReward
     {
         public List<Resource> Resources { get; set; }
-        public TokenReward? TokenReward {get; set;}
+        public TokenReward? TokenReward { get; set; }
         public int? TeleportedTileId { get; set; }
         public int? ExperiencePoints { get; set; }
-        public bool? RerollMercenaryAction {get; set;}
-        public bool? GetRandomArtifact  { get; set; }
-        public Duel? Duel {get; set;}
+        public bool? RerollMercenaryAction { get; set; }
+        public bool? GetRandomArtifact { get; set; }
+        public Duel? Duel { get; set; }
+        public int? Banner { get; set; }
         public Artifact? Artifact { get; set; }
         public bool EmptyReward { get; set; } = false;
         public bool EmptyMovement { get; set; } = false;
@@ -137,7 +141,7 @@ namespace BoardGameBackend.Models
         {
             return new TileReward
             {
-                Resources = new List<Resource> {  },
+                Resources = new List<Resource> { },
             };
         }
     }
@@ -160,7 +164,7 @@ namespace BoardGameBackend.Models
             return new TileReward
             {
                 RerollMercenaryAction = true,
-                Resources = new List<Resource> {  },
+                Resources = new List<Resource> { },
             };
         }
     }
@@ -171,8 +175,8 @@ namespace BoardGameBackend.Models
         {
             return new TileReward
             {
-                GetRandomArtifact  = true,
-                Resources = new List<Resource> {  },
+                GetRandomArtifact = true,
+                Resources = new List<Resource> { },
             };
         }
     }
@@ -199,7 +203,7 @@ namespace BoardGameBackend.Models
         }
     }
 
-     public class SignetTileAction : ITileAction
+    public class SignetTileAction : ITileAction
     {
         public TileReward OnEnterReward()
         {
@@ -214,9 +218,9 @@ namespace BoardGameBackend.Models
     {
         public TileReward OnEnterReward()
         {
-            return new TileReward 
+            return new TileReward
             {
-                 Duel = new Duel {DuelHeroStat = ResourceHeroType.Magic}
+                Duel = new Duel { DuelHeroStat = ResourceHeroType.Magic }
             };
         }
     }
@@ -225,9 +229,9 @@ namespace BoardGameBackend.Models
     {
         public TileReward OnEnterReward()
         {
-            return new TileReward 
+            return new TileReward
             {
-                 Duel = new Duel {DuelHeroStat = ResourceHeroType.Siege}
+                Duel = new Duel { DuelHeroStat = ResourceHeroType.Siege }
             };
         }
     }
@@ -236,12 +240,59 @@ namespace BoardGameBackend.Models
     {
         public TileReward OnEnterReward()
         {
-            return new TileReward 
+            return new TileReward
             {
-                 Duel = new Duel {DuelHeroStat = ResourceHeroType.Army}
+                Duel = new Duel { DuelHeroStat = ResourceHeroType.Army }
             };
         }
     }
+
+    public class BannerYellowTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward
+            {
+                Banner = 3
+            };
+        }
+    }
+
+    public class BannerBlueTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward
+            {
+                Banner = 4
+            };
+        }
+    }
+
+
+    public class BannerGreenTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward
+            {
+                Banner = 1
+            };
+        }
+    }
+
+    public class BannerRedTileAction : ITileAction
+    {
+        public TileReward OnEnterReward()
+        {
+            return new TileReward
+            {
+                Banner = 2
+            };
+        }
+    }
+
+
 
     public class DefaultTileAction : ITileAction
     {
@@ -249,7 +300,7 @@ namespace BoardGameBackend.Models
         {
             return new TileReward
             {
-                Resources = new List<Resource> {  },
+                Resources = new List<Resource> { },
             };
         }
     }
@@ -279,8 +330,13 @@ namespace BoardGameBackend.Models
 
                 19 => new DuelArmyTileAction(),
                 20 => new MoneySmallerTileAction(),
+                21 => new BannerGreenTileAction(),
+                22 => new BannerRedTileAction(),
+                23 => new BannerYellowTileAction(),
+                24 => new BannerBlueTileAction(),
                 _ => new DefaultTileAction() // Default if no specific ID is matched
             };
-        }
+
     }
+}
 }

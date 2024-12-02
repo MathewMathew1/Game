@@ -66,6 +66,10 @@ namespace BoardGameBackend.Managers
                 {
                     _duelManager.Duel(player, tileReward.Duel.DuelHeroStat, tileReward);
                 }
+                if (tileReward.Banner != null)
+                {
+                    tileReward.Resources = new List<Resource> { new Resource(ResourceType.Gold, BannerHelper.BannerRewardTileAction(player, tileReward.Banner.Value)) };
+                }
             }
 
             var eventArgs = new GetCurrentTileReward
@@ -288,6 +292,10 @@ namespace BoardGameBackend.Managers
                     if (tileReward.Duel != null)
                     {
                         _duelManager.Duel(player, tileReward.Duel.DuelHeroStat, tileReward);
+                    }
+                    if (tileReward.Banner != null)
+                    {
+                        tileReward.Resources = new List<Resource> { new Resource(ResourceType.Gold, BannerHelper.BannerRewardTileAction(player, tileReward.Banner.Value)) };
                     }
                     if (tileReward.EmptyMovement)
                     {

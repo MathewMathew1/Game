@@ -17,4 +17,8 @@
 {"Id" : 17, "Name" : "PotyczkaMagic", "ImageIndex" : 16, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1", "Req" : 6},
 {"Id" : 18, "Name" : "PotyczkaSiege", "ImageIndex" : 17, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1", "Req" : 1},
 {"Id" : 19, "Name" : "PotyczkaArmy", "ImageIndex" : 18, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1", "Req" : 7},
-{"Id" : 20, "Name" : "Targowisko", "ImageIndex" : 19, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1"}]
+{"Id" : 20, "Name" : "Targowisko", "ImageIndex" : 19, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1"},
+{"Id" : 21, "Name" : "BannerFaction1", "ImageIndex" : 20, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1"},
+{"Id" : 22, "Name" : "BannerFaction2", "ImageIndex" : 21, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1"},
+{"Id" : 23, "Name" : "BannerFaction3", "ImageIndex" : 22, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1"},
+{"Id" : 24, "Name" : "BannerFaction4", "ImageIndex" : 23, "OffsetX" : 0, "OffsetY" : 0, "IconAtlas" : "ATLAS_TYPY_POLA_1"}]

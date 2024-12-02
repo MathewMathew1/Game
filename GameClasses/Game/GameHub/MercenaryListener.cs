@@ -36,7 +36,13 @@ namespace BoardGameBackend.Managers.EventListeners
             gameContext.EventManager.Subscribe<LockMercenaryData>("LockMercenary", data =>
             {
                 BroadcastLockMercenary(gameId, data);
-            }, priority: 10);       
+            }, priority: 10);   
+
+            gameContext.EventManager.Subscribe<PreMercenaryRerolled>("PreMercenaryRerolled", data =>
+            {
+                BroadcastPreMercenaryReroll(gameId, data);
+            }, priority: 10);     
+
         }
 
         public void BroadcastMercenaryPicked(MercenaryPicked mercenaryPicked, string gameId)
@@ -68,6 +74,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("LockMercenary", data);
+        }
+
+        public void BroadcastPreMercenaryReroll(string gameId, PreMercenaryRerolled data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("PreMercenaryRerolled", data);
         }
     }
 }
