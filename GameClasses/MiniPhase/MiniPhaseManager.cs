@@ -122,7 +122,31 @@ namespace BoardGameBackend.Managers
             {             
                 EndCurrentMiniPhase();                    
             }, priority: 2);
+
+            gameContext.EventManager.Subscribe<RotateTileEventData>("BlinkTileEvent", data =>
+            {             
+                EndCurrentMiniPhase();                    
+            }, priority: 2);
+
+            gameContext.EventManager.Subscribe<DragonSummonEventData>("SummonDragonEvent", data =>
+            {             
+                EndCurrentMiniPhase();                    
+            }, priority: 2);
        
+            gameContext.EventManager.Subscribe<ArtifactDiscardData>("DiscardArtifactForFullMovementEvent", data =>
+            {             
+                EndCurrentMiniPhase();                   
+            }, priority: 2);
+
+            gameContext.EventManager.Subscribe("BuffHeroMiniPhaseEnded", () =>
+            {
+                _gameContext.PhaseManager.EndCurrentPhaseIfPhaseType(PhaseType.HeroCardPickingPhase, false);
+            }, priority: 0);
+
+            gameContext.EventManager.Subscribe("FulfillProphecyMiniPhaseEnded", () =>
+            {
+                _gameContext.PhaseManager.EndCurrentPhaseIfPhaseType(PhaseType.HeroCardPickingPhase, false);
+            }, priority: 0);
         }
 
         private void StartCurrentMiniPhase(MiniPhase miniPhase)
@@ -203,8 +227,78 @@ namespace BoardGameBackend.Managers
         {
             if(_gameContext.PawnManager._currentTile.RotateID == 14) return;
 
+            bool bAnyValidTile = false;
+            foreach(var tile in _gameContext.GameTiles.Tiles)
+            {
+                if(tile.RotateID == _gameContext.PawnManager._currentTile.RotateID)
+                {
+                    if(tile.Id != _gameContext.PawnManager._currentTile.Id)
+                    {
+                        if(tile.Token == null || !tile.Token.IsDragon)
+                        {
+                            bAnyValidTile = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(!bAnyValidTile)
+                return;
+
             var miniPhaseClass = new RotatePawnMiniPhase(_gameContext);
             StartCurrentMiniPhase(miniPhaseClass);
+        }
+
+        public void StartBlinkPawnMiniPhase()
+        {
+            bool bAnyValidTile = false;
+            foreach(Connection connetion in _gameContext.PawnManager._currentTile.Connections)
+            {
+                var tile = _gameContext.GameTiles.GetTileById(connetion.ToId);
+                if(tile.Token == null || !tile.Token.IsDragon)
+                {
+                    bAnyValidTile = true;
+                    break;
+                }
+            }
+
+            if(!bAnyValidTile)
+                return;
+
+            var miniBlinkClass = new BlinkPawnMiniPhase(_gameContext);
+            StartCurrentMiniPhase(miniBlinkClass);
+        }
+
+        public void StartSummonDragonMiniPhase()
+        {
+            if(_gameContext.DragonManager.PreparedNextDragonForSummon())
+            {
+                var miniPhaseClass = new SummonDragonMiniPhase(_gameContext);
+                StartCurrentMiniPhase(miniPhaseClass);
+            }
+        }
+
+        public void StartPickingDragonsForMiniPhase()
+        {
+            List<Dragon> dragons = _gameContext.DragonManager.PrepareDragonsToPickFrom(2);
+            if(dragons.Count() == 0)
+            {
+                _gameContext.DragonManager.DragonsToPickFrom = null;
+                return;
+            }
+            else if(dragons.Count() == 1)
+            {
+                _gameContext.DragonManager.SetNextDragonToSummon(dragons[0]);
+                _gameContext.DragonManager.DragonsToPickFrom = null;
+                var miniPhaseClass = new SummonDragonMiniPhase(_gameContext);
+                StartCurrentMiniPhase(miniPhaseClass);
+            }
+            else
+            {
+                var miniPhaseClass = new PickDragonToSummonMiniPhase(_gameContext);
+                StartCurrentMiniPhase(miniPhaseClass);
+            }
         }
 
         public void StarReplaceHeroMiniPhase()
@@ -257,5 +351,13 @@ namespace BoardGameBackend.Managers
             StartCurrentMiniPhase(miniPhaseClass);
         }
 
+        public void StarDiscardArtifactForFullMovementMiniPhase(PlayerInGame player)
+        {   
+            if(player.Artifacts.Count == 0)
+                return;
+
+            var miniPhaseClass = new DiscardArtifactForFullMovement(_gameContext);
+            StartCurrentMiniPhase(miniPhaseClass);
+        }
     }
 }

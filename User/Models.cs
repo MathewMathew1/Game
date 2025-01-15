@@ -41,4 +41,8 @@ namespace BoardGameBackend.Models
         public required  string Username { get; set; }
         public required  string Password { get; set; }
     }
+    public class GameVersionCheckDto
+    {
+        public required int VersionId { get; set; }
+    }
 }

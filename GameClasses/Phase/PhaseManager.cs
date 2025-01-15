@@ -44,5 +44,11 @@ namespace BoardGameBackend.Managers
             }
             CurrentPhase.StartPhase();
         }
+
+        public void EndCurrentPhaseIfPhaseType(PhaseType iPhaseType, bool startNextTurn)
+        {
+            if(iPhaseType == CurrentPhase.Name)
+                EndCurrentPhase(startNextTurn);
+        }
     }
 }

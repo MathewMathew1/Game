@@ -96,10 +96,10 @@ public static class LobbyManager
     {
         var lobbyInfo = Lobbies.FirstOrDefault(l => l.Lobby.Id == lobbyId);
 
-        if (lobbyInfo != null && lobbyInfo.Lobby.HostId == user.Id)
+    /*    if (lobbyInfo != null && lobbyInfo.Lobby.HostId == user.Id)
         {
             return true;
-        }
+        } */
         return false;
     }
 

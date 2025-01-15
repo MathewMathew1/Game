@@ -69,7 +69,10 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastRotatePawnEvent(gameId, data);                    
             }, priority: 5);
 
-            
+            gameContext.EventManager.Subscribe<RotateTileEventData>("BlinkTileEvent", data =>
+            {             
+                BroadcastBlinkPawnEvent(gameId, data);                    
+            }, priority: 5);
         }
 
         public void BroadcastMoveToTile(MoveOnTile moveOnTile, string gameId)
@@ -152,6 +155,10 @@ namespace BoardGameBackend.Managers.EventListeners
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotateTileDataEvent", data);
         }
 
-      
+        public void BroadcastBlinkPawnEvent(string gameId, RotateTileEventData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BlinkTileDataEvent", data);
+        }
     }
 }

@@ -64,6 +64,8 @@ namespace BoardGameBackend.Mappers
             .ForMember(dest => dest.ResourcesNeeded, opt => opt.MapFrom(src => MapResourcesNeeded(src.ResourcesNeeded)))
             .ForMember(dest => dest.Faction, opt => opt.MapFrom(src => Fractions.GetFractionById(src.Faction)));
 
+            CreateMap<DragonFromJson, Dragon>();
+
             CreateMap<Tile, TileWithType>()
             .ForMember(dest => dest.TileType, opt => opt.MapFrom<TileTypeResolver>());
 

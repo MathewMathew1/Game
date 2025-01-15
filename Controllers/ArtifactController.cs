@@ -124,5 +124,57 @@ namespace BoardGameBackend.Controllers
             }
 
         }
+
+        [HttpPost("discardformoveconfirm/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(DiscardArtifactForFullMovement))]
+        public ActionResult DiscardArtifactForMoveConfirm(string id, [FromBody] ArtifactRerollModel artifactRerollModel)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+           
+                var bActionResponse = gameContext.ArtifactManager.DisardArtifactForMovement(artifactRerollModel.ArtifactId, player);
+                if(bActionResponse == false){
+                    return BadRequest(new { Error = "Unable to discard artifact for move." });
+                }
+
+                return Ok(new { Message = "Artifact discarded for movement successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
+
+        [HttpPatch("discardformovereject/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(DiscardArtifactForFullMovement))]
+        public ActionResult DiscardArtifactForMoveReject(string id)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+           
+                var bActionResponse = gameContext.ArtifactManager.RejectDisardArtifactForMovement(player);
+                if(bActionResponse == false){
+                    return BadRequest(new { Error = "Unable to reject discard artifact for move." });
+                }
+
+                return Ok(new { Message = "Rejected artifact discard for movement successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+
+        }
     }
 }

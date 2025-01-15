@@ -431,6 +431,44 @@ namespace BoardGameBackend.Models
             return 0;
         }
     }
+    public class ProphecyOneHundredThirtyEight : BaseProphecyPoints
+    {
+        public ProphecyOneHundredThirtyEight(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+            if (player.PlayerDragonManager.Dragons.Count() >= Value2) return Value1;
+
+            return 0;
+        }
+    }
+    public class ProphecyOneHundredThirtyNine : BaseProphecyPoints
+    {
+        public ProphecyOneHundredThirtyNine(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+            List<bool> bools = new List<bool>{};
+            foreach(var h in Fractions.GetAllFractions())
+            {
+                bools.Add(false);
+            }
+            foreach(var mercenaryCard in player.PlayerMercenaryManager.Mercenaries)
+            {
+                if(mercenaryCard.Faction != null)
+                {
+                    bools[mercenaryCard.Faction.Id - 1] = true;
+                }
+            }
+            foreach(var b in bools)
+            {
+                if(!b)
+                    return 0;
+            }
+            return Value1;
+        }
+    }
+
 
 
     public static class ProphecyRequirementStore
@@ -531,6 +569,12 @@ namespace BoardGameBackend.Models
                         break;
                     case 102:
                         _requirements.Add(requirementData.Id, new ProphecyOneHundredTwo(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 138:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredThirtyEight(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 139:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredThirtyNine(requirementData.IntValue1, requirementData.IntValue2));
                         break;
                     default:
                         break;

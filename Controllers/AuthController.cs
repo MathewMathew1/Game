@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using BoardGameBackend.Repositories;
 using BoardGameBackend.Models;
 using AutoMapper;
+using BoardGameBackend.Helpers;
 
 namespace BoardGameBackend.Controllers
 {
@@ -11,11 +12,17 @@ namespace BoardGameBackend.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
+        private const int m_iGameVersion = 4;
 
         public AuthController(IAuthService authService, IMapper mapper)
         {
             _mapper = mapper;
             _authService = authService;
+        }
+
+        public bool CheckGameVersion(int iVersion)
+        {
+            return m_iGameVersion == iVersion;
         }
 
         [HttpPost("signup")]
@@ -64,6 +71,25 @@ namespace BoardGameBackend.Controllers
 
                 var userDto = _mapper.Map<UserModelDto>(data.User);
                 return Ok(new { User = userDto, data.Token });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+        }
+        
+        [HttpPost("GameVersion")]
+        public async Task<IActionResult> GameVersion(GameVersionCheckDto dto)
+        {
+            try
+            {
+                var bValidVersion = CheckGameVersion(dto.VersionId);
+                if (!bValidVersion)
+                {
+                    return BadRequest(new { Error = "Invalid version attempt." });
+                }
+                return Ok(new { JsonDictionary = InitJsonManager.GetJSONDictionary() });
             }
             catch (Exception ex)
             {

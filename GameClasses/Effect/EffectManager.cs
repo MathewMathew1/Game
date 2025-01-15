@@ -44,7 +44,13 @@ namespace BoardGameBackend.Managers
                 {EffectType.ROTATE_PAWN, RotatePawnMiniPhase},
                 {EffectType.DUEL_ARMY, DuelArmy},
                 {EffectType.DUEL_SIEGE, DuelSiege},
-                 {EffectType.DUEL_MAGIC, DuelMagic},
+                {EffectType.DUEL_MAGIC, DuelMagic},
+                {EffectType.OPTIONAL_DISCARD_ARTIFACT_FOR_FULL_MOVE, OptionalDiscardArtifactForFullMove},
+                {EffectType.SUMMON_DRAGON, SummonDragonMiniPhase},
+                {EffectType.PAWN_BLINK_ONE_TILE, BlinkOneTileMiniPhase},
+                {EffectType.PICK_TWO_DRAGONS_SUMMON_ONE, PickTwoDragonsSummonOneMiniPhase},
+                {EffectType.GET_TWO_RANDOM_ARTIFACTS, AddTwoRandomArtifact},
+                {EffectType.TWO_FULL_MOVES_NOW, AddTwoFullMovesNow}
             };
         }
 
@@ -132,6 +138,11 @@ namespace BoardGameBackend.Managers
             _gameContext.MiniPhaseManager.StartTeleportMiniPhase();
         }
 
+        private void OptionalDiscardArtifactForFullMove(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StarDiscardArtifactForFullMovementMiniPhase(player);
+        }
+
         private void TakeThreeArtifacts(EffectType effect, PlayerInGame player)
         {
             _gameContext.ArtifactManager.AddArtifactsToPlayer(3, player);
@@ -177,6 +188,20 @@ namespace BoardGameBackend.Managers
         private void RotatePawnMiniPhase(EffectType effect, PlayerInGame player)
         {
             _gameContext.MiniPhaseManager.StarRotatePawnMiniPhase();
+        }
+
+        private void BlinkOneTileMiniPhase(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StartBlinkPawnMiniPhase();
+        }
+
+        private void SummonDragonMiniPhase(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StartSummonDragonMiniPhase();
+        }
+        private void PickTwoDragonsSummonOneMiniPhase(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.StartPickingDragonsForMiniPhase();
         }
 
         private void BanishRoyalCardHero(EffectType effect, PlayerInGame player)
@@ -227,6 +252,14 @@ namespace BoardGameBackend.Managers
         private void AddThreeRandomArtifact(EffectType effect, PlayerInGame player)
         {
             _gameContext.ArtifactManager.AddArtifactsToPlayer(3, player);
+        }
+        private void AddTwoRandomArtifact(EffectType effect, PlayerInGame player)
+        {
+            _gameContext.ArtifactManager.AddArtifactsToPlayer(2, player);
+        }
+        private void AddTwoFullMovesNow(EffectType effect, PlayerInGame player)
+        {
+            player.AddFullMovement(2);
         }
 
         private void FulfillProphecyReward(EffectType effect, PlayerInGame player)

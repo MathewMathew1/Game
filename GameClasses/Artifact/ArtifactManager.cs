@@ -18,13 +18,18 @@ namespace BoardGameBackend.Managers
             _gameContext = gameContext;
             _artifacts = new List<Artifact>();
 
+            bool bDragonDLC = gameContext.IsDLCDragonsOn();
+
             foreach (var artifactFromJson in ArtifactsFactory.ArtifactsFromJsonList)
             {
-                for (int i = 0; i < artifactFromJson.ShuffleX; i++)
+                if(bDragonDLC || !artifactFromJson.DragonDLC)
                 {
-                    var mercenary = GameMapper.Instance.Map<Artifact>(artifactFromJson);
-                    mercenary.InGameIndex = _nextInGameIndex++;
-                    _artifacts.Add(mercenary);
+                    for (int i = 0; i < artifactFromJson.ShuffleX; i++)
+                    {
+                        var mercenary = GameMapper.Instance.Map<Artifact>(artifactFromJson);
+                        mercenary.InGameIndex = _nextInGameIndex++;
+                        _artifacts.Add(mercenary);
+                    }
                 }
             }
 
@@ -33,7 +38,7 @@ namespace BoardGameBackend.Managers
             _gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", player =>
             {
                 SetUpNewArtifacts(player);
-            }, priority: 0);
+            }, priority: 2);
 
             _gameContext.EventManager.Subscribe<MoveOnTile>("MoveOnTile", moveOnTileData =>
             {
@@ -92,6 +97,34 @@ namespace BoardGameBackend.Managers
 
             _gameContext.EventManager.Broadcast("ArtifactsGivenToPlayer", ref artifactToPickFromData);
         }
+
+        public bool DisardArtifactForMovement(int artifactId, PlayerInGame player)
+        {
+            var artifact = player.Artifacts.Find(artifact => artifact.InGameIndex == artifactId);
+            if (artifact == null) return false;
+
+            player.DiscardArtifact(artifactId);
+            TossedAwayArtifacts.Add(artifact);
+            player.AddFullMovement(1);
+
+            ArtifactDiscardData eData = new ArtifactDiscardData
+            {
+                ArtifactId = artifactId,
+                Player = player,
+            };
+
+            _gameContext.EventManager.Broadcast("DiscardArtifactForFullMovementEvent", ref eData);
+
+            return true;
+        }
+
+        public bool RejectDisardArtifactForMovement(PlayerInGame player)
+        {
+            _gameContext.MiniPhaseManager.EndCurrentMiniPhase();
+            _gameContext.TurnManager.EndTurn();
+            return true;
+        }
+        
 
         public bool RerollArtifactByIndex(int artifactId, PlayerInGame player)
         {

@@ -181,6 +181,59 @@ namespace BoardGameBackend.Controllers
             }
         }
 
+
+        [HttpPost("summondragon/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(SummonDragonMiniPhase))]
+        public ActionResult SummonDragon(string id, [FromBody] RotatePawnData data)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                var bResponse = gameContext.DragonManager.SummonDragon(player, data.TileId);
+
+                if (!bResponse)
+                {
+                    return BadRequest(new { Error = "Unable to spawn dragon." });
+                }
+
+                return Ok(new { Message = "Spawned dragon successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+        }
+
+        [HttpPost("confirmdragonpick/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(PickDragonToSummonMiniPhase))]
+        public ActionResult ConfirmDragonPick(string id, [FromBody] DragonPickModel data)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+           
+                var bResponse = gameContext.DragonManager.ConfirmPickDragon(data.DragonId);
+                if(!bResponse){
+                    return BadRequest(new { Error = "Unable to confirm pick dragon." });
+                }
+
+                return Ok(new { Message = "Confirm dragon picked successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+        }
+
         [HttpPost("rotate/{id}")]
         [Authorize]
         [MiniPhaseCheckFilter(typeof(RotatePawnMiniPhase))]
@@ -200,6 +253,34 @@ namespace BoardGameBackend.Controllers
                 }
 
                 return Ok(new { Message = "Rotate pawn successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return BadRequest(new { Error = "Unexpected error" });
+            }
+        }
+
+
+        [HttpPost("RequestBlink/{id}")]
+        [Authorize]
+        [MiniPhaseCheckFilter(typeof(BlinkPawnMiniPhase))]
+        public ActionResult RequestBlink(string id, [FromBody] RotatePawnData data)
+        {
+            try
+            {
+                UserModel user = (UserModel)Request.HttpContext.Items["User"]!;
+                var gameContext = (GameContext)Request.HttpContext.Items["GameContext"]!;
+                var player = (PlayerInGame)Request.HttpContext.Items["Player"]!;
+
+                var swappedTokens = gameContext.PawnManager.BlinkPawn(player, data.TileId);
+
+                if (!swappedTokens)
+                {
+                    return BadRequest(new { Error = "Unable to blink pawn." });
+                }
+
+                return Ok(new { Message = "Blinked pawn successfully." });
             }
             catch (Exception ex)
             {

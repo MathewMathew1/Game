@@ -16,4 +16,8 @@ namespace BoardGameBackend.Models
     {
         public required int ArtifactId { get; set; }
     }
+    public class DragonPickModel
+    {
+        public required int DragonId { get; set; }
+    }
 }

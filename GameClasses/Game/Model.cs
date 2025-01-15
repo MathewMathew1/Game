@@ -13,6 +13,7 @@ namespace BoardGameBackend.Models
         public required List<HeroCardCombined> HeroCards {get;set;}
         public required ArtifactInfo ArtifactInfo {get; set;}
         public required List<Player> PlayerBasedOnMorales {get; set;}
+        public required DragonFullData DragonData {get; set;}
         public required int PawnTilePosition {get; set;}
         public required Guid CurrentPlayerId {get; set;}
     }
@@ -23,6 +24,7 @@ namespace BoardGameBackend.Models
         public required Dictionary<ResourceType, int> Resources {get;set;}
         public required Dictionary<ResourceHeroType, int> ResourceHero {get;set;}
         public required List<Mercenary> Mercenaries {get;set;}
+        public required List<Dragon> Dragons {get; set;}
         public required ArtifactPlayerData Artifacts {get;set;}
         public required RoyalCardsPlayerData RoyalCardsData {get;set;}
         public required PlayerHeroData Heroes {get;set;}

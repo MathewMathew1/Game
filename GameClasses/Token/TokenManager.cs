@@ -5,11 +5,16 @@ namespace BoardGameBackend.Models
         private readonly List<TokenFromJson> _tokens;
         public readonly List<TokenFromJson> AllTokens;
 
-        public TokenManager()
+        public TokenManager(bool dragonDLC)
         {
 
             AllTokens = new List<TokenFromJson>(TokensFactory.TokensFromJsonList);
-            _tokens = AllTokens.FindAll((token)=> token.InStartingPool == true);
+            _tokens = new List<TokenFromJson>();
+            foreach(var token in AllTokens)
+            {
+                if(token.InStartingPool && (dragonDLC || !token.DragonDLC))
+                    _tokens.Add(token);
+            }
             ShuffleTokens();
         }
 

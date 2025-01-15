@@ -50,6 +50,10 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastArtifactPhaseSkipped(gameId, data);                     
             }, priority: 5);
             
+            gameContext.EventManager.Subscribe<ArtifactDiscardData>("DiscardArtifactForFullMovementEvent", data =>
+            {             
+                BroadcastArtifactDiscardConfirmData(gameId, data);               
+            }, priority: 5);
         }
 
         public void BroadcastArtifactsToPickFrom(string gameId, ArtifactToPickFromData artifactToPickFromData,
@@ -120,6 +124,12 @@ namespace BoardGameBackend.Managers.EventListeners
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("PlayerSkippedArtifactPhase", data);
+        }
+
+        public void BroadcastArtifactDiscardConfirmData(string gameId, ArtifactDiscardData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("PlayerDiscardedArtifactForMovePhase", data);
         }
     }
 }

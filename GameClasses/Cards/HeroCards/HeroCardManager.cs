@@ -228,13 +228,20 @@ namespace BoardGameBackend.Models
                         Console.WriteLine("ERROR LACKING REWARD");
                     }
                 }
+                else
+                {
+                    // Tutaj można testować nowe umiejętności.
+              //      Dragon? topdeckdragon = _gameContext.DragonManager.GetDragonFromTopDeck();
+              //      if(topdeckdragon != null)
+              //         _gameContext.DragonManager.AcquireDragonCard(topdeckdragon, player);
+              //     reward = RewardFactory.GetRewardById(141).OnReward();
+              //     _gameContext.RewardHandlerManager.HandleReward(player, reward);
+                }
 
                 var eventArgs = new HeroCardPicked(heroCard, player, currentHeroCard, reward);
                 _gameContext.EventManager.Broadcast("HeroCardPicked", ref eventArgs);
             }
             return heroCard;
-
-
         }
 
         public void StartOfRoundSetup(){

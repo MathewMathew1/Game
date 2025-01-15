@@ -16,6 +16,10 @@ namespace BoardGameBackend.Models
         BanishRoyalCard,
         SwapTokens,
         RotatePawnMiniPhase,
-        ReplaceHeroToBuyMiniPhase
+        ReplaceHeroToBuyMiniPhase,
+        DiscardArtifactForFullMovement,
+        SummonDragonMiniPhase,
+        BlinkPawnMiniPhase,
+        PickDragonToSummonMiniPhase,
     }
 }

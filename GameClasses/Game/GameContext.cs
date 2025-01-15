@@ -17,6 +17,7 @@ namespace BoardGameBackend.Managers
         public TimerManager TimerManager { get; private set; }
         public GameTiles GameTiles { get; private set; }
         public MercenaryManager MercenaryManager { get; private set; }
+        public DragonManager DragonManager { get; private set; }
         public MiniPhaseManager MiniPhaseManager { get; private set; }
         public ArtifactManager ArtifactManager { get; private set; }
         public EffectManager EffectManager { get; private set; }
@@ -26,11 +27,25 @@ namespace BoardGameBackend.Managers
         public RewardHandlerManager RewardHandlerManager { get; private set; }
         public RolayCardManager RolayCardManager { get; private set; }
 
+        public bool m_bDLCDragons {get; private set; }
+        public bool m_bSignets25914 {get; private set; }
+
+        public bool AreSignetsSpecialThreshold()
+        {
+            return m_bSignets25914;
+        }
+        public bool IsDLCDragonsOn()
+        {
+            return m_bDLCDragons;
+        }
+
         public GameContext(string gameId, List<Player> players, StartGameModel startGameModel)
         {
             EventManager = new EventManager();
             GameId = gameId;
-            PlayerManager = new PlayersManager(players, this);
+            m_bDLCDragons = startGameModel.DLCDragons;
+            m_bSignets25914 = startGameModel.SignetsTwoFiveNine;
+            PlayerManager = new PlayersManager(players, this, startGameModel.SignetsTwoFiveNine);
             TurnManager = startGameModel.TurnType == TurnTypes.FULL_TURN ? new PlayerFullTurnManager(this) : new PhaseByPhaseTurnManager(this);
             HeroCardManager = new HeroCardManager(this, startGameModel.LessCards, startGameModel.MoreHeroCards);
             PhaseManager = new PhaseManager(this);
@@ -38,6 +53,7 @@ namespace BoardGameBackend.Managers
             GameTiles = new GameTiles(this);
             PawnManager = new PawnManager(GameTiles.GetTileById(27), this);
             MercenaryManager = new MercenaryManager(this, startGameModel.RemovePropheciesAtLastRound, startGameModel.SameAmountOfMercenariesEachRound);
+            DragonManager = new DragonManager(this, m_bDLCDragons);
             MiniPhaseManager = new MiniPhaseManager(this);
             ArtifactManager = new ArtifactManager(this);
             EffectManager = new EffectManager(this);
@@ -45,7 +61,7 @@ namespace BoardGameBackend.Managers
             ScorePointsManager = new ScorePointsManager(this);
             EndGameEffectManager = new EndGameEffectManager(this);
             RewardHandlerManager = new RewardHandlerManager(this);
-            TokenManager = new TokenManager();
+            TokenManager = new TokenManager(m_bDLCDragons);
             RolayCardManager = new RolayCardManager(this);
 
             EventManager.Subscribe("EndOfGamePreData", () =>
@@ -72,7 +88,8 @@ namespace BoardGameBackend.Managers
                 TokenSetup = tokenSetup,
                 Players = playerViewModels,
                 GameId = GameId,
-                RolayCards = rolayCards
+                RolayCards = rolayCards,
+                Signets25914 = m_bSignets25914
             };
 
             EventManager.Broadcast("GameStarted", ref data);

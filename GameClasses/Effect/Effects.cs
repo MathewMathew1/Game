@@ -25,6 +25,12 @@ namespace BoardGameBackend.Models
         DUEL_MAGIC,
         DUEL_SIEGE,
         DUEL_ARMY,
+        OPTIONAL_DISCARD_ARTIFACT_FOR_FULL_MOVE,
+        SUMMON_DRAGON,
+        PAWN_BLINK_ONE_TILE,
+        PICK_TWO_DRAGONS_SUMMON_ONE,
+        GET_TWO_RANDOM_ARTIFACTS,
+        TWO_FULL_MOVES_NOW,
     }
 
     public class GameEffect

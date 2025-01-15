@@ -19,14 +19,11 @@ namespace BoardGameBackend.Models
         public ResourceHeroType DuelHeroStat { get; set; }
     }
 
-
-
     public class TileReward
     {
         public List<Resource> Resources { get; set; }
         public TokenReward? TokenReward { get; set; }
         public int? TeleportedTileId { get; set; }
-        public int? ExperiencePoints { get; set; }
         public bool? RerollMercenaryAction { get; set; }
         public bool? GetRandomArtifact { get; set; }
         public Duel? Duel { get; set; }
@@ -35,6 +32,8 @@ namespace BoardGameBackend.Models
         public bool EmptyReward { get; set; } = false;
         public bool EmptyMovement { get; set; } = false;
         public bool TempSignet { get; set; } = false;
+        public bool Dragon { get; set; } = false;
+        public bool GoldFromDragon { get; set; } = false;
 
         public TileReward()
         {

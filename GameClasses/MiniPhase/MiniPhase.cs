@@ -312,6 +312,59 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class SummonDragonMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.SummonDragonMiniPhase;
+
+        public SummonDragonMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("SummonDragonMiniPhaseStarted");
+            Console.WriteLine("SummonDragonMiniPhaseStarted.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.TurnManager.ResetCurrentPlayer();
+            var eventArgs = new MiniPhaseDataWithDifferentPlayer
+            {
+                PlayerId =_gameContext.TurnManager.CurrentPlayer.Id
+            };
+            _gameContext.EventManager.Broadcast("SummonDragonMiniPhaseEnded", ref eventArgs);
+            Console.WriteLine("SummonDragonMiniPhaseEnded.");
+        }
+    }
+    public class PickDragonToSummonMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.PickDragonToSummonMiniPhase;
+
+        public PickDragonToSummonMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+        }
+
+        public override void StartMiniPhase()
+        {
+            var eventArgs = new DragonPickData
+            {
+                Cards = _gameContext.DragonManager.DragonsToPickFrom
+            };
+            _gameContext.EventManager.Broadcast("PickDragonMiniPhaseStarted", ref eventArgs);
+            Console.WriteLine("PickDragonMiniPhaseStarted.");
+        }
+
+        public override void EndMiniPhase()
+        {
+         //   _gameContext.EventManager.Broadcast("PickDragonMiniPhaseEnded");
+            Console.WriteLine("PickDragonMiniPhaseEnded.");
+        }
+    }
+
+    
+
     public class RotatePawnMiniPhase : MiniPhase
     {
         public override MiniPhaseType Name => MiniPhaseType.RotatePawnMiniPhase;
@@ -331,6 +384,51 @@ namespace BoardGameBackend.Models
         {
             _gameContext.EventManager.Broadcast("RotatePawnMiniPhaseEnded");
             Console.WriteLine("RotatePawnMiniPhaseEnded.");
+        }
+    }
+
+    public class BlinkPawnMiniPhase : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.BlinkPawnMiniPhase;
+
+        public BlinkPawnMiniPhase(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("BlinkPawnMiniPhaseStarted");
+            Console.WriteLine("BlinkPawnMiniPhaseStarted.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("BlinkPawnMiniPhaseEnded");
+            Console.WriteLine("BlinkPawnMiniPhaseEnded.");
+        }
+    }
+    
+
+    public class DiscardArtifactForFullMovement : MiniPhase
+    {
+        public override MiniPhaseType Name => MiniPhaseType.DiscardArtifactForFullMovement;
+
+        public DiscardArtifactForFullMovement(GameContext gameContext) : base(gameContext)
+        {
+            
+        }
+
+        public override void StartMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("DiscardArtifactForFullMovementPhaseStarted");
+            Console.WriteLine("DiscardArtifactForFullMovementPhaseStarted.");
+        }
+
+        public override void EndMiniPhase()
+        {
+            _gameContext.EventManager.Broadcast("DiscardArtifactForFullMovementPhaseEnded");
+            Console.WriteLine("DiscardArtifactForFullMovementPhaseEnded.");
         }
     }
 

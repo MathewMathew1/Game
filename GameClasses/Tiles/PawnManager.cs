@@ -157,6 +157,12 @@ namespace BoardGameBackend.Managers
 
             if (tile.Id == _currentTile.Id) return false;
 
+            if(tile.Token != null)
+            {
+                if(tile.Token.IsDragon)
+                    return false;
+            }
+
             _currentTile = tile;
 
             var eventArgs = new RotateTileEventData
@@ -167,6 +173,40 @@ namespace BoardGameBackend.Managers
 
             _gameContext.EventManager.Broadcast("RotateTileEvent", ref eventArgs);
 
+            return true;
+        }
+
+        public bool BlinkPawn(PlayerInGame player, int blinkToId)
+        {
+            bool bIsAdjacent = false;
+            foreach(Connection c in _currentTile.Connections)
+            {
+                if(blinkToId == c.ToId)
+                {
+                    bIsAdjacent = true;
+                    break;
+                }
+            }
+            if(!bIsAdjacent)
+                return false;
+
+            var tile = _gameContext.GameTiles.GetTileById(blinkToId);
+
+            if(tile.Token != null)
+            {
+                if(tile.Token.IsDragon)
+                    return false;
+            }
+
+            _currentTile = tile;
+
+            var eventArgs = new RotateTileEventData
+            {
+                TileId = tile.Id,
+                PlayerId = player.Id,
+            };
+
+            _gameContext.EventManager.Broadcast("BlinkTileEvent", ref eventArgs);
 
             return true;
         }
@@ -212,6 +252,7 @@ namespace BoardGameBackend.Managers
 
             if (!(fullBoot || unFullBoot)) return false;
             if (!fullBoot && FullMovement) return false;
+            if (!FullMovement && tile.Token != null && tile.Token.IsDragon) return false;
 
             TileReward tileReward = new TileReward
             {
@@ -355,15 +396,15 @@ namespace BoardGameBackend.Managers
 
             var tile = _gameContext.GameTiles.GetTileById(tileId);
 
-            if (tile.TileTypeId == TileHelper.MagicTileId ||
-                tile.Id == CurrentTile.Id ||
-                tile.TileTypeId == TileHelper.CastleTileId ||
-                tile.TileTypeId == TileHelper.StartTileId ||
-                tile.Token != null)
-            {
-
+            if (tile.TileTypeId == TileHelper.MagicTileId || tile.Id == CurrentTile.Id || tile.TileTypeId == TileHelper.CastleTileId || tile.TileTypeId == TileHelper.StartTileId)
                 return false;
+            
+            if(tile.Token != null)
+            {
+                if(tile.Token.IsDragon || tile.Token.InStartingPool)
+                    return false;
             }
+
 
             var token = _gameContext.TokenManager.GetTokenById(TileHelper.BlockTileTokenId);
             tiles.ForEach(tile =>
@@ -390,6 +431,14 @@ namespace BoardGameBackend.Managers
 
         private void GetRewardFromToken(TileWithType tile, TileReward tileReward, PlayerInGame player)
         {
+            if(tile.Token.IsDragon)
+            {
+                 _gameContext.DragonManager.AcquireDragonCard(tile.Token.DragonLink, player, tileReward);
+                tile.Token = null;
+                tileReward.Dragon = true;
+                return;
+            }
+
             tileReward.TokenReward = new TokenReward { Reward = RewardFactory.GetRewardById(tile.Token.EffectID).OnReward() };
             _gameContext.RewardHandlerManager.HandleReward(player, tileReward.TokenReward.Reward);
 
@@ -408,6 +457,15 @@ namespace BoardGameBackend.Managers
 
             bool fulfillRequirementsToMoveToTile = true;
             bool thereIsConnection = false;
+
+            if(tile.Token != null && tile.Token.IsDragon)
+            {
+                if(player.PlayerHeroCardManager.CurrentHeroCard?.MovementFullLeft == 0)
+                    return false;
+
+                if(!_gameContext.DragonManager.CanPlayerDefeatDragon(tile.Token.DragonLink, player))
+                    return false;
+            }
 
             foreach (var connection in _currentTile.Connections)
             {

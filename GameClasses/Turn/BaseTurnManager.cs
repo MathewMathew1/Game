@@ -100,7 +100,21 @@ namespace BoardGameBackend.Managers
             {             
                 EndTurn();                    
             }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<RotateTileEventData>("BlinkTileEvent", data =>
+            {             
+                EndTurn();                    
+            }, priority: 1);
             
+            _gameContext.EventManager.Subscribe<ArtifactDiscardData>("DiscardArtifactForFullMovementEvent", data =>
+            {             
+                EndTurn();                    
+            }, priority: 1);
+
+            _gameContext.EventManager.Subscribe<DragonSummonEventData>("SummonDragonEvent", data =>
+            {             
+                IfDragonNotBlockingEndTurn();                    
+            }, priority: 1);
         }
 
         public abstract void EndTurn(); 
@@ -108,6 +122,9 @@ namespace BoardGameBackend.Managers
 
         public void ResetCurrentPlayer()
         {
+            if(realCurrentPlayer == null)
+                return;
+                
             _currentPlayer = realCurrentPlayer;
             BlockNextPlayerTurn = false;
         }
@@ -117,6 +134,21 @@ namespace BoardGameBackend.Managers
             BlockNextPlayerTurn = true;
             realCurrentPlayer = _currentPlayer;
             _currentPlayer = player;
+
+            var eventArgs = new MiniPhaseDataWithDifferentPlayer
+            {
+                PlayerId = player.Id
+            };
+
+            
+            _gameContext.EventManager.Broadcast("ChangedPlayerInPhase", ref eventArgs);
+        }
+        public void IfDragonNotBlockingEndTurn()
+        {
+            if(!_gameContext.DragonManager.IsExtraSpawnOn())
+            {
+                EndTurn();
+            }
         }
 
         public PlayerInGame? CurrentPlayer => _currentPlayer;

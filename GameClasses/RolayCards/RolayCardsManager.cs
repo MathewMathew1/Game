@@ -67,10 +67,19 @@ namespace BoardGameBackend.Models
             if(pickedCard.EffectId != null){
                 var royalCardReward = RewardFactory.GetRewardById(pickedCard.EffectId.Value);
                 royalCardRewards = royalCardReward.OnReward();
-
-                _gameContext.RewardHandlerManager.HandleReward(player, royalCardRewards);
             }   
-            
+
+            var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.TWOGOLD_ON_ROYAL_CARD);
+            if(amountOfAuras > 0)
+            {
+                if(royalCardRewards == null)
+                    royalCardRewards = new Reward();
+
+                royalCardRewards.Resources.Add(new Resource(ResourceType.Gold, 2 * amountOfAuras));
+            }
+
+            if(royalCardRewards != null)
+                _gameContext.RewardHandlerManager.HandleReward(player, royalCardRewards);
 
             player.AddRoyalCard(pickedCard);
             if (pickedCard.Morale > 0)

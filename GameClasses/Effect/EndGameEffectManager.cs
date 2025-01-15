@@ -83,6 +83,5 @@ namespace BoardGameBackend.Managers
 
             scorePointsTable.RoyalCardPoints +=  pointsAwarded;
         }
-
     }
 }

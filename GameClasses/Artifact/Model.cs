@@ -15,6 +15,7 @@ namespace BoardGameBackend.Models
         public required int BackgroundIndex { get; set; }
         public required int EffectType { get; set; }
         public required bool SecondEffectSuperior { get; set; }
+        public required bool DragonDLC{get; set;}
     }
 
     public class Artifact
@@ -33,6 +34,7 @@ namespace BoardGameBackend.Models
         public required int BackgroundIndex { get; set; }
         public required int EffectType { get; set; }
         public required bool SecondEffectSuperior { get; set; }
+        public required bool DragonDLC{get; set;}
         
     }
 

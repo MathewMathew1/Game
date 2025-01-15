@@ -12,6 +12,7 @@ namespace BoardGameBackend.Managers.EventListeners
             _listeners.Add(new TileEventListener(hubContextProvider));
             _listeners.Add(new ArtifactEventListener(hubContextProvider));
             _listeners.Add(new MercenaryEventListener(hubContextProvider));
+            _listeners.Add(new DragonEventListener(hubContextProvider));
             _listeners.Add( new PhaseEventListener(hubContextProvider));
             _listeners.Add( new MiniPhaseEventListener(hubContextProvider));
             _listeners.Add( new OtherEventListener(hubContextProvider));

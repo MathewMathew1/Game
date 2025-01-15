@@ -11,6 +11,9 @@ namespace BoardGameBackend.Models
         public required string ToolTipText {get; set;}
         public required bool Collectable {get; set;}
         public required bool InStartingPool {get; set;}
+        public required bool DragonDLC {get; set;}
+        public required bool IsDragon {get; set;}
+        public Dragon? DragonLink {get; set; }
     }
 
     public class TokenTileInfo

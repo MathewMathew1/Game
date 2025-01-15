@@ -357,6 +357,47 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class BlinkOneTileReward : BaseReward
+    {
+        public BlinkOneTileReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.PAWN_BLINK_ONE_TILE }
+            };
+        }
+    }
+
+
+    public class SummonDragonReward : BaseReward
+    {
+        public SummonDragonReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.SUMMON_DRAGON }
+            };
+        }
+    }
+    public class ChooseDragonToSummonReward : BaseReward
+    {
+        public ChooseDragonToSummonReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.PICK_TWO_DRAGONS_SUMMON_ONE }
+            };
+        }
+    }
+
+    
+
     public class SwapTokensReward : BaseReward
     {
         public SwapTokensReward(int value1, int value2) : base(value1, value2) { }
@@ -410,6 +451,18 @@ namespace BoardGameBackend.Models
         }
     }
 
+    public class GetTwoArtifactsReward : BaseReward
+    {
+        public GetTwoArtifactsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.GET_TWO_RANDOM_ARTIFACTS }
+            };
+        }
+    }
     public class RefreshMercenariesReward : BaseReward
     {
         public RefreshMercenariesReward(int value1, int value2) : base(value1, value2) { }
@@ -615,6 +668,19 @@ namespace BoardGameBackend.Models
             return new Reward
             {
                 Effects = new List<EffectType>() { EffectType.REROLL_MERCENARY }
+            };
+        }
+    }
+
+    public class OptionalDiscardArtifactForFullMove : BaseReward
+    {
+        public OptionalDiscardArtifactForFullMove(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.OPTIONAL_DISCARD_ARTIFACT_FOR_FULL_MOVE }
             };
         }
     }
@@ -928,6 +994,20 @@ namespace BoardGameBackend.Models
             };
         }
     }
+
+    public class FullMovesDuringMoveReward : BaseReward
+    {
+        public FullMovesDuringMoveReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                Effects = new List<EffectType>() { EffectType.TWO_FULL_MOVES_NOW }
+            };
+        }
+    }
+    
 
     public class EmptyMoveOnTilesWithSignetReward : BaseReward
     {
@@ -1247,6 +1327,34 @@ namespace BoardGameBackend.Models
             };
         }
     }
+    public class EmptyMoveOnOneGoldReward : BaseReward
+    {
+        public EmptyMoveOnOneGoldReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.EMPTY_MOVE_ON_TILES_WITH_ONEGOLD, Permanent = true }
+                }
+            };
+        }
+    }
+    public class TwoGoldOnRoyalCardReward : BaseReward
+    {
+        public TwoGoldOnRoyalCardReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.TWOGOLD_ON_ROYAL_CARD, Permanent = true }
+                }
+            };
+        }
+    }
 
     public class EmptyMoveOnCastleReward : BaseReward
     {
@@ -1323,8 +1431,49 @@ namespace BoardGameBackend.Models
         }
     }
 
-    
 
+    public class TokenDragonslayerReward : BaseReward
+    {
+        public TokenDragonslayerReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.NEXT_DRAGON_REQ_IGNORE, Permanent = true }
+                }
+            };
+        }
+    }
+    public class ReduceDragonsReqReward : BaseReward
+    {
+        public ReduceDragonsReqReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.DRAGON_REQ_MIGHTS_MINUS_ONE, Permanent = true }
+                }
+            };
+        }
+    }
+    public class FullMoveOnDragonReward : BaseReward
+    {
+        public FullMoveOnDragonReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.FULL_MOVE_ON_DRAGON_DEFEAT, Permanent = true }
+                }
+            };
+        }
+    }
 
     public class NoReward : BaseReward
     {
@@ -1643,11 +1792,8 @@ namespace BoardGameBackend.Models
                     case 123:
                         _rewards.Add(rewardData.Id, new RotatePawnReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
-                    case 134:
-                        _rewards.Add(rewardData.Id, new MarketGold(rewardData.IntValue1, rewardData.IntValue2));
-                        break;
                     case 127:
-                        _rewards.Add(rewardData.Id, new  GoldOnDuelTilesReward(rewardData.IntValue1, rewardData.IntValue2));
+                        _rewards.Add(rewardData.Id, new GoldOnDuelTilesReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 128:
                         _rewards.Add(rewardData.Id, new InstantWinDuelReward(rewardData.IntValue1, rewardData.IntValue2));
@@ -1661,20 +1807,54 @@ namespace BoardGameBackend.Models
                     case 131:
                         _rewards.Add(rewardData.Id, new DuelArmyReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
-                       
                     case 132:
                         _rewards.Add(rewardData.Id, new InstantWinDuelReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 134:
+                        _rewards.Add(rewardData.Id, new MarketGold(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                     case 135:
                         _rewards.Add(rewardData.Id, new EmptyMovementWhenHeroHasPoint(rewardData.IntValue1, rewardData.IntValue2));
                         break;
-
-                    
-
+                    case 136:
+                        _rewards.Add(rewardData.Id, new OptionalDiscardArtifactForFullMove(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 137:
+                        _rewards.Add(rewardData.Id, new SummonDragonReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 140:
+                        _rewards.Add(rewardData.Id, new BlinkOneTileReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 141:
+                        _rewards.Add(rewardData.Id, new ChooseDragonToSummonReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 142:
+                        _rewards.Add(rewardData.Id, new TokenDragonslayerReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 143:
+                        _rewards.Add(rewardData.Id, new ReduceDragonsReqReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 144:
+                        _rewards.Add(rewardData.Id, new FullMoveOnDragonReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 145:
+                        _rewards.Add(rewardData.Id, new TwoGoldOnRoyalCardReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 146:
+                        _rewards.Add(rewardData.Id, new EmptyMoveOnOneGoldReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 147:
+                        _rewards.Add(rewardData.Id, new FullMovesDuringMoveReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 148:
+                        _rewards.Add(rewardData.Id, new SignetsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 149:
+                        _rewards.Add(rewardData.Id, new GetTwoArtifactsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
                 }
             }
         }
-
 
         public static BaseReward GetRewardById(int id)
         {

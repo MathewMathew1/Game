@@ -25,13 +25,18 @@ namespace BoardGameBackend.Managers
             _gameContext = gameContext;
             _mercenaries = new List<Mercenary>();
 
+            bool bIsDragonDLCOn = gameContext.IsDLCDragonsOn();
+
             foreach (var mercenaryFromJson in MercenariesFactory.MercenariesFromJsonList)
             {
-                for (int i = 0; i < mercenaryFromJson.ShuffleX; i++)
+                if(bIsDragonDLCOn || !mercenaryFromJson.DragonDLC)
                 {
-                    var mercenary = GameMapper.Instance.Map<Mercenary>(mercenaryFromJson);
-                    mercenary.InGameIndex = _nextInGameIndex++;
-                    _mercenaries.Add(mercenary);
+                    for (int i = 0; i < mercenaryFromJson.ShuffleX; i++)
+                    {
+                        var mercenary = GameMapper.Instance.Map<Mercenary>(mercenaryFromJson);
+                        mercenary.InGameIndex = _nextInGameIndex++;
+                        _mercenaries.Add(mercenary);
+                    }
                 }
             }
 

@@ -56,13 +56,16 @@ namespace BoardGameBackend.Managers
                     rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
                     break;
                 case 3:
-                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 2, Artifact = false, Reroll = false });
+                //    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 2, Artifact = false, Reroll = false });
+                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
                     rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
                     break;
                 case 4:
                 default:
-                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 2, Artifact = false, Reroll = true }); // 2nd place
-                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 1, Artifact = false, Reroll = false }); // 3rd place
+                //    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 2, Artifact = false, Reroll = true }); // 2nd place
+                //   rewardsBasedOnPlace.Add(new PlayerReward { Gold = 1, Artifact = false, Reroll = false }); // 3rd place
+                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
+                    rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
                     rewardsBasedOnPlace.Add(new PlayerReward { Gold = 0, Artifact = false, Reroll = false });
                     break;
             }

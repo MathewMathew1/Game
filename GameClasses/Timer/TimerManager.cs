@@ -18,7 +18,7 @@ namespace BoardGameBackend.Managers
             _playerTimes = new Dictionary<Guid, TimeSpan>();
             _playerStopwatch = new Stopwatch();
 
-            gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", OnPlayerTurnStart, priority: 0);
+            gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", OnPlayerTurnStart, priority: 2);
             gameContext.EventManager.Subscribe<StartOfGame>("GameStarted", (data) => OnPlayerTurnStart(_gameContext.TurnManager.CurrentPlayer!), priority: 0);
 
             _gameStopwatch.Start();
@@ -41,7 +41,7 @@ namespace BoardGameBackend.Managers
                 _playerStopwatch.Stop();
                 UpdatePlayerTime(_currentPlayer, _playerStopwatch.Elapsed);
             }
-            Console.WriteLine("123312");
+            Console.WriteLine("OnPlayerTurnStart");
             _currentPlayer = player;
             _playerStopwatch.Reset();
             _playerStopwatch.Start();

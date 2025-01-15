@@ -22,6 +22,7 @@ namespace BoardGameBackend.Models
         public int? EffectId { get; set; }
         public string? ToolTipText {get; set;}
         public int? EffectType { get; set; }
+        public required bool DragonDLC {get; set;}
     }
 
     public class ResourceJsonInfo
@@ -61,6 +62,7 @@ namespace BoardGameBackend.Models
         public int? EffectType { get; set; }
         public LockedByPlayerInfo? LockedByPlayerInfo {get; set;}
         public string? ToolTipText {get; set;}
+        public required bool DragonDLC {get; set;}
     }
 
     public class MercenaryData
@@ -68,6 +70,12 @@ namespace BoardGameBackend.Models
         public required List<Mercenary> BuyableMercenaries { get; set; }
         public int RemainingMercenariesAmount { get; set; }
         public required int TossedMercenariesAmount {get; set;}
+    }
+
+    public class DragonFullData
+    {
+        public Dragon? CurrentlySummonedDragon {get; set; }        
+        public List<Dragon>? DragonsToPick {get; set; }    
     }
 
     public class MercenaryFulfillProphecyReturnData

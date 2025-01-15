@@ -129,11 +129,41 @@ namespace BoardGameBackend.Managers.EventListeners
             gameContext.EventManager.Subscribe("RotatePawnMiniPhaseStarted", () =>
             {
                 BroadcastStartRotatePawn(gameId);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("BlinkPawnMiniPhaseStarted", () =>
+            {
+                BroadcastStartBlinkPawn(gameId);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("SummonDragonMiniPhaseStarted", () =>
+            {
+                BroadcastStartSummonDragon(gameId);
             }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("PickDragonMiniPhaseStarted", (DragonPickData data) =>
+            {
+                BroadcastStartPickDragon(gameId, data);
+            }, priority: 1); 
+
+            gameContext.EventManager.Subscribe("DiscardArtifactForFullMovementPhaseStarted", () =>
+            {
+                BroadcastStartOptionalDiscardArtifactForFullMove(gameId);
+            }, priority: 1);
 
             gameContext.EventManager.Subscribe("RotatePawnMiniPhaseEnded", () =>
             {
                 BroadcastEndRotatePawn(gameId);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("BlinkPawnMiniPhaseEnded", () =>
+            {
+                BroadcastEndBlinkPawn(gameId);
+            }, priority: 1);
+
+            gameContext.EventManager.Subscribe("SummonDragonMiniPhaseEnded", (MiniPhaseDataWithDifferentPlayer data) =>
+            {
+                BroadcastEndSummonDragon(gameId, data);
             }, priority: 1); 
 
             gameContext.EventManager.Subscribe("ReplaceHeroToBuyMiniPhaseStarted", () =>
@@ -146,6 +176,10 @@ namespace BoardGameBackend.Managers.EventListeners
                 BroadcastEndRotatePawn(gameId);
             }, priority: 1); 
 
+            gameContext.EventManager.Subscribe("DiscardArtifactForFullMovementPhaseEnded", () =>
+            {
+                BroadcastDiscardArtifactForFullMovement(gameId);
+            }, priority: 1); 
         }
 
 
@@ -280,17 +314,53 @@ namespace BoardGameBackend.Managers.EventListeners
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SwapTokenMiniPhaseStarted");
         }
-
         public void BroadcastEndRotatePawn(string gameId)
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotatePawnMiniPhaseEnded");
+        }
+        public void BroadcastEndBlinkPawn(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BlinkPawnMiniPhaseEnded");
+        }
+        
+        public void BroadcastEndSummonDragon(string gameId, MiniPhaseDataWithDifferentPlayer data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SummonDragonMiniPhaseEnded", data);
+        }
+
+        public void BroadcastDiscardArtifactForFullMovement(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("DiscardArtifactForFullMovementPhaseEnded");
         }
 
         public void BroadcastStartRotatePawn(string gameId)
         {
             var hubContext = _hubContextProvider!.LobbyHubContext;
             hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("RotatePawnMiniPhaseStarted");
+        }
+        public void BroadcastStartBlinkPawn(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("BlinkPawnMiniPhaseStarted");
+        }
+        public void BroadcastStartSummonDragon(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("SummonDragonMiniPhaseStarted");
+        }
+        public void BroadcastStartPickDragon(string gameId, DragonPickData data)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("PickDragonMiniPhaseStarted", data);
+        }
+        public void BroadcastStartOptionalDiscardArtifactForFullMove(string gameId)
+        {
+            var hubContext = _hubContextProvider!.LobbyHubContext;
+            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(gameId)!.Id).SendAsync("DiscardArtifactForFullMovementPhaseStarted");
         }
 
         public void BroadcastReplaceHeroToBuy(string gameId)

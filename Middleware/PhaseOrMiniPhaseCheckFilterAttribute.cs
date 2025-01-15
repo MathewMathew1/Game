@@ -59,7 +59,7 @@ namespace BoardGameBackend.MiddleWare
 
                 var currentPhase = gameContext.PhaseManager.CurrentPhase;
 
-                if (currentMiniPhase?.GetType() == _requiredMiniPhaseType || currentPhase?.GetType() == _requiredPhaseType)
+                if (currentMiniPhase?.GetType() == _requiredMiniPhaseType || (currentPhase?.GetType() == _requiredPhaseType && currentMiniPhase == null))
                 {
                     context.HttpContext.Items["Player"] = currentPlayer;
                     context.HttpContext.Items["Lobby"] = lobby;

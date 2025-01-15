@@ -48,7 +48,7 @@ namespace BoardGameBackend.Managers.EventListeners
             gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", player =>
             {
                 BroadcastNewPlayerTurn(player, gameId);
-            }, priority: 0);
+            }, priority: 2);
 
             gameContext.EventManager.Subscribe<EndOfTurnEventData>("EndOfTurn", (data) =>
             {

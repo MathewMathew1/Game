@@ -48,6 +48,30 @@ namespace BoardGameBackend.Models
         public required MercenariesLeftData MercenariesLeftData { get; set; }
     }
 
+    public class DragonAcquired
+    {
+        public Reward? Reward { get; set; }
+        public required Dragon Card { get; set; }
+        public required PlayerInGame Player { get; set; }
+        public required int MovementFullLeft {get; set; }
+        public required bool UsedToken {get; set;}
+    }
+
+    public class DragonSummonData
+    {
+        public required Dragon Card { get; set; }
+    }
+    public class DragonPickData
+    {
+        public required List<Dragon> Cards { get; set; }
+    }
+    
+    public class DragonSummonEventData{
+        public required int TileId {get; set;}
+        public required Guid PlayerId {get; set;}
+        public required TokenFromJson Token {get; set;}
+    }
+
     public class MercenaryRerolled
     {
         public required Mercenary Card { get; set; }
@@ -112,6 +136,7 @@ namespace BoardGameBackend.Models
         public int MovementFullLeft { get; set; }
         public int MovementUnFullLeft { get; set; }
         public int TileId { get; set; }
+        public bool AdjacentMovement { get; set; }
     }
 
 
@@ -151,11 +176,11 @@ namespace BoardGameBackend.Models
     {
         public List<Resource> Resources { get; set; }
         public int? TeleportedTileId { get; set; }
-        public int? ExperiencePoints { get; set; }
         public bool? RerollMercenaryAction { get; set; }
         public bool? GetRandomArtifact { get; set; }
         public bool? GotArtifact { get; set; }
         public TokenReward? TokenReward { get; set; }
+        public bool Dragon { get; set; } = false;
     }
 
     public class ArtifactPlayed
@@ -171,6 +196,12 @@ namespace BoardGameBackend.Models
         public required Artifact Artifact { get; set; }
         public required PlayerInGame Player { get; set; }
         public required Artifact ArtifactRerolled { get; set; }
+    }
+
+    public class ArtifactDiscardData
+    {
+        public required int ArtifactId { get; set; }
+        public required PlayerInGame Player { get; set; }
     }
 
     public class ArtifactRerolledDataForOtherUsers
@@ -222,6 +253,7 @@ namespace BoardGameBackend.Models
         public required string GameId { get; set; }
         public required List<TokenTileInfo> TokenSetup { get; set; }
         public required List<RolayCard> RolayCards { get; set; }
+        public required bool Signets25914 {get; set; } 
     }
 
     public class FulfillProphecy
@@ -339,5 +371,4 @@ namespace BoardGameBackend.Models
         public required int TileId {get; set;}
         public required Guid PlayerId {get; set;}
     }
-
 }

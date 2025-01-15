@@ -84,6 +84,7 @@ namespace BoardGameBackend.Managers
                 var mercenariesPoints = 0;
                 var heroPoints = 0;
                 var royalCardsPoints = 0;
+                var dragonCardsPoints = 0;
 
                 p.PlayerMercenaryManager.Mercenaries.ForEach(mercenary =>
                 {
@@ -107,11 +108,17 @@ namespace BoardGameBackend.Managers
                     royalCardsPoints += card.ScorePoints;
                 });
 
+                p.PlayerDragonManager.Dragons.ForEach(card =>
+                {
+                    dragonCardsPoints += card.ScorePoints;
+                });
 
                 playerScores[p.Id].HeroPoints = heroPoints;
                 playerScores[p.Id].MercenaryPoints = mercenariesPoints;
                 playerScores[p.Id].RoyalCardPoints = royalCardsPoints;
+                playerScores[p.Id].DragonCardPoints = dragonCardsPoints;
                 playerScores[p.Id] = _gameContext.EndGameEffectManager.GetPoints(p.EndGameAuras,p, playerScores[p.Id]);
+
                 
             });
 

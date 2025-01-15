@@ -10,22 +10,24 @@ namespace BoardGameBackend.Models
         public string Name { get; private set; }
         public int Morale { get; set; }
         public PlayerMercenaryManager PlayerMercenaryManager { get; set; } = new PlayerMercenaryManager();
+        public PlayerDragonManager PlayerDragonManager { get; set; } = new PlayerDragonManager();
         public List<Artifact> Artifacts { get; set; } = new List<Artifact>();
         public List<Artifact> ArtifactsPlayed { get; set; } = new List<Artifact>();
         public List<AuraTypeWithLongevity> AurasTypes { get; set; } = new List<AuraTypeWithLongevity>();
         public List<EndGameAura> EndGameAuras { get; set; } = new List<EndGameAura>();
         public PlayerHeroCardManager PlayerHeroCardManager = new PlayerHeroCardManager();
-        public PlayerRolayCardManager PlayerRolayCardManager = new PlayerRolayCardManager();
+        public PlayerRolayCardManager PlayerRolayCardManager {get; set; }
         public ResourceHeroManager ResourceHeroManager { get; set; }
         public List<TokenFromJson> Tokens { get; set; } = new List<TokenFromJson>();
         public Dictionary<string, bool> BoolAdditionalStorage = new Dictionary<string, bool>();
         public int Points { get; set; } = 0;
         public bool AlreadyPlayedCurrentPhase = false;
 
-        public PlayerInGame(Player player)
+        public PlayerInGame(Player player, bool m_bSignets25914)
         {
             Id = player.Id;
             Name = player.Name;
+            PlayerRolayCardManager = new PlayerRolayCardManager(m_bSignets25914);
             ResourceManager = new ResourceManager(this);
             ResourceHeroManager = new ResourceHeroManager();
         }
@@ -201,6 +203,16 @@ namespace BoardGameBackend.Models
             PlayerHeroCardManager.ResetCurrentHeroCard();
         }
 
+        public void AddDragon(Dragon dragon)
+        {
+            PlayerDragonManager.Dragons.Add(dragon);
+
+            ResourceHeroManager.AddResource(ResourceHeroType.Siege, dragon.Siege);
+            ResourceHeroManager.AddResource(ResourceHeroType.Army, dragon.Army);
+            ResourceHeroManager.AddResource(ResourceHeroType.Magic, dragon.Magic);
+            
+            Points += dragon.ScorePoints;
+        }
         public void AddMercenary(Mercenary mercenary)
         {
             PlayerMercenaryManager.Mercenaries.Add(mercenary);
@@ -258,6 +270,32 @@ namespace BoardGameBackend.Models
             {
                 Artifacts.Remove(artifact);
                 Artifacts.Add(artifactRerolled);
+            }
+        }
+
+        public void DiscardArtifact(int artifactId)
+        {
+            var artifact = Artifacts.FirstOrDefault(a => a.InGameIndex == artifactId);
+
+            if (artifact != null)
+            {
+                Artifacts.Remove(artifact);
+            }
+        }
+
+        public void AddFullMovement(int fullMoves)
+        {
+            if(PlayerHeroCardManager.CurrentHeroCard != null)
+            {
+                PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft += fullMoves;
+            }
+            else
+            {
+                // it would not display properly on front end :)
+                for(int i = 0; i < fullMoves; i++)
+                {
+                    AurasTypes.Add( new AuraTypeWithLongevity { Aura = AurasType.ONE_FULL_MOVEMENT, Permanent = false });
+                }
             }
         }
 
