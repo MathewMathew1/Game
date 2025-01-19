@@ -261,11 +261,18 @@ namespace BoardGameBackend.Managers
 
         public void RefreshBuyableMercenaries()
         {
-            TossedAwayMercenaries.AddRange(BuyableMercenaries);
-
+            int iToAdd = 0;
+            foreach(var oldMerc in BuyableMercenaries)
+            {
+                if(oldMerc.LockedByPlayerInfo == null)
+                {
+                    iToAdd++;
+                    TossedAwayMercenaries.Add(oldMerc);
+                }
+            }
             BuyableMercenaries = BuyableMercenaries.FindAll(m => m.LockedByPlayerInfo != null);
 
-            for (int i = 0; i < BuyableMercenariesCount; i++)
+            for (int i = 0; i < iToAdd; i++)
             {
                 if (_mercenaries.Count > 0)
                 {

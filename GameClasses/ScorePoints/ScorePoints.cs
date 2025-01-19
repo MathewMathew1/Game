@@ -49,6 +49,7 @@ namespace BoardGameBackend.Managers
                                            scoreTable.RoyalCardPoints+
                                            scoreTable.HeroPoints +
                                            scoreTable.TokenPoints +
+                                           scoreTable.DragonCardPoints +
                                            scoreTable.ArtefactPoints;
             }
 
@@ -89,13 +90,11 @@ namespace BoardGameBackend.Managers
                 p.PlayerMercenaryManager.Mercenaries.ForEach(mercenary =>
                 {
                     mercenariesPoints += mercenary.ScorePoints;
-
                 });
 
                 p.PlayerHeroCardManager.HeroCardsLeft.ForEach(hero =>
                 {
                     heroPoints += hero.ScorePoints;
-
                 });
 
                 p.PlayerHeroCardManager.HeroCardsRight.ForEach(hero =>
@@ -118,7 +117,6 @@ namespace BoardGameBackend.Managers
                 playerScores[p.Id].RoyalCardPoints = royalCardsPoints;
                 playerScores[p.Id].DragonCardPoints = dragonCardsPoints;
                 playerScores[p.Id] = _gameContext.EndGameEffectManager.GetPoints(p.EndGameAuras,p, playerScores[p.Id]);
-
                 
             });
 
@@ -165,7 +163,7 @@ namespace BoardGameBackend.Managers
                     AmountOfPointsBasedOnPlace = new List<int> { 6, 0, 0, 0 };
                     break;
                 case 3:
-                    AmountOfPointsBasedOnPlace = new List<int> { 6, 3, 0, 0 };
+                    AmountOfPointsBasedOnPlace = new List<int> { 6, 2, 0, 0 };
                     break;
                 default:
                     AmountOfPointsBasedOnPlace = new List<int> { 6, 3, 1, 0 };
