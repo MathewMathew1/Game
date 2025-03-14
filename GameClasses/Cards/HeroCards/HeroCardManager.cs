@@ -16,13 +16,13 @@ namespace BoardGameBackend.Models
 
         private static Random _random = new Random();
 
-        public HeroCardManager(GameContext gameContext, bool lessCards, bool moreCardsPerRound)
+        public HeroCardManager(GameContext gameContext, bool lessCards, bool moreCardsPerRound, HeroPoolTypes heroPool)
         {
             _gameContext = gameContext;
             _moreCardsPerRound = moreCardsPerRound;
 
             // Generate and filter hero cards based on players and lessCards flag
-            _heroCardCombinedList = GenerateAndCombineHeroCards(gameContext.PlayerManager.Players.Count, lessCards);
+            _heroCardCombinedList = GenerateAndCombineHeroCards(gameContext.PlayerManager.Players.Count, lessCards, heroPool);
             _takenCards = new Dictionary<int, PlayerInGame?>();
 
             ShuffleHeroCardCombinedList();
@@ -38,7 +38,7 @@ namespace BoardGameBackend.Models
             }, priority: 5);
         }
 
-        private List<HeroCardCombined> GenerateAndCombineHeroCards(int playerCount, bool lessCards)
+        private List<HeroCardCombined> GenerateAndCombineHeroCards(int playerCount, bool lessCards, HeroPoolTypes heroPool)
         {
             // Retrieve the combined card data from JSON
             var combinedFromJsonList = HeroesCardsFromJson.HeroesCombinedFromJsonList;
@@ -53,17 +53,20 @@ namespace BoardGameBackend.Models
             var combinedHeroCards = combinedFromJsonList.Select(jsonCard => new HeroCardCombined
             {
                 Id = jsonCard.Id,
-                LeftSide = GetHeroCardById(jsonCard.LeftSide),
-                RightSide = GetHeroCardById(jsonCard.RightSide)
+                LeftSide = GetHeroCardById(jsonCard.LeftSide, heroPool),
+                RightSide = GetHeroCardById(jsonCard.RightSide, heroPool)
             }).ToList();
 
             return combinedHeroCards;
         }
 
-        private HeroCard GetHeroCardById(int id)
+        private HeroCard GetHeroCardById(int id, HeroPoolTypes heroPool)
         {
-            // Assuming _gameContext or some data source has the list of HeroCards to fetch by ID
             var heroCardsJson = HeroesFromJson.HeroesFromJsonList;
+            if(heroPool == HeroPoolTypes.PRE_03_2025)
+                heroCardsJson = HeroesFromJson.HeroesFromJsonListPre032025;
+
+            // Assuming _gameContext or some data source has the list of HeroCards to fetch by ID
             return GameMapper.Instance.Map<HeroCard>(heroCardsJson.FirstOrDefault(h => h.Id == id));
         }
 

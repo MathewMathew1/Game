@@ -26,16 +26,20 @@ namespace BoardGameBackend.Managers
             _mercenaries = new List<Mercenary>();
 
             bool bIsDragonDLCOn = gameContext.IsDLCDragonsOn();
+            bool bNoBuildingsAllows = gameContext.NoBuildingsInPool();
 
             foreach (var mercenaryFromJson in MercenariesFactory.MercenariesFromJsonList)
             {
                 if(bIsDragonDLCOn || !mercenaryFromJson.DragonDLC)
                 {
-                    for (int i = 0; i < mercenaryFromJson.ShuffleX; i++)
+                    if(!bNoBuildingsAllows || mercenaryFromJson.TypeCard != MercenaryHelper.BuildingCardType)
                     {
-                        var mercenary = GameMapper.Instance.Map<Mercenary>(mercenaryFromJson);
-                        mercenary.InGameIndex = _nextInGameIndex++;
-                        _mercenaries.Add(mercenary);
+                        for (int i = 0; i < mercenaryFromJson.ShuffleX; i++)
+                        {
+                            var mercenary = GameMapper.Instance.Map<Mercenary>(mercenaryFromJson);
+                            mercenary.InGameIndex = _nextInGameIndex++;
+                            _mercenaries.Add(mercenary);
+                        }
                     }
                 }
             }
@@ -188,18 +192,21 @@ namespace BoardGameBackend.Managers
             
             var mercenariesToRemove = new List<Mercenary>();
 
-            BuyableMercenaries.ForEach(mercenary =>
+            if(!_gameContext.NoEndRoundDiscount())
             {
-                if (mercenary.LockedByPlayerInfo != null) return;
-                mercenary.GoldDecrease += 1;
-                var goldNeeded = mercenary.ResourcesNeeded.Find(x => x.Name == ResourceType.Gold);
-
-                if (goldNeeded!.Amount - mercenary.GoldDecrease <= 0)
+                BuyableMercenaries.ForEach(mercenary =>
                 {
-                    TossedAwayMercenaries.Add(mercenary);
-                    mercenariesToRemove.Add(mercenary);
-                }
-            });
+                    if (mercenary.LockedByPlayerInfo != null) return;
+                    mercenary.GoldDecrease += 1;
+                    var goldNeeded = mercenary.ResourcesNeeded.Find(x => x.Name == ResourceType.Gold);
+
+                    if (goldNeeded!.Amount - mercenary.GoldDecrease <= 0)
+                    {
+                        TossedAwayMercenaries.Add(mercenary);
+                        mercenariesToRemove.Add(mercenary);
+                    }
+                });
+            }
 
             foreach (var mercenary in mercenariesToRemove)
             {
@@ -216,9 +223,9 @@ namespace BoardGameBackend.Managers
 
         public void RemoveProphecyMercenaries()
         {
-            BuyableMercenaries = BuyableMercenaries.Where(m => m.TypeCard != 3 || m.LockedByPlayerInfo != null).ToList();
-            TossedAwayMercenaries = TossedAwayMercenaries.Where(m => m.TypeCard != 3).ToList();
-            _mercenaries = _mercenaries.Where(m => m.TypeCard != 3).ToList();
+            BuyableMercenaries = BuyableMercenaries.Where(m => m.TypeCard != MercenaryHelper.ProphecyCardType || m.LockedByPlayerInfo != null).ToList();
+            TossedAwayMercenaries = TossedAwayMercenaries.Where(m => m.TypeCard != MercenaryHelper.ProphecyCardType).ToList();
+            _mercenaries = _mercenaries.Where(m => m.TypeCard != MercenaryHelper.ProphecyCardType).ToList();
         }
 
         public void AddRerolledMercenary(){

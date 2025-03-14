@@ -50,7 +50,13 @@ namespace BoardGameBackend.Models
         DRAGON_REQ_MIGHTS_MINUS_ONE,
         FULL_MOVE_ON_DRAGON_DEFEAT,
         EMPTY_MOVE_ON_TILES_WITH_ONEGOLD,
-        TWOGOLD_ON_ROYAL_CARD
+        TWOGOLD_ON_ROYAL_CARD,
+        GOLD_ON_DRAGON_DEFEAT,
+        GEMS_ON_TILES_WITH_NITER,
+        WOOD_ON_TILES_WITH_IRON,
+        NITER_ON_TILES_WITH_WOOD,
+        IRON_ON_TILES_WITH_GEMS,
+        GOLD_ON_TILES_WITH_ONEGOLD
     }
 
     public enum EndGameAuraType

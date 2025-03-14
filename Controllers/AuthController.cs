@@ -12,7 +12,7 @@ namespace BoardGameBackend.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
-        private const int m_iGameVersion = 4;
+        private const int m_iGameVersion = 5;
 
         public AuthController(IAuthService authService, IMapper mapper)
         {
@@ -89,7 +89,7 @@ namespace BoardGameBackend.Controllers
                 {
                     return BadRequest(new { Error = "Invalid version attempt." });
                 }
-                return Ok(new { JsonDictionary = InitJsonManager.GetJSONDictionary() });
+                return Ok(new { JsonDictionary = InitJsonManager.GetJSONDictionary(), ChangelogList = InitJsonManager.GetChangelogList() });
             }
             catch (Exception ex)
             {

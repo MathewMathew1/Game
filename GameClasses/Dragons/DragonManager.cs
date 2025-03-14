@@ -14,6 +14,7 @@ namespace BoardGameBackend.Managers
         private bool _dragonDLCon = false;
         public Dragon? nextDragonToSummon;
         private const int iSpawnOnRoundStart = 3;
+        private bool bExtraSpawnFiredAlready = false;
         public int iSpawnOnRoundHelpIndex = -1;
 
         public DragonManager(GameContext gameContext, bool dragonDLCon)
@@ -26,9 +27,12 @@ namespace BoardGameBackend.Managers
                 
             foreach (var dragonFromJson in DragonsFactory.DragonsFromJsonList)
             {
-                var dragon = GameMapper.Instance.Map<Dragon>(dragonFromJson);
-                dragon.InGameIndex = _nextInGameIndex++;
-                _dragons.Add(dragon);
+                if(dragonFromJson.ShuffleX > 0)
+                {
+                    var dragon = GameMapper.Instance.Map<Dragon>(dragonFromJson);
+                    dragon.InGameIndex = _nextInGameIndex++;
+                    _dragons.Add(dragon);
+                }
             }
 
             ShuffleDragons();
@@ -40,12 +44,12 @@ namespace BoardGameBackend.Managers
 
             gameContext.EventManager.Subscribe<PlayerInGame>("New player turn", player =>
             {
-                CheckIfExtraSummonIsNeeded();
+                DoStartExtraSpawn();
             }, priority: 1);
 
             gameContext.EventManager.Subscribe<DragonSummonEventData>("SummonDragonEvent", data =>
             {             
-                CheckIfExtraSummonIsNeeded();                
+                DoStartExtraSpawn();                
             }, priority: 0); 
         }
 
@@ -95,6 +99,9 @@ namespace BoardGameBackend.Managers
                 }
                 iMovementFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementFullLeft;
             }
+
+            
+
 
             var eventArgs = new DragonAcquired
             {
@@ -324,6 +331,9 @@ namespace BoardGameBackend.Managers
 
             if(_gameContext.TurnManager.CurrentTurn % 2 != 1) return;
 
+            if(bExtraSpawnFiredAlready) return;
+
+            bExtraSpawnFiredAlready = true;
             iSpawnOnRoundHelpIndex = 0;
         }
         public void DoStartExtraSpawn()
@@ -346,10 +356,6 @@ namespace BoardGameBackend.Managers
             {
                 DoEndExtraSpawnNow();
             }
-        }
-        public void CheckIfExtraSummonIsNeeded()
-        {
-            DoStartExtraSpawn();
         }
         public bool IsExtraSpawnOn()
         {

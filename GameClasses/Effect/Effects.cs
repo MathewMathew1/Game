@@ -18,6 +18,7 @@ namespace BoardGameBackend.Models
         REPLACE_HERO,
         GET_THREE_RANDOM_ARTIFACTS,
         GOLD_FOR_PROPHECY,
+        GOLD_WHEN_NO_GOLD,
         BANISH_ROYAL_CARD,
         SWAP_TOKENS,
         GOLD_FOR_BUILDINGS,

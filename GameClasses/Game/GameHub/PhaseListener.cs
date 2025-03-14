@@ -133,12 +133,8 @@ namespace BoardGameBackend.Managers.EventListeners
         }
 
         public void BroadCastStartOfTheGame(StartOfGame startOfGame){
-           var hubContext = _hubContextProvider!.LobbyHubContext;     
+           var hubContext = _hubContextProvider!.LobbyHubContext;    
            hubContext.Clients.Group(LobbyManager.GetLobbyByGameId(startOfGame.GameId)!.Id).SendAsync("GameStarted", startOfGame);
         }
-
-        
-
-
     }
 }

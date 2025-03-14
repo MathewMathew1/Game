@@ -28,6 +28,17 @@ namespace BoardGameBackend.Managers
 
         public void EndCurrentPhase(bool startNextTurn)
         {
+            if(CurrentPhase.Name == PhaseType.HeroCardPickingPhase)
+            {
+                if(_gameContext.TurnManager.CurrentPlayer != null)
+                {
+                    if(_gameContext.TurnManager.CurrentPlayer.PlayerHeroCardManager.CurrentHeroCard == null)
+                    {
+                        Console.WriteLine("Gra próbowała zakończyć fazę wyboru bohatera bez bohatera!!!");
+                        return;
+                    }
+                }
+            }
             CurrentPhase.EndPhase();
             MoveToNextPhase(startNextTurn);
         }

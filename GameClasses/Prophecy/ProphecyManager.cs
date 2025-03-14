@@ -1,5 +1,6 @@
 
 using System.Text.Json;
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Models
@@ -130,7 +131,7 @@ namespace BoardGameBackend.Models
 
         protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
         {
-            var amountOfConstructions = player.PlayerMercenaryManager.Mercenaries.Count(mercenary => mercenary.TypeCard == 2);
+            var amountOfConstructions = player.PlayerMercenaryManager.Mercenaries.Count(mercenary => mercenary.TypeCard == MercenaryHelper.BuildingCardType);
             if (amountOfConstructions >= Value2) return Value1;
 
             return 0;
@@ -143,7 +144,7 @@ namespace BoardGameBackend.Models
 
         protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
         {
-            var amountOfMercenaries = player.PlayerMercenaryManager.Mercenaries.Count(mercenary => mercenary.TypeCard == 1);
+            var amountOfMercenaries = player.PlayerMercenaryManager.Mercenaries.Count(mercenary => mercenary.TypeCard == MercenaryHelper.MercenaryCardType);
             if (amountOfMercenaries >= Value2) return Value1;
 
             return 0;
@@ -270,7 +271,125 @@ namespace BoardGameBackend.Models
             return 0;
         }
     }
+    
+    public class ProphecyOneHundredFifty : BaseProphecyPoints
+    {
+        public ProphecyOneHundredFifty(int value1, int value2) : base(value1, value2) { }
 
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
+            var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
+            int iTotal = amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight;
+            if(iTotal == 0)
+                return 0;
+
+            for(int i = 1; i <= 4; i++)
+            {
+                if(i != Value2)
+                {
+                    if(iTotal <= player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i) + player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i))
+                        return 0;
+                }
+            }
+
+            return Value1;
+        }
+    }
+
+    public class ProphecyOneHundredFiftyOne : BaseProphecyPoints
+    {
+        public ProphecyOneHundredFiftyOne(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
+            var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
+            int iTotal = amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight;
+            if(iTotal == 0)
+                return 0;
+
+            for(int i = 1; i <= 4; i++)
+            {
+                if(i != Value2)
+                {
+                    if(iTotal <= player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i) + player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i))
+                        return 0;
+                }
+            }
+
+            return Value1;
+        }
+    }
+    
+    public class ProphecyOneHundredFiftyTwo : BaseProphecyPoints
+    {
+        public ProphecyOneHundredFiftyTwo(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
+            var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
+            int iTotal = amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight;
+            if(iTotal == 0)
+                return 0;
+
+            for(int i = 1; i <= 4; i++)
+            {
+                if(i != Value2)
+                {
+                    if(iTotal <= player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i) + player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i))
+                        return 0;
+                }
+            }
+
+            return Value1;
+        }
+    }
+    
+    public class ProphecyOneHundredFiftyThree : BaseProphecyPoints
+    {
+        public ProphecyOneHundredFiftyThree(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+
+            var amountOfHerosWithFactionOnLeft = player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == Value2);
+            var amountOfHerosWithFactionOnRight = player.PlayerHeroCardManager.HeroCardsRight.Count(hero => hero.Faction.Id == Value2);
+            int iTotal = amountOfHerosWithFactionOnLeft + amountOfHerosWithFactionOnRight;
+            if(iTotal == 0)
+                return 0;
+
+            for(int i = 1; i <= 4; i++)
+            {
+                if(i != Value2)
+                {
+                    if(iTotal <= player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i) + player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i))
+                        return 0;
+                }
+            }
+
+            return Value1;
+        }
+    }
+    public class ProphecyOneHundredFiftyFour : BaseProphecyPoints
+    {
+        public ProphecyOneHundredFiftyFour(int value1, int value2) : base(value1, value2) { }
+
+        protected override int CalculatePoints(PlayerInGame player, Mercenary mercenary)
+        {
+            for(int i = 1; i <= 4; i++)
+            {
+                if((player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i) > 0) && (player.PlayerHeroCardManager.HeroCardsLeft.Count(hero => hero.Faction.Id == i) > 0))
+                        return 0;
+            }
+
+            return Value1;
+        }
+    }
 
     public class ProphecyThirtyFive : BaseProphecyPoints
     {
@@ -575,6 +694,21 @@ namespace BoardGameBackend.Models
                         break;
                     case 139:
                         _requirements.Add(requirementData.Id, new ProphecyOneHundredThirtyNine(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 150:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredFifty(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 151:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredFiftyOne(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 152:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredFiftyTwo(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 153:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredFiftyThree(requirementData.IntValue1, requirementData.IntValue2));
+                        break;
+                    case 154:
+                        _requirements.Add(requirementData.Id, new ProphecyOneHundredFiftyFour(requirementData.IntValue1, requirementData.IntValue2));
                         break;
                     default:
                         break;

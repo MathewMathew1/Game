@@ -152,7 +152,7 @@ namespace BoardGameBackend.Managers
             var player = GetPlayerById(mercenaryPicked.Player.Id);
             if (player == null) return;
 
-            if (mercenaryPicked.Card.TypeCard != 3) return;
+            if (mercenaryPicked.Card.TypeCard != MercenaryHelper.ProphecyCardType) return;
 
             var auraIndex = player.AurasTypes.FindIndex(a => a.Aura == AurasType.FULFILL_PROPHECY);
 
@@ -223,12 +223,20 @@ namespace BoardGameBackend.Managers
             ApplyPostDragonAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_SIGNET, TileHelper.SignetTileId);
             ApplyPostDragonAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_REROLL, TileHelper.MercRerollTileId);
             ApplyPostDragonAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_ARTIFACT, TileHelper.ArtifactTileId);
+            ApplyPostDragonAuraReward(player, data, AurasType.GEMS_ON_TILES_WITH_NITER, TileHelper.NiterTileId, ResourceType.Gems);
+            ApplyPostDragonAuraReward(player, data, AurasType.WOOD_ON_TILES_WITH_IRON, TileHelper.IronTileId, ResourceType.Wood);
+            ApplyPostDragonAuraReward(player, data, AurasType.NITER_ON_TILES_WITH_WOOD, TileHelper.WoodTileId, ResourceType.Niter);
+            ApplyPostDragonAuraReward(player, data, AurasType.IRON_ON_TILES_WITH_GEMS, TileHelper.GemsTileId, ResourceType.Iron);
+            ApplyPostDragonAuraReward(player, data, AurasType.GOLD_ON_TILES_WITH_ONEGOLD, TileHelper.OneGoldTileId);
+
 
             condition = data.TileReward.TeleportedTileId != null; // always good
             ApplyAuraReward(player, data, AurasType.GOLD_ON_TILE_TELEPORT, condition);
 
             condition = TileHelper.DuelTilesId.Contains(data.Tile.TileTypeId); // tile block was bad!!!
             ApplyAuraReward(player, data, AurasType.GOLD_ON_TILE_DUEL, condition);
+
+  
 
             var amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.EMPTY_MOVE_ON_TILES_WITH_SIGNET);
             if (amountOfAuras > 0)
@@ -238,6 +246,16 @@ namespace BoardGameBackend.Managers
                 {
                     player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft += 1;
                     data.MovementUnFullLeft = player.PlayerHeroCardManager.CurrentHeroCard.MovementUnFullLeft;
+                }
+            }
+
+            if(data.TileReward.Dragon)
+            {
+                amountOfAuras = player.AurasTypes.Count(a => a.Aura == AurasType.GOLD_ON_DRAGON_DEFEAT);
+                if (amountOfAuras > 0)
+                {
+                    player.ResourceManager.AddResource(ResourceType.Gold, amountOfAuras);
+                    data.TileReward.Resources.Add(new Resource(ResourceType.Gold, amountOfAuras));
                 }
             }
 
@@ -282,7 +300,7 @@ namespace BoardGameBackend.Managers
             return false;
         }
 
-        void ApplyPostDragonAuraReward(PlayerInGame player, MoveOnTile data, AurasType auraType, int tileType)
+        void ApplyPostDragonAuraReward(PlayerInGame player, MoveOnTile data, AurasType auraType, int tileType, ResourceType resReward = ResourceType.Gold)
         {
             var amountOfAuras = player.AurasTypes.Count(a => a.Aura == auraType);
 
@@ -292,8 +310,8 @@ namespace BoardGameBackend.Managers
                 {
                     if(GotAnyRewardFromTile(data))
                     {
-                        player.ResourceManager.AddResource(ResourceType.Gold, amountOfAuras);
-                        data.TileReward.Resources.Add(new Resource(ResourceType.Gold, amountOfAuras));
+                        player.ResourceManager.AddResource(resReward, amountOfAuras);
+                        data.TileReward.Resources.Add(new Resource(resReward, amountOfAuras));
                     }
                 }
             }

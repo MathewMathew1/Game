@@ -29,6 +29,8 @@ namespace BoardGameBackend.Managers
 
         public bool m_bDLCDragons {get; private set; }
         public bool m_bSignets25914 {get; private set; }
+        public bool m_bNoEndRoundDiscount {get; private set; }
+        public bool m_bNoBuildingsInPool {get; private set; }
 
         public bool AreSignetsSpecialThreshold()
         {
@@ -38,6 +40,14 @@ namespace BoardGameBackend.Managers
         {
             return m_bDLCDragons;
         }
+        public bool NoEndRoundDiscount()
+        {
+            return m_bNoEndRoundDiscount;
+        }
+        public bool NoBuildingsInPool()
+        {
+            return m_bNoBuildingsInPool;
+        }
 
         public GameContext(string gameId, List<Player> players, StartGameModel startGameModel)
         {
@@ -45,9 +55,11 @@ namespace BoardGameBackend.Managers
             GameId = gameId;
             m_bDLCDragons = startGameModel.DLCDragons;
             m_bSignets25914 = startGameModel.SignetsTwoFiveNine;
+            m_bNoEndRoundDiscount = startGameModel.NoEndRoundDiscount;
+            m_bNoBuildingsInPool = startGameModel.NoBuildingsInPool;
             PlayerManager = new PlayersManager(players, this, startGameModel.SignetsTwoFiveNine);
             TurnManager = startGameModel.TurnType == TurnTypes.FULL_TURN ? new PlayerFullTurnManager(this) : new PhaseByPhaseTurnManager(this);
-            HeroCardManager = new HeroCardManager(this, startGameModel.LessCards, startGameModel.MoreHeroCards);
+            HeroCardManager = new HeroCardManager(this, startGameModel.LessCards, startGameModel.MoreHeroCards, startGameModel.HeroPoolType);
             PhaseManager = new PhaseManager(this);
             BoardManager = new BoardManager(this);
             GameTiles = new GameTiles(this);
@@ -79,7 +91,6 @@ namespace BoardGameBackend.Managers
             .ToList();
 
             var mercenaryData = MercenaryManager.GetMercenaryData();
-
             var rolayCards = RolayCardManager.GetRolayCards();
 
             StartOfGame data = new StartOfGame

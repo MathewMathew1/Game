@@ -16,8 +16,6 @@ namespace BoardGameBackend.Managers
         {
             _hubContextProvider = hubContextProvider;
         }
-
-
         public static GameContext StartGameFromLobby(Lobby lobby, StartGameModel startGameModel)
         {
             var gameId = Guid.NewGuid().ToString();

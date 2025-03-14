@@ -1,4 +1,5 @@
 using System.Text.Json;
+using BoardGameBackend.Helpers;
 
 namespace BoardGameBackend.Models
 {
@@ -236,7 +237,7 @@ namespace BoardGameBackend.Models
 
         public bool CheckRequirements(PlayerInGame player)
         {
-            var amountOfCards = player.PlayerMercenaryManager.Mercenaries.Count(Mercenary => Mercenary.TypeCard == 3);
+            var amountOfCards = player.PlayerMercenaryManager.Mercenaries.Count(Mercenary => Mercenary.TypeCard == MercenaryHelper.ProphecyCardType);
             return amountOfCards >= 0;
         }
     }
@@ -332,6 +333,82 @@ namespace BoardGameBackend.Models
                 return player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard.ScorePoints > 0;
             else
                 return player.PlayerHeroCardManager.CurrentHeroCard.HeroCard.ScorePoints > 0;
+        }
+    }
+    public class RequirementThirtyFour : IRequirementMovement
+    {
+        private readonly int _value1;
+        private readonly int _value2;
+
+        public int Value1 => _value1;
+        public int Value2 => _value2;
+
+        public RequirementThirtyFour(int value1, int value2)
+        {
+            _value1 = value1;
+            _value2 = value2;
+        }
+
+        public bool CheckRequirements(PlayerInGame player)
+        {
+            if(player.PlayerHeroCardManager.CurrentHeroCard == null)
+                return false;
+
+            if(player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard != null)
+                return player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard.Army > 0;
+            else
+                return player.PlayerHeroCardManager.CurrentHeroCard.HeroCard.Army > 0;
+        }
+    }
+    
+    public class RequirementThirtyFive : IRequirementMovement
+    {
+        private readonly int _value1;
+        private readonly int _value2;
+
+        public int Value1 => _value1;
+        public int Value2 => _value2;
+
+        public RequirementThirtyFive(int value1, int value2)
+        {
+            _value1 = value1;
+            _value2 = value2;
+        }
+
+        public bool CheckRequirements(PlayerInGame player)
+        {
+            if(player.PlayerHeroCardManager.CurrentHeroCard == null)
+                return false;
+
+            if(player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard != null)
+                return player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard.Magic > 0;
+            else
+                return player.PlayerHeroCardManager.CurrentHeroCard.HeroCard.Magic > 0;
+        }
+    }
+    public class RequirementThirtySix : IRequirementMovement
+    {
+        private readonly int _value1;
+        private readonly int _value2;
+
+        public int Value1 => _value1;
+        public int Value2 => _value2;
+
+        public RequirementThirtySix(int value1, int value2)
+        {
+            _value1 = value1;
+            _value2 = value2;
+        }
+
+        public bool CheckRequirements(PlayerInGame player)
+        {
+            if(player.PlayerHeroCardManager.CurrentHeroCard == null)
+                return false;
+
+            if(player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard != null)
+                return player.PlayerHeroCardManager.CurrentHeroCard.ReplacedHeroCard.HeroCard.Siege > 0;
+            else
+                return player.PlayerHeroCardManager.CurrentHeroCard.HeroCard.Siege > 0;
         }
     }
     public static class RequirementMovementStore
@@ -441,6 +518,15 @@ namespace BoardGameBackend.Models
                         break;
                     case 33:
                         _requirements.Add(requirementData.Id, new RequirementHasDragon(requirementData.Value1, requirementData.Value2));
+                        break;
+                    case 34:
+                        _requirements.Add(requirementData.Id, new RequirementThirtyFour(requirementData.Value1, requirementData.Value2));
+                        break;
+                    case 35:
+                        _requirements.Add(requirementData.Id, new RequirementThirtyFive(requirementData.Value1, requirementData.Value2));
+                        break;
+                    case 36:
+                        _requirements.Add(requirementData.Id, new RequirementThirtySix(requirementData.Value1, requirementData.Value2));
                         break;
 
                 }

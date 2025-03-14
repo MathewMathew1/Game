@@ -1,3 +1,4 @@
+using BoardGameBackend.Helpers;
 using BoardGameBackend.Models;
 
 namespace BoardGameBackend.Managers
@@ -11,7 +12,7 @@ namespace BoardGameBackend.Managers
             var mercenary = Mercenaries.FirstOrDefault(m => m.InGameIndex == id);
             if(mercenary == null) return false;
 
-            if(mercenary.TypeCard != 3) return false;
+            if(mercenary.TypeCard != MercenaryHelper.ProphecyCardType) return false;
 
             mercenary.IsAlwaysFulfilled = true;
 
@@ -19,7 +20,7 @@ namespace BoardGameBackend.Managers
         }
 
         public List<Mercenary> GetAllUnfilledProphecies(){
-            var mercenaries = Mercenaries.FindAll(m => m.IsAlwaysFulfilled == false && m.TypeCard == 3);
+            var mercenaries = Mercenaries.FindAll(m => m.IsAlwaysFulfilled == false && m.TypeCard == MercenaryHelper.ProphecyCardType);
 
             return mercenaries;
         }

@@ -63,6 +63,7 @@ namespace BoardGameBackend.Models
         public LockedByPlayerInfo? LockedByPlayerInfo {get; set;}
         public string? ToolTipText {get; set;}
         public required bool DragonDLC {get; set;}
+        public required int ShuffleX { get; set; }
     }
 
     public class MercenaryData

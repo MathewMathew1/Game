@@ -150,7 +150,7 @@ namespace BoardGameBackend.Models
         {
             return new Reward
             {
-                Resources = new List<Resource> { },
+                Effects = new List<EffectType>() { EffectType.GOLD_WHEN_NO_GOLD },
                 AurasTypes = new List<AuraTypeWithLongevity>() { new AuraTypeWithLongevity { Aura = AurasType.GOLD_WHEN_NO_GOLD, Permanent = true } }
             };
         }
@@ -1474,6 +1474,96 @@ namespace BoardGameBackend.Models
             };
         }
     }
+    
+    public class OneCoinOnDragonReward : BaseReward
+    {
+        public OneCoinOnDragonReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_DRAGON_DEFEAT, Permanent = true }
+                }
+            };
+        }
+    }
+    
+    public class GemsOnNiterReward : BaseReward
+    {
+        public GemsOnNiterReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GEMS_ON_TILES_WITH_NITER, Permanent = true }
+                }
+            };
+        }
+    }
+    
+    public class WoodOnIronReward : BaseReward
+    {
+        public WoodOnIronReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.WOOD_ON_TILES_WITH_IRON, Permanent = true }
+                }
+            };
+        }
+    }
+    
+    public class NiterOnWoodReward : BaseReward
+    {
+        public NiterOnWoodReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.NITER_ON_TILES_WITH_WOOD, Permanent = true }
+                }
+            };
+        }
+    }
+    
+    public class IronOnGemsReward : BaseReward
+    {
+        public IronOnGemsReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.IRON_ON_TILES_WITH_GEMS, Permanent = true }
+                }
+            };
+        }
+    }
+
+    public class GoldOnOneGoldReward : BaseReward
+    {
+        public GoldOnOneGoldReward(int value1, int value2) : base(value1, value2) { }
+
+        public override Reward OnReward()
+        {
+            return new Reward
+            {
+                AurasTypes = new List<AuraTypeWithLongevity>() {
+                    new AuraTypeWithLongevity { Aura = AurasType.GOLD_ON_TILES_WITH_ONEGOLD, Permanent = true }
+                }
+            };
+        }
+    }
 
     public class NoReward : BaseReward
     {
@@ -1851,6 +1941,24 @@ namespace BoardGameBackend.Models
                         break;
                     case 149:
                         _rewards.Add(rewardData.Id, new GetTwoArtifactsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 155:
+                        _rewards.Add(rewardData.Id, new OneCoinOnDragonReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 156:
+                        _rewards.Add(rewardData.Id, new GemsOnNiterReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 157:
+                        _rewards.Add(rewardData.Id, new WoodOnIronReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 158:
+                        _rewards.Add(rewardData.Id, new NiterOnWoodReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 159:
+                        _rewards.Add(rewardData.Id, new IronOnGemsReward(rewardData.IntValue1, rewardData.IntValue2));
+                        break;
+                    case 160:
+                        _rewards.Add(rewardData.Id, new GoldOnOneGoldReward(rewardData.IntValue1, rewardData.IntValue2));
                         break;
                 }
             }

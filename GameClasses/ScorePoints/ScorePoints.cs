@@ -163,10 +163,10 @@ namespace BoardGameBackend.Managers
                     AmountOfPointsBasedOnPlace = new List<int> { 6, 0, 0, 0 };
                     break;
                 case 3:
-                    AmountOfPointsBasedOnPlace = new List<int> { 6, 2, 0, 0 };
+                    AmountOfPointsBasedOnPlace = new List<int> { 6, 3, 0, 0 };
                     break;
                 default:
-                    AmountOfPointsBasedOnPlace = new List<int> { 6, 3, 1, 0 };
+                    AmountOfPointsBasedOnPlace = new List<int> { 7, 4, 1, 0 };
                     break;
             }
         }

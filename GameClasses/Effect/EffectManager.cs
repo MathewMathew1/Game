@@ -38,6 +38,7 @@ namespace BoardGameBackend.Managers
                 {EffectType.REPLACE_HERO, ReplaceNextHero},
                 {EffectType.GET_THREE_RANDOM_ARTIFACTS, AddThreeRandomArtifact},
                 {EffectType.GOLD_FOR_PROPHECY, GoldForEachProphecy},
+                {EffectType.GOLD_WHEN_NO_GOLD, GoldWhenNoGoldInstant},
                 {EffectType.GOLD_FOR_BUILDINGS, GoldForEachBuilding},
                 {EffectType.BANISH_ROYAL_CARD, BanishRoyalCardHero},
                 {EffectType.SWAP_TOKENS, SwapTokens},
@@ -214,19 +215,37 @@ namespace BoardGameBackend.Managers
             _gameContext.MiniPhaseManager.StartBuffHeroMiniPhase();
         }
 
-        private void GoldForEachProphecy(EffectType effect, PlayerInGame player)
+        private void GoldWhenNoGoldInstant(EffectType effect, PlayerInGame player)
         {
-            var amountOfProphecy = player.PlayerMercenaryManager.Mercenaries.Count(m => m.TypeCard == MercenaryHelper.ProphecyCardType);
+            int iAmountPlausible = 1;
+            if(player.ResourceManager.GetResourceAmount(ResourceType.Gold) != 0)
+                return;
 
-            player.ResourceManager.AddResource(ResourceType.Gold, amountOfProphecy);
+            player.ResourceManager.AddResource(ResourceType.Gold, iAmountPlausible);
 
             ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
             {
-                Resources = new List<Resource> { new Resource(ResourceType.Gold, 1) },
-                ResourceInfo = $"has received {amountOfProphecy} gold for starting close to castle",
+                Resources = new List<Resource> { new Resource(ResourceType.Gold, iAmountPlausible) },
+                ResourceInfo = $"has received {iAmountPlausible} gold for no gold",
                 PlayerId = player.Id,
             };
             _gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
+        }
+        private void GoldForEachProphecy(EffectType effect, PlayerInGame player)
+        {
+            var amountOfProphecy = player.PlayerMercenaryManager.Mercenaries.Count(m => m.TypeCard == MercenaryHelper.ProphecyCardType);
+            if(amountOfProphecy > 0)
+            {
+                player.ResourceManager.AddResource(ResourceType.Gold, amountOfProphecy);
+
+                ResourceReceivedEventData resourceReceivedEventData = new ResourceReceivedEventData
+                {
+                    Resources = new List<Resource> { new Resource(ResourceType.Gold, amountOfProphecy) },
+                    ResourceInfo = $"has received {amountOfProphecy} gold for prophecies",
+                    PlayerId = player.Id,
+                };
+                _gameContext.EventManager.Broadcast("ResourceReceivedEvent", ref resourceReceivedEventData);
+            }
         }
 
         private void GoldForEachBuilding(EffectType effect, PlayerInGame player)
